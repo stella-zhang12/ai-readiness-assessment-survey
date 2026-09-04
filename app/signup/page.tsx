@@ -110,7 +110,9 @@ export default function SignupPage() {
           <p className="text-xs leading-relaxed text-ink-muted">
             This beta uses AI to generate summaries and readiness ratings, and
             records time spent in the tool to help the research team improve
-            it. AI can make mistakes — cross-check important results.
+            it. AI can make mistakes — cross-check important results. The tool
+            asks about your data but never collects it; please don&apos;t enter
+            personal or patient records.
           </p>
         </form>
       )}

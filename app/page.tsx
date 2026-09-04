@@ -69,15 +69,9 @@ export default function Landing() {
           </span>
         </h1>
 
-        <p className="mt-5 max-w-measure font-serif text-2xl leading-snug text-ink">
-          Know whether an AI use case is ready —{" "}
-          <em className="text-heritage">before it&apos;s built.</em>
-        </p>
-
-        <p className="mt-4 max-w-measure text-base text-ink-soft">
-          A structured team assessment for health and CRVS programs: define
-          one specific use case, work through it together, and get a clear
-          readiness profile across four elements.
+        <p className="mt-5 max-w-measure text-lg text-ink-soft">
+          An interactive survey that guides health teams through a structured
+          assessment of whether a proposed AI use case is ready to build.
         </p>
 
         <div className="mt-4 flex flex-wrap gap-2">
@@ -154,21 +148,6 @@ export default function Landing() {
         </span>
       </div>
 
-      <ul className="mt-12 max-w-measure space-y-1.5 border-t border-line pt-6 text-sm text-ink-muted">
-        <li>
-          Results are advisory input to your team&apos;s decision — never an
-          approval or rejection of a project.
-        </li>
-        <li>
-          This tool asks <em>about</em> your data; it never collects or
-          processes your actual records. Please don&apos;t enter personal or
-          patient data.
-        </li>
-      </ul>
-
-        <p className="mt-6 text-xs text-ink-muted">
-          Banner photo: Gilman Hall, Johns Hopkins University (public domain).
-        </p>
       </div>
     </main>
   );

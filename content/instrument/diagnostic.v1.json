@@ -2,7 +2,7 @@
   "id": "diagnostic",
   "version": 1,
   "title": "Diagnostic",
-  "chooserDescription": "A structured diagnostic version best suited for teams who are actively planning or preparing to implement an AI tool. Open scoping questions, an AI-generated problem summary, and a structured readiness assessment, ending with a rated readiness read across four elements.",
+  "chooserDescription": "The full assessment, ending in a rated readiness profile across the four elements.",
   "estimatedMinutes": "30-45",
   "source": "Revised Version of AI Readiness (Re-Scoped).docx",
   "sourceNotes": [

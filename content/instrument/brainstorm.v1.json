@@ -2,7 +2,7 @@
   "id": "brainstorm",
   "version": 1,
   "title": "Brainstorm",
-  "chooserDescription": "A lighter, exploratory version best suited for early-stage conversations, initial scoping, or teams who are new to AI implementation. 17 open questions across four sections - no scoring. Ends with a printable transcript and an AI-suggested list of things to find out.",
+  "chooserDescription": "Think an early idea through. 17 open questions, no scoring.",
   "estimatedMinutes": "10-15",
   "source": "Revised Version of AI Readiness (Re-Scoped).docx",
   "sourceNotes": [
