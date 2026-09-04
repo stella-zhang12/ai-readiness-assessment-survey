@@ -22,3 +22,12 @@ h2 {
   outline: 3px solid var(--spirit);
   outline-offset: 2px;
 }
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    font-size: 11pt;
+  }
+}
