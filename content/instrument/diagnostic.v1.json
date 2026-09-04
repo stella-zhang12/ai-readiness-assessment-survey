@@ -2,7 +2,7 @@
   "id": "diagnostic",
   "version": 1,
   "title": "Diagnostic",
-  "chooserDescription": "The full assessment, ending in a rated readiness profile across the four elements.",
+  "chooserDescription": "The full assessment. Shows you how ready your use case is - and where the gaps are.",
   "estimatedMinutes": "30-45",
   "source": "Revised Version of AI Readiness (Re-Scoped).docx",
   "sourceNotes": [

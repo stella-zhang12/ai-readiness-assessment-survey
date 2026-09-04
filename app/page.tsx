@@ -26,13 +26,6 @@ const quickExamples = [
   },
 ];
 
-const elements = [
-  "Use Case",
-  "Data",
-  "Safety",
-  "Country-Level Readiness",
-];
-
 export default function Landing() {
   return (
     <main>
@@ -73,17 +66,6 @@ export default function Landing() {
           An interactive survey that guides health teams through a structured
           assessment of whether a proposed AI use case is ready to build.
         </p>
-
-        <div className="mt-4 flex flex-wrap gap-2">
-          {elements.map((el) => (
-            <span
-              key={el}
-              className="rounded-full border border-washline bg-wash px-3.5 py-1 text-sm font-semibold text-heritage"
-            >
-              {el}
-            </span>
-          ))}
-        </div>
 
       <div className="mt-8 max-w-measure rounded-xl border border-washline bg-wash p-5">
         <h2 className="font-bold text-heritage">What counts as a use case?</h2>
