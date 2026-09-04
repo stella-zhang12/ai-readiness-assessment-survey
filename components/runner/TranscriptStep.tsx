@@ -1,10 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { Instrument } from "@/lib/instrument";
 import { isAnswered, type AnswerMap } from "@/lib/steps";
+
+type Todo = { qid: string | null; action: string; why: string };
 
 export function TranscriptStep({
   instrument,
@@ -23,6 +25,25 @@ export function TranscriptStep({
 }) {
   const supabase = useMemo(() => createClient(), []);
   const [completed, setCompleted] = useState(false);
+  const [aiTodos, setAiTodos] = useState<Todo[] | null>(null);
+  const fetched = useRef(false);
+
+  useEffect(() => {
+    if (fetched.current) return;
+    fetched.current = true;
+    fetch("/api/ai/results", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ assessmentId }),
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d?.followups?.todos?.length && !d.followups.fallback) {
+          setAiTodos(d.followups.todos);
+        }
+      })
+      .catch(() => {});
+  }, [assessmentId]);
 
   async function markComplete() {
     await supabase
@@ -55,9 +76,7 @@ export function TranscriptStep({
         </h1>
         <p className="mt-2 max-w-measure text-sm text-ink-soft">
           {answeredCount} of 17 questions answered. Print it, share it, or come
-          back and edit — everything stays saved. (The AI-suggested
-          &ldquo;things to find out&rdquo; list arrives in the next build
-          step.)
+          back and edit — everything stays saved.
         </p>
         <div className="mt-5 flex flex-wrap items-center gap-4">
           <button
@@ -134,17 +153,36 @@ export function TranscriptStep({
             )
         )}
 
-        {idkList.length > 0 && (
+        {aiTodos ? (
           <div>
             <h2 className="border-b border-line pb-1 text-lg font-bold text-heritage">
-              To find out
+              Suggested next steps{" "}
+              <span className="align-middle text-[10px] font-bold uppercase tracking-wider text-spirit-dark">
+                AI-generated
+              </span>
             </h2>
-            <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-ink-soft">
-              {idkList.map((q) => (
-                <li key={q.id}>{q.prompt}</li>
+            <ol className="mt-3 space-y-2">
+              {aiTodos.map((t, i) => (
+                <li key={i} className="text-sm text-ink-soft">
+                  <span className="font-semibold text-ink">{t.action}</span>{" "}
+                  <span className="text-ink-muted">— {t.why}</span>
+                </li>
               ))}
-            </ul>
+            </ol>
           </div>
+        ) : (
+          idkList.length > 0 && (
+            <div>
+              <h2 className="border-b border-line pb-1 text-lg font-bold text-heritage">
+                To find out
+              </h2>
+              <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-ink-soft">
+                {idkList.map((q) => (
+                  <li key={q.id}>{q.prompt}</li>
+                ))}
+              </ul>
+            </div>
+          )
         )}
       </div>
     </section>

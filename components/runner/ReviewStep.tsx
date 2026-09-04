@@ -15,11 +15,13 @@ type SectionSummary = {
 export function ReviewStep({
   instrument,
   answers,
+  assessmentId,
   onJump,
   onBack,
 }: {
   instrument: Instrument;
   answers: AnswerMap;
+  assessmentId: string;
   onJump: (sectionId: string) => void;
   onBack: () => void;
 }) {
@@ -95,10 +97,10 @@ export function ReviewStep({
       <div className="mt-8 rounded-xl border border-washline bg-wash p-5">
         <h2 className="font-bold text-heritage">Next: your readiness results</h2>
         <p className="mt-1.5 text-sm text-ink-soft">
-          The AI-generated readiness table — a rating for each of the four
-          elements with the reasoning behind it, plus a suggested follow-up
-          list — is the next build step. Your answers are all saved and will
-          feed straight into it.
+          The AI reads everything your team wrote and rated, then rates each
+          of the four elements with its reasoning — plus a suggested
+          follow-up list. Takes about half a minute. Results are labeled
+          AI-generated and can be regenerated any time.
         </p>
       </div>
 
@@ -111,10 +113,16 @@ export function ReviewStep({
           Back
         </button>
         <Link
-          href="/dashboard"
+          href={`/a/${assessmentId}/results`}
           className="rounded-md bg-heritage px-6 py-2.5 font-semibold text-white hover:bg-heritage-deep"
         >
-          Back to dashboard
+          Generate readiness results
+        </Link>
+        <Link
+          href="/dashboard"
+          className="text-sm font-semibold text-spirit-dark underline underline-offset-2"
+        >
+          Finish later
         </Link>
       </div>
     </section>

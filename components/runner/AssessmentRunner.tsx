@@ -16,6 +16,50 @@ import { TextQuestionStep } from "./TextQuestionStep";
 import { LikertSectionStep } from "./LikertSectionStep";
 import { ReviewStep } from "./ReviewStep";
 import { TranscriptStep } from "./TranscriptStep";
+import { SummaryStep } from "./SummaryStep";
+import type { AiSummarySection } from "@/lib/instrument";
+
+/** Quick-check recap shown on milestone screens (PRD §7.2, fail-silent). */
+function MilestoneRecap({
+  assessmentId,
+  sectionId,
+}: {
+  assessmentId: string;
+  sectionId: string;
+}) {
+  const [recap, setRecap] = useState<string | null>(null);
+  useEffect(() => {
+    const ctrl = new AbortController();
+    const timeout = setTimeout(() => ctrl.abort(), 9000);
+    fetch("/api/ai/recap", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ assessmentId, sectionId }),
+      signal: ctrl.signal,
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => d?.recap && setRecap(d.recap))
+      .catch(() => {})
+      .finally(() => clearTimeout(timeout));
+    return () => {
+      clearTimeout(timeout);
+      ctrl.abort();
+    };
+  }, [assessmentId, sectionId]);
+
+  if (!recap) return null;
+  return (
+    <div className="relative mx-auto mt-6 max-w-md rounded-xl border border-washline bg-wash p-4 text-left">
+      <span className="absolute -top-2.5 right-3 rounded-full bg-spirit px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
+        AI-generated
+      </span>
+      <p className="text-xs font-semibold text-spirit-dark">
+        Quick check before you continue
+      </p>
+      <p className="mt-1 text-sm leading-relaxed text-ink-soft">{recap}</p>
+    </div>
+  );
+}
 
 type Props = {
   assessmentId: string;
@@ -206,6 +250,10 @@ export function AssessmentRunner({
             <p className="mx-auto mt-2 max-w-sm text-ink-soft">
               Next up: {step.nextTitle}. Everything so far is saved.
             </p>
+            <MilestoneRecap
+              assessmentId={assessmentId}
+              sectionId={step.key.replace("milestone:", "")}
+            />
             <div className="mt-8 flex items-center justify-center gap-4">
               <button
                 type="button"
@@ -226,33 +274,30 @@ export function AssessmentRunner({
         )}
 
         {step.kind === "summary_placeholder" && (
-          <section className="py-16 text-center">
-            <h1 className="text-2xl font-bold text-heritage">
-              Your AI problem summary will appear here
-            </h1>
-            <p className="mx-auto mt-3 max-w-md text-ink-soft">
-              In the finished tool, this screen shows a short AI-written
-              summary of your Section A answers for you to confirm or edit.
-              The AI features are the next build step — continue to the
-              readiness ratings for now.
-            </p>
-            <div className="mt-8 flex items-center justify-center gap-4">
-              <button
-                type="button"
-                onClick={() => goTo(idx - 1)}
-                className="text-sm font-semibold text-spirit-dark underline underline-offset-2"
-              >
-                Back
-              </button>
-              <button
-                type="button"
-                onClick={() => goTo(idx + 1)}
-                className="rounded-md bg-heritage px-6 py-2.5 font-semibold text-white hover:bg-heritage-deep"
-              >
-                Continue to ratings
-              </button>
-            </div>
-          </section>
+          <SummaryStep
+            section={
+              instrument.sections.find(
+                (s): s is AiSummarySection => s.type === "ai_summary"
+              )!
+            }
+            assessmentId={assessmentId}
+            summaryText={answers["C.summary_final"]?.text}
+            c1Rating={answers["C1"]?.rating}
+            fallbackText={(() => {
+              const a1 = answers["A1"]?.text?.split(/(?<=\.)\s/)[0] ?? "";
+              const a2 = answers["A2"]?.text?.split(/(?<=\.)\s/)[0] ?? "";
+              return [
+                a1 && `You told us: ${a1}`,
+                a2 && `The main challenge is: ${a2}`,
+              ]
+                .filter(Boolean)
+                .join(" ");
+            })()}
+            onSaveText={(t) => setAnswer("C.summary_final", { text: t })}
+            onRateC1={(v) => setAnswer("C1", { rating: v }, 150)}
+            onContinue={() => goTo(idx + 1)}
+            onBack={() => goTo(idx - 1)}
+          />
         )}
 
         {step.kind === "likert" && (
@@ -271,6 +316,7 @@ export function AssessmentRunner({
           <ReviewStep
             instrument={instrument}
             answers={answers}
+            assessmentId={assessmentId}
             onJump={jumpToSection}
             onBack={() => goTo(idx - 1)}
           />
