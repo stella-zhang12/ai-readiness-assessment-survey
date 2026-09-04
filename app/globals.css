@@ -8,7 +8,13 @@
 }
 
 body {
-  @apply bg-white text-ink antialiased;
+  @apply bg-white font-sans text-ink antialiased;
+}
+
+/* Headings carry the serif voice; interface text stays sans. */
+h1,
+h2 {
+  @apply font-serif;
 }
 
 /* Quiet, accessible focus states everywhere */

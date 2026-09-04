@@ -9,6 +9,10 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+        serif: ["var(--font-serif)", "Georgia", "serif"],
+      },
       colors: {
         heritage: {
           DEFAULT: "#002D72",

@@ -39,28 +39,18 @@ export default function Landing() {
       />
 
       <div className="mx-auto max-w-3xl px-6 py-12">
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-4">
+        <div className="flex flex-col gap-2.5">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/jhu-seal.png"
-            alt=""
-            width={208}
-            height={280}
-            className="h-16 w-auto"
+            src="/jhu-bsph-logo.png"
+            alt="Johns Hopkins Bloomberg School of Public Health"
+            width={345}
+            height={94}
+            className="h-12 w-auto"
           />
-          <div className="flex flex-col gap-1.5">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/jhu-logo.png"
-              alt="Johns Hopkins University"
-              width={786}
-              height={191}
-              className="h-8 w-auto"
-            />
-            <span className="text-xs font-semibold uppercase tracking-widest text-spirit-dark">
-              Center for Global Digital Health Innovation
-            </span>
-          </div>
+          <span className="text-xs font-semibold uppercase tracking-widest text-spirit-dark">
+            Center for Global Digital Health Innovation
+          </span>
         </div>
 
         <h1 className="mt-8 text-4xl font-bold leading-tight text-heritage">
@@ -77,7 +67,7 @@ export default function Landing() {
             intelligence. The instrument evaluates a single, clearly defined
             use case and produces a readiness profile across four elements —
             Use Case, Data, Safety, and Country-Level Readiness — to inform
-            planning and investment decisions prior to development.
+            planning prior to development.
           </p>
         </div>
 
