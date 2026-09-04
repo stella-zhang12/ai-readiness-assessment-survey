@@ -89,10 +89,10 @@ export function NewAssessmentForm({
             {title}
           </p>
           <h1 className="mt-3 text-2xl font-bold text-heritage">
-            How deep do you want to go?
+            Select an assessment type
           </h1>
           <p className="mt-1.5 text-sm text-ink-muted">
-            Not sure? Start with the Brainstorm — you can always run the
+            Not sure which? Start with the Brainstorm — you can always run the
             Diagnostic afterwards.
           </p>
 

@@ -22,6 +22,15 @@ check(
   "brainstorm: every question has a helper sentence",
   v1Questions.every((q) => typeof q.helper === "string" && q.helper.length > 0)
 );
+check(
+  "brainstorm: every question has crvs + healthcare examples",
+  v1Questions.every((q) => q.examples?.crvs?.text && q.examples?.healthcare?.text)
+);
+check(
+  "brainstorm: pain-point and constraint questions have chips",
+  (brainstorm.sections[0].questions.find((q) => q.id === "V1-S1.Q2")?.chips?.length ?? 0) >= 5 &&
+    (brainstorm.sections[0].questions.find((q) => q.id === "V1-S1.Q5")?.chips?.length ?? 0) >= 5
+);
 
 // --- Diagnostic ------------------------------------------------------------
 const secs = Object.fromEntries(diagnostic.sections.map((s) => [s.id, s]));
