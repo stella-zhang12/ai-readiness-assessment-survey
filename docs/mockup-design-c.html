@@ -1,0 +1,342 @@
+<title>Readiness Tool Design C</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --ink:#161616; --ink2:#565650; --muted:#8E8E86; --line:#E4E4DE;
+    --accent:#1F6B4F; --accent-deep:#174F3B; --wash:#EEF4F0; --focus:#C9A227;
+    --good:#1E5B38; --mid:#8A5A00;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#161715; --ink:#EFEEE8; --ink2:#BFBEB4; --muted:#8B8B81; --line:#33342F;
+      --accent:#5FAF8C; --accent-deep:#7CC4A4; --wash:#20302A; --focus:#C9A227;
+      --good:#7FC89A; --mid:#D9A95E;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#161715; --ink:#EFEEE8; --ink2:#BFBEB4; --muted:#8B8B81; --line:#33342F;
+    --accent:#5FAF8C; --accent-deep:#7CC4A4; --wash:#20302A; --focus:#C9A227;
+    --good:#7FC89A; --mid:#D9A95E;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
+  button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+  button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+  /* whisper chrome */
+  .topline{position:fixed;top:0;left:0;right:0;height:3px;background:var(--line);z-index:10}
+  .topline i{display:block;height:100%;background:var(--accent);width:5%;transition:width .4s ease}
+  .corner{position:fixed;top:12px;right:16px;font-size:12.5px;color:var(--muted);display:flex;gap:14px;z-index:10}
+  .corner button{color:var(--muted);text-decoration:underline;text-underline-offset:2px;font-size:12.5px}
+  .backfab{position:fixed;top:12px;left:16px;font-size:13px;color:var(--muted);z-index:10;visibility:hidden;text-decoration:underline;text-underline-offset:2px}
+  @media (prefers-reduced-motion:reduce){.topline i{transition:none}}
+
+  /* stage */
+  main{min-height:100vh;display:grid;place-items:center;padding:70px 22px 90px}
+  .step{display:none;width:100%;max-width:620px}
+  .step.on{display:block;animation:up .4s cubic-bezier(.2,.7,.3,1)}
+  @keyframes up{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.step.on{animation:none}}
+
+  .tag{font-size:13px;color:var(--accent);font-weight:650;letter-spacing:.02em;margin:0 0 14px}
+  h1.q{font-size:clamp(26px,4.6vw,38px);line-height:1.22;font-weight:750;letter-spacing:-.015em;margin:0 0 12px;text-wrap:balance}
+  h1.q em{font-style:normal;color:var(--accent)}
+  .why{font-size:16px;color:var(--ink2);margin:0 0 30px;max-width:52ch}
+
+  input[type=text],textarea{width:100%;border:none;border-bottom:2.5px solid var(--line);background:transparent;color:var(--ink);font:20px/1.5 system-ui,sans-serif;padding:6px 2px 12px;resize:none}
+  textarea{min-height:96px}
+  input:focus,textarea:focus{outline:none;border-bottom-color:var(--accent)}
+  ::placeholder{color:var(--muted)}
+
+  .cta{display:flex;align-items:center;gap:16px;margin-top:30px}
+  .go{background:var(--accent);color:#fff;font-weight:650;font-size:17px;padding:13px 30px;border-radius:6px}
+  .go:hover{background:var(--accent-deep)}
+  .enter{font-size:13px;color:var(--muted)}
+  .enter b{font-weight:650;border:1px solid var(--line);border-radius:4px;padding:1px 7px;font-size:12px}
+
+  /* options */
+  .opts{display:grid;gap:10px;margin-top:6px}
+  .opts button{display:flex;align-items:center;gap:16px;text-align:left;font-size:18px;padding:16px 18px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg)}
+  .opts button:hover{border-color:var(--accent)}
+  .opts button .k{font-size:12px;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:2px 8px;flex:none}
+  .opts button.sel{border-color:var(--accent);background:var(--wash)}
+  .opts button.soft{color:var(--ink2);font-size:16px}
+  .fills{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+  .fills button{font-size:14px;color:var(--ink2);border:1.5px solid var(--line);border-radius:6px;padding:6px 14px;background:var(--bg)}
+  .fills button:hover{border-color:var(--accent);color:var(--accent)}
+  .fills button.used{border-style:dashed;color:var(--muted)}
+  .tiny{font-size:13.5px;color:var(--muted);margin-top:22px}
+  .tiny a,.tiny button{color:var(--muted);text-decoration:underline;text-underline-offset:2px;font-size:13.5px}
+
+  /* milestone */
+  .mile{text-align:center}
+  .mile .big{font-size:52px;line-height:1;margin:0 0 18px}
+  .mile h1{font-size:clamp(24px,4vw,32px);margin:0 0 10px;font-weight:750;letter-spacing:-.015em}
+  .mile p{color:var(--ink2);margin:0 auto 26px;max-width:44ch}
+  .dots{display:flex;gap:8px;justify-content:center;margin:0 0 26px}
+  .dots i{width:34px;height:5px;border-radius:99px;background:var(--line)}
+  .dots i.f{background:var(--accent)}
+
+  /* recap */
+  .recap{background:var(--wash);border-radius:10px;padding:20px 22px;font-size:17px;color:var(--ink2);max-width:56ch}
+  .recap .ai{display:block;font-size:12.5px;color:var(--muted);margin-top:10px}
+
+  /* results */
+  .verdict{font-size:clamp(26px,4.4vw,36px);font-weight:750;letter-spacing:-.015em;line-height:1.25;margin:0 0 24px;text-wrap:balance}
+  .row4{display:grid;gap:0;border-top:1px solid var(--line)}
+  .r{display:flex;justify-content:space-between;gap:14px;padding:15px 2px;border-bottom:1px solid var(--line);font-size:17px}
+  .r b{font-weight:600}
+  .r .full{color:var(--good);font-weight:700}
+  .r .part{color:var(--mid);font-weight:700}
+  h2.mini{font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:30px 0 8px;font-weight:650}
+  ul.next{margin:0;padding-left:20px}
+  ul.next li{margin:0 0 8px;color:var(--ink2);max-width:52ch;font-size:16px}
+</style>
+
+<div class="topline"><i id="bar"></i></div>
+<button class="backfab" id="backBtn">← back</button>
+<div class="corner"><button id="magbtn">save &amp; finish later</button><span id="savedTxt">saved</span></div>
+
+<main>
+  <!-- 0 hook: name the project -->
+  <section class="step on">
+    <p class="tag">Let's scope your AI idea · ~8 minutes to a first readiness read</p>
+    <h1 class="q">What should we call this project?</h1>
+    <p class="why">Just a working name — we'll use it as we go.</p>
+    <input type="text" id="pname" placeholder="e.g., Verbal autopsy coding" autocomplete="off">
+    <div class="cta"><button class="go" data-n>Start</button><span class="enter">press <b>Enter ↵</b></span></div>
+  </section>
+
+  <!-- version chooser -->
+  <section class="step">
+    <p class="tag">one choice first</p>
+    <h1 class="q">How deep do you want to go today?</h1>
+    <div class="opts">
+      <button data-ver="brain"><span class="k">1</span><span><b>Brainstorm</b> — think it through out loud<br><span style="font-size:14px;color:var(--muted)">open questions only · ~10 min · no scoring</span></span></button>
+      <button data-ver="diag"><span class="k">2</span><span><b>Diagnostic</b> — get a readiness read<br><span style="font-size:14px;color:var(--muted)">adds one-tap ratings · ~30 min · scored across the four elements</span></span></button>
+    </div>
+    <p class="tiny">Not sure? Start light — you can switch to the diagnostic later and every answer carries over.</p>
+  </section>
+
+  <!-- 1 A1 -->
+  <section class="step">
+    <p class="tag">1 · the idea</p>
+    <h1 class="q">In a sentence or two — what should <em class="pn">the AI</em> actually do?</h1>
+    <textarea placeholder="Suggest ICD-10 cause-of-death codes from verbal autopsy records, with a health officer confirming each one…"></textarea>
+    <div class="cta"><button class="go" data-n>Continue</button><span class="enter"><b>Enter ↵</b></span></div>
+    <p class="tiny"><button data-ex>Show me an example</button></p>
+  </section>
+
+  <!-- 2 A2 -->
+  <section class="step">
+    <p class="tag">2 · the pain</p>
+    <h1 class="q">What hurts most about how this works today?</h1>
+    <p class="why">Say it plainly — tap any that apply and fill in the blank.</p>
+    <div class="fills">
+      <button data-ins="Time taken">+ Time taken</button>
+      <button data-ins="Staff workload">+ Staff workload</button>
+      <button data-ins="Quality issues">+ Quality issues</button>
+      <button data-ins="Data limitations">+ Data limitations</button>
+      <button data-ins="Coordination">+ Coordination</button>
+    </div>
+    <textarea placeholder="Forms wait ~47 days in a central queue; 12 coders cover 47 districts; 18% get miscoded…"></textarea>
+    <div class="cta"><button class="go" data-n>Continue</button><span class="enter"><b>Enter ↵</b></span></div>
+  </section>
+
+  <!-- 3 milestone -->
+  <section class="step mile">
+    <p class="big">🌱</p>
+    <div class="dots"><i class="f"></i><i class="f"></i><i></i><i></i><i></i></div>
+    <h1>That's the hardest part done.</h1>
+    <p>Two quick questions on fit, then a rapid-fire round of one-tap ratings. You're about 3 minutes in.</p>
+    <button class="go" data-n>Keep going</button>
+  </section>
+
+  <!-- 4 A3 -->
+  <section class="step">
+    <p class="tag">3 · the fit</p>
+    <h1 class="q">Why does <em class="pn">this</em> need AI — and not just fixed rules?</h1>
+    <p class="why">Rules follow instructions ("if fever and under 5, flag it"). AI learns patterns. Not sure? Tell us what rules would miss.</p>
+    <textarea placeholder="Symptom patterns are too context-dependent to write as rules — the same three symptoms can mean five different causes…"></textarea>
+    <div class="cta"><button class="go" data-n>Continue</button><span class="enter"><b>Enter ↵</b></span></div>
+  </section>
+
+  <!-- 5 recap -->
+  <section class="step">
+    <p class="tag">quick check</p>
+    <h1 class="q">Did we get this right?</h1>
+    <div class="recap" id="recapBox">“<span class="pn">Your project</span>: coding cause of death from verbal autopsy forms is slow (47-day average) and error-prone (18% miscoding), and rules won't cut it because symptom patterns are too context-dependent.”
+      <span class="ai">AI-generated from your answers — continuing confirms it.</span>
+    </div>
+    <div class="cta"><button class="go" data-n>That's right</button><button class="soft" data-b style="color:var(--muted);text-decoration:underline">let me fix something</button></div>
+  </section>
+
+  <!-- 6 ratings intro -->
+  <section class="step mile" data-mode="diag">
+    <p class="big">⚡</p>
+    <div class="dots"><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i></div>
+    <h1>Now the rapid-fire round.</h1>
+    <p>One-tap ratings about your data, safety, and support. Tap an answer and we move on — “not sure yet” is always allowed (we'll build you a find-out list).</p>
+    <button class="go" data-n>Ready</button>
+  </section>
+
+  <!-- 7 D1.1.1 -->
+  <section class="step" data-mode="diag">
+    <p class="tag">data · 1 of 24</p>
+    <h1 class="q">Your records live in structured, digital formats?</h1>
+    <p class="why">Databases, spreadsheets, digital forms — not paper piles or scanned PDFs.</p>
+    <div class="opts">
+      <button data-lk><span class="k">1</span>Fully — it's all structured &amp; digital</button>
+      <button data-lk><span class="k">2</span>Partially — some is</button>
+      <button data-lk><span class="k">3</span>No — mostly paper or free text</button>
+      <button data-lk class="soft"><span class="k">4</span>Not sure yet → add to my find-out list</button>
+    </div>
+    <p class="tiny"><button data-why>Why we ask</button><span id="w1" style="display:none"> — AI learns from past records; paper can't teach it. Behind this: the validated evidence base (e.g., NIDDK's AI-readiness challenge, JAMIA 2025).</span></p>
+  </section>
+
+  <!-- 8 D1.1.4 -->
+  <section class="step" data-mode="diag">
+    <p class="tag">data · 2 of 24</p>
+    <h1 class="q">Each historical record has a confirmed outcome attached?</h1>
+    <p class="why">Like a verified cause of death on every past case — that's what the AI learns to reproduce.</p>
+    <div class="opts">
+      <button data-lk><span class="k">1</span>Fully — outcomes are verified</button>
+      <button data-lk><span class="k">2</span>Partially</button>
+      <button data-lk><span class="k">3</span>No</button>
+      <button data-lk class="soft"><span class="k">4</span>Not sure yet</button>
+    </div>
+  </section>
+
+  <!-- 9 D2.1 -->
+  <section class="step" data-mode="diag">
+    <p class="tag">safety · 1 of 2</p>
+    <h1 class="q">A qualified person reviews the AI's suggestion before it counts?</h1>
+    <p class="why">For anything touching a person's official record.</p>
+    <div class="opts">
+      <button data-lk><span class="k">1</span>Fully — review is defined</button>
+      <button data-lk><span class="k">2</span>Partially</button>
+      <button data-lk><span class="k">3</span>No</button>
+      <button data-lk class="soft"><span class="k">4</span>Not sure yet</button>
+    </div>
+  </section>
+
+  <!-- 10 results -->
+  <section class="step">
+    <p class="tag" id="resTag">✓ done — your first readiness read</p>
+    <h1 class="verdict" id="resDiagH"><em class="pn" style="font-style:normal;color:var(--accent)">Your project</em> is close to ready. Data quality is the gap.</h1>
+    <div id="brainResults" style="display:none">
+      <h1 class="verdict"><em class="pn" style="font-style:normal;color:var(--accent)">Your project</em>, scoped and on paper.</h1>
+      <div class="recap">“Coding cause of death from verbal autopsy forms is slow (47-day average) and error-prone (18% miscoding); rules won't work because symptom patterns are too context-dependent; a health officer confirms every AI suggestion.”<span class="ai">AI-generated summary of your brainstorm — share it, or go deeper.</span></div>
+      <div class="cta"><button class="go" data-upgrade>Go deeper → run the ratings (~5 min)</button><span class="enter">every answer carries over</span></div>
+      <div style="height:8px"></div>
+    </div>
+    <div class="row4" data-diagonly>
+      <div class="r"><b>Use case</b><span class="full">Fully meets</span></div>
+      <div class="r"><b>Data</b><span class="part">Partially meets</span></div>
+      <div class="r"><b>Safety</b><span class="full">Fully meets</span></div>
+      <div class="r"><b>Country-level</b><span class="part">Partially meets</span></div>
+    </div>
+    <h2 class="mini" data-diagonly>Your find-out list</h2>
+    <ul class="next" data-diagonly><li>Can records be accessed without long approvals? → ask the registration data manager</li></ul>
+    <h2 class="mini">Next steps</h2>
+    <ul class="next">
+      <li>Digitize the ~15% paper-only forms in rural districts</li>
+      <li>Raise a post-grant budget line before development starts</li>
+    </ul>
+    <div class="cta"><button class="go" onclick="window.print()">Save as PDF</button><button class="soft" data-restart style="color:var(--muted);text-decoration:underline">restart demo</button></div>
+    <p class="tiny">AI can make mistakes — cross-check against your own knowledge. Ratings for data, safety and country-level come from your taps; wording is AI-generated from your answers.</p>
+  </section>
+</main>
+
+<script>
+  const allSteps=[...document.querySelectorAll('.step')];
+  let mode='diag';         // set by the version chooser
+  let i=0;
+  const bar=document.getElementById('bar'), backBtn=document.getElementById('backBtn');
+  function seq(){ return allSteps.filter(s=>!s.dataset.mode || s.dataset.mode===mode); }
+  function steps_(){ return seq(); }
+  function applyMode(){
+    const brain = mode==='brain';
+    const bres=document.getElementById('brainResults');
+    const dh=document.getElementById('resDiagH');
+    const tag=document.getElementById('resTag');
+    if(bres) bres.style.display = brain?'':'none';
+    if(dh) dh.style.display = brain?'none':'';
+    document.querySelectorAll('[data-diagonly]').forEach(e=>e.style.display=brain?'none':'');
+    if(tag) tag.textContent = brain ? '✓ brainstorm complete' : '✓ done — your first readiness read';
+  }
+  function render(){
+    const steps=seq();
+    if(i>=steps.length) i=steps.length-1;
+    allSteps.forEach(s=>s.classList.remove('on'));
+    steps[i].classList.add('on');
+    bar.style.width=((i+1)/steps.length*100)+'%';
+    backBtn.style.visibility=i===0?'hidden':'visible';
+    const f=steps[i].querySelector('input,textarea'); if(f) setTimeout(()=>f.focus(),50);
+    window.scrollTo({top:0});
+  }
+  function next(){ const steps=seq(); if(i<steps.length-1){i++;
+    if(steps[i-1] && steps[i-1].querySelector('#pname')){
+      const n=document.getElementById('pname').value.trim();
+      if(n) document.querySelectorAll('.pn').forEach(e=>e.textContent=n);
+    }
+    render(); } }
+  function back(){ if(i>0){i--; render();} }
+  // version chooser
+  document.querySelectorAll('[data-ver]').forEach(b=>b.addEventListener('click',()=>{
+    b.parentElement.querySelectorAll('button').forEach(x=>x.classList.remove('sel'));
+    b.classList.add('sel');
+    mode=b.dataset.ver==='brain'?'brain':'diag';
+    applyMode(); pulse();
+    setTimeout(next,380);
+  }));
+  // upgrade from brainstorm results to diagnostic ratings
+  document.querySelectorAll('[data-upgrade]').forEach(b=>b.addEventListener('click',()=>{
+    mode='diag'; applyMode();
+    const steps=seq();
+    i=steps.findIndex(s=>s.dataset.mode==='diag'); // ratings intro
+    render();
+  }));
+  document.querySelectorAll('[data-n]').forEach(b=>b.addEventListener('click',next));
+  document.querySelectorAll('[data-b]').forEach(b=>b.addEventListener('click',back));
+  backBtn.addEventListener('click',back);
+  document.querySelectorAll('[data-restart]').forEach(b=>b.addEventListener('click',()=>{i=0;render();}));
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Enter'&&!e.shiftKey&&!e.target.closest('textarea')){e.preventDefault();next();}
+    if(e.key==='Enter'&&e.target.closest('input')){e.preventDefault();next();}
+    if(['1','2','3','4'].includes(e.key)&&!e.target.matches('input,textarea')){
+      const g=seq()[i].querySelector('.opts'); if(!g)return;
+      const b=g.querySelectorAll('button')[+e.key-1]; if(b)b.click();
+    }
+  });
+  // one-tap ratings: select, breathe, advance
+  document.querySelectorAll('.opts').forEach(g=>{
+    [...g.querySelectorAll('button')].forEach(b=>b.addEventListener('click',()=>{
+      g.querySelectorAll('button').forEach(x=>x.classList.remove('sel'));
+      b.classList.add('sel'); pulse();
+      setTimeout(next,380);
+    }));
+  });
+  // whispers
+  const savedTxt=document.getElementById('savedTxt'); let t=null;
+  function pulse(){savedTxt.textContent='saving…';clearTimeout(t);t=setTimeout(()=>savedTxt.textContent='saved',500);}
+  document.querySelectorAll('textarea,input').forEach(x=>x.addEventListener('input',pulse));
+  const mag=document.getElementById('magbtn');
+  mag.addEventListener('click',()=>{mag.textContent='resume link sent ✓';setTimeout(()=>mag.textContent='save & finish later',2400);});
+  // suggested-fill buttons: insert "Term: " ready to complete
+  document.querySelectorAll('[data-ins]').forEach(c=>c.addEventListener('click',()=>{
+    const ta=c.closest('.step').querySelector('textarea'); if(!ta) return;
+    ta.value=(ta.value.trim()?ta.value.replace(/\s*$/,'\n\n'):'')+c.dataset.ins+': ';
+    ta.focus();
+    ta.setSelectionRange(ta.value.length, ta.value.length);
+    c.classList.add('used'); pulse();
+  }));
+  // example toggle + why toggle
+  document.querySelectorAll('[data-ex]').forEach(b=>b.addEventListener('click',()=>{
+    const ta=seq()[i].querySelector('textarea');
+    ta.placeholder="Example — Following a death, we want to suggest the most likely ICD-10 cause from the verbal autopsy form; a trained officer confirms or overrides before the national register is updated.";
+    ta.focus();
+  }));
+  document.querySelectorAll('[data-why]').forEach(b=>b.addEventListener('click',()=>{
+    const w=document.getElementById('w1'); w.style.display=w.style.display==='none'?'':'none';
+  }));
+</script>

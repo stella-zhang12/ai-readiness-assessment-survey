@@ -1,0 +1,169 @@
+{
+  "id": "brainstorm",
+  "version": 1,
+  "title": "Brainstorm",
+  "chooserDescription": "A lighter, exploratory version best suited for early-stage conversations, initial scoping, or teams who are new to AI implementation. 17 open questions across four sections - no scoring. Ends with a printable transcript and an AI-suggested list of things to find out.",
+  "estimatedMinutes": "10-15",
+  "source": "Revised Version of AI Readiness (Re-Scoped).docx",
+  "sourceNotes": [
+    "The source document specifies 'for each of the question, add a one sentence explanation' and the review thread specifies condensing the Diagnostic guidance into 1-2 sentences without changing the question wording. All helper sentences below are Claude-drafted to that spec and marked draft pending lab review.",
+    "The source document contains no illustrative examples for Brainstorm questions; example toggles are omitted in v1."
+  ],
+  "disclaimer": "AI can make mistakes, so accuracy should be cross-checked.",
+  "sections": [
+    {
+      "id": "V1-S1",
+      "type": "text",
+      "title": "Use case definition",
+      "questions": [
+        {
+          "id": "V1-S1.Q1",
+          "handle": "Use case",
+          "prompt": "Describe the use case",
+          "helper": "One or two sentences on what the AI would do - its input, its output, and who would use it.",
+          "helperDraft": true,
+          "opener": true,
+          "openerNudge": "Be specific: one input, one output. What goes in, what comes out, and who uses it?",
+          "exampleChips": [
+            "Classifying cause of death from verbal autopsy records",
+            "Predicting which children are at risk of missing a vaccination appointment",
+            "Extracting structured information from handwritten health facility reports"
+          ]
+        },
+        {
+          "id": "V1-S1.Q2",
+          "handle": "Today's process",
+          "prompt": "How is this process handled today? What are the pain points?",
+          "helper": "Walk through the current process and where it hurts: time, workload, quality, data, coordination.",
+          "helperDraft": true
+        },
+        {
+          "id": "V1-S1.Q3",
+          "handle": "Rationale for AI",
+          "prompt": "Why are we considering using AI instead of a rule-based solution?",
+          "helper": "A rule-based tool follows fixed instructions; AI learns patterns from historical data. Why does this problem need the latter?",
+          "helperDraft": true
+        },
+        {
+          "id": "V1-S1.Q4",
+          "handle": "Primary users",
+          "prompt": "Who are the primary users?",
+          "helper": "Everyone who would touch the tool or its output, from field staff to managers.",
+          "helperDraft": true
+        },
+        {
+          "id": "V1-S1.Q5",
+          "handle": "Constraints",
+          "prompt": "What are the identified regulatory, budget, and technical constraints?",
+          "helper": "Laws, budgets, approvals, legacy systems, or skill gaps that will shape what you can build.",
+          "helperDraft": true
+        },
+        {
+          "id": "V1-S1.Q6",
+          "handle": "Success measures",
+          "prompt": "How will you measure success?",
+          "helper": "Aim for numbers: what improves, by how much, measured how and how often.",
+          "helperDraft": true
+        }
+      ]
+    },
+    {
+      "id": "V1-S2",
+      "type": "text",
+      "title": "Workflow and scope validation",
+      "questions": [
+        {
+          "id": "V1-S2.Q1",
+          "handle": "End-to-end workflow",
+          "prompt": "What is the complete end-to-end workflow?",
+          "helper": "List the steps from the very first input to the final output, including handoffs between people and systems.",
+          "helperDraft": true
+        },
+        {
+          "id": "V1-S2.Q2",
+          "handle": "Decomposition",
+          "prompt": "Can this workflow be decomposed into smaller, independent use cases?",
+          "helper": "Could parts of this workflow stand alone as smaller, simpler tools?",
+          "helperDraft": true
+        },
+        {
+          "id": "V1-S2.Q3",
+          "handle": "Dependencies",
+          "prompt": "What are the dependencies between workflow stages?",
+          "helper": "Which steps can't start until another finishes? Where do delays cascade?",
+          "helperDraft": true
+        }
+      ]
+    },
+    {
+      "id": "V1-S3",
+      "type": "text",
+      "title": "AI application",
+      "questions": [
+        {
+          "id": "V1-S3.Q1",
+          "handle": "AI capability",
+          "prompt": "What is the AI capability required (classification, prediction, generation, extraction, etc.)?",
+          "helper": "Classification, prediction, generation, extraction - which kind of task is this?",
+          "helperDraft": true
+        },
+        {
+          "id": "V1-S3.Q2",
+          "handle": "Input data",
+          "prompt": "Please define the input data (sources, format, volume).",
+          "helper": "Where the data comes from, what format it's in, and roughly how much there is.",
+          "helperDraft": true
+        },
+        {
+          "id": "V1-S3.Q3",
+          "handle": "Expected output",
+          "prompt": "What is the expected output?",
+          "helper": "What exactly the AI produces - a code, a score, a document, a flag.",
+          "helperDraft": true
+        },
+        {
+          "id": "V1-S3.Q4",
+          "handle": "Human review",
+          "prompt": "Where does human review/approval occur?",
+          "helper": "Where a person checks, approves, or overrides the AI before anything becomes official.",
+          "helperDraft": true
+        }
+      ]
+    },
+    {
+      "id": "V1-S4",
+      "type": "text",
+      "title": "Data requirements",
+      "questions": [
+        {
+          "id": "V1-S4.Q1",
+          "handle": "Historical data",
+          "prompt": "What kind of historical data do we have? Is the data labeled?",
+          "helper": "What past records exist, and whether they include the 'right answers' an AI could learn from.",
+          "helperDraft": true
+        },
+        {
+          "id": "V1-S4.Q2",
+          "handle": "Data quality",
+          "prompt": "What is the quality of the data (completeness, accuracy, bias considerations)?",
+          "helper": "How complete and accurate the records are, and whether any groups are under-represented.",
+          "helperDraft": true
+        },
+        {
+          "id": "V1-S4.Q3",
+          "handle": "Data governance",
+          "prompt": "What are the data governance requirements (privacy, security, compliance requirements)?",
+          "helper": "Privacy, security, and compliance rules that apply to using this data.",
+          "helperDraft": true
+        },
+        {
+          "id": "V1-S4.Q4",
+          "handle": "Integration",
+          "prompt": "What are the data integration points (real-time vs batch integration)?",
+          "helper": "Whether the tool needs live data feeds or periodic batches, and from which systems.",
+          "helperDraft": true
+        }
+      ]
+    }
+  ]
+}

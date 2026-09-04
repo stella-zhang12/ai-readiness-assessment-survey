@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --heritage: #002d72;
+  --spirit: #68ace5;
+}
+
+body {
+  @apply bg-white text-ink antialiased;
+}
+
+/* Quiet, accessible focus states everywhere */
+:focus-visible {
+  outline: 3px solid var(--spirit);
+  outline-offset: 2px;
+}

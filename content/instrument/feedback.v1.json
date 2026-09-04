@@ -1,0 +1,14 @@
+{
+  "id": "feedback",
+  "version": 1,
+  "title": "How was it?",
+  "intro": "Two minutes of feedback helps us improve the tool. Entirely optional.",
+  "note": "Wording pending lab review (PRD section 11 / open question 4).",
+  "questions": [
+    { "id": "FB1", "type": "rating", "prompt": "How easy was the tool to use?", "min": 1, "max": 5, "minLabel": "Very hard", "maxLabel": "Very easy" },
+    { "id": "FB2", "type": "rating", "prompt": "How clear were the questions?", "min": 1, "max": 5, "minLabel": "Very unclear", "maxLabel": "Very clear" },
+    { "id": "FB3", "type": "rating", "prompt": "How useful was the AI summary of your problem?", "min": 1, "max": 5, "minLabel": "Not useful", "maxLabel": "Very useful" },
+    { "id": "FB4", "type": "rating", "prompt": "How much do you trust the final readiness rating?", "min": 1, "max": 5, "minLabel": "Not at all", "maxLabel": "Completely" },
+    { "id": "FB5", "type": "text", "prompt": "What was confusing, missing, or most valuable?" }
+  ]
+}

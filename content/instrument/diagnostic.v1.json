@@ -1,0 +1,352 @@
+{
+  "id": "diagnostic",
+  "version": 1,
+  "title": "Diagnostic",
+  "chooserDescription": "A structured diagnostic version best suited for teams who are actively planning or preparing to implement an AI tool. Open scoping questions, an AI-generated problem summary, and a structured readiness assessment, ending with a rated readiness read across four elements.",
+  "estimatedMinutes": "30-45",
+  "source": "Revised Version of AI Readiness (Re-Scoped).docx",
+  "sourceNotes": [
+    "Sub-use-case machinery (C2 loop, Section D main-vs-sub branching, question-count preview) removed per product decision - one use case per assessment.",
+    "Source typos corrected in transcription: 'qualtity' (D1.3 guidance), doubled colon (D2.1 guidance), A5 example 'three levels' with two bullets.",
+    "The document's stray reference to a 'D4' block is treated as a typo (no D4 exists)."
+  ],
+  "disclaimer": "AI can make mistakes, so accuracy should be cross-checked.",
+  "promptRules": [
+    "Limit summaries to 1 to 2 sentences using only the language and terms from the respondent's answers. Do not add interpretation or new information.",
+    "Always indicate when content has been AI generated."
+  ],
+  "workedExample": {
+    "title": "CRVS use case used throughout this survey",
+    "text": "A national health ministry is piloting an AI tool that reads verbal autopsy records, interviews conducted with families after a death, and automatically suggests the most likely cause of death using international disease codes (ICD-10). This replaces a manual process where trained doctors review thousands of records each year, a process that is slow, costly, and produces inconsistent results across districts."
+  },
+  "scale": {
+    "options": [
+      { "value": 2, "label": "Fully Meets the Criteria", "short": "Fully", "color": "green" },
+      { "value": 1, "label": "Partially Meets the Criteria", "short": "Partially", "color": "amber" },
+      { "value": 0, "label": "Absent", "short": "Absent", "color": "red" }
+    ],
+    "idk": { "label": "I don't know", "short": "Don't know" },
+    "hiddenValues": true
+  },
+  "sections": [
+    {
+      "id": "A",
+      "type": "text",
+      "title": "Scope of the problem",
+      "subtitle": "Broad questions",
+      "purpose": "Understand the use case at a broad level.",
+      "questions": [
+        {
+          "id": "A1",
+          "handle": "Use case",
+          "prompt": "Please describe the use case.",
+          "guidance": "For example: classifying cause of death from verbal autopsy records; predicting which children are at risk of missing a vaccination appointment; extracting structured information from handwritten health facility reports.",
+          "opener": true,
+          "openerNudge": "Be specific: one input, one output. What goes in, what comes out, and who uses it?",
+          "exampleChips": [
+            "Classifying cause of death from verbal autopsy records",
+            "Predicting which children are at risk of missing a vaccination appointment",
+            "Extracting structured information from handwritten health facility reports"
+          ],
+          "examples": {
+            "crvs": {
+              "text": "Following a death in the community, we want to determine the most likely cause of death from completed verbal autopsy records, structured interview forms filled out by community health workers. The system would analyze the symptoms, circumstances, and other details recorded in each form to suggest an ICD-10 cause-of-death code. A trained health officer would then confirm or override the suggestion before it is entered into the official national death register.",
+              "note": "The source document's second paragraph (three sub-use cases) is omitted: sub-use cases are out of scope for this product."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "A district immunization program wants to predict which children are likely to miss their next vaccination appointment, using each child's registration and visit history from the electronic immunization registry. The system would flag high-risk children each week so community health workers can call or visit their caregivers before the appointment is missed."
+            }
+          }
+        },
+        {
+          "id": "A2",
+          "handle": "Challenges",
+          "prompt": "What are the main challenges or pain points?",
+          "guidance": "Consider factors such as time taken, staff workload, quality issues, delays, data limitations, and coordination challenges.",
+          "chips": [
+            { "label": "Time taken", "hint": "How long does the process take? Where do delays occur?" },
+            { "label": "Staff workload", "hint": "Is the process too labor-intensive or dependent on too few specialists?" },
+            { "label": "Quality issues", "hint": "Are errors, inconsistencies, or omissions common? How are they detected and corrected?" },
+            { "label": "Data limitations", "hint": "Is the data incomplete, inconsistent, inaccessible, or not in a usable format?" },
+            { "label": "Coordination challenges", "hint": "Are there handoff problems between teams, systems, or locations?" }
+          ],
+          "examples": {
+            "crvs": {
+              "text": "Time: The average time from verbal autopsy interview to a coded cause-of-death entry is 47 days. The main bottleneck is the central coding queue, forms sit waiting for one of the 12 coders to become available. In peak periods such as after disease outbreaks, the queue can grow to over 90 days.\n\nStaff workload: The 12 coders are responsible for approximately 32,000 verbal autopsy records per year across all 47 districts. Each coder reviews an average of 12 to 15 records per day. Coder availability is constrained by recruitment difficulties and budget, two coder posts have been vacant for over 18 months.\n\nQuality: An internal audit comparing coder assignments against specialist review found an 18% miscoding rate, concentrated in causes of death that require distinguishing between clinically similar conditions, for example, malaria versus sepsis, or neonatal asphyxia versus neonatal infection. Miscoding is not currently tracked systematically.\n\nData limitations: Approximately 15% of verbal autopsy forms in rural districts are still submitted on paper and have not been digitized. Of the digital records, around 23% are missing the deceased's age and 8% contain duplicate entries, both of which cause coding errors or delays.\n\nCoordination: Because all coding is centralized, district health officers have no visibility into where their forms are in the queue or when coding will be completed. There is no feedback mechanism. When a coder identifies a form that is incomplete or unclear, there is no formal process for querying the originating CHW or district office."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "Time: reminder lists are compiled by hand at each clinic, taking nurses 2-3 hours per week.\n\nStaff workload: follow-up visits are spread evenly, so workers spend much of their time on families who would have attended anyway.\n\nQuality: about a quarter of defaulting children are never followed up because they are not identified in time.\n\nData limitations: some caregiver phone numbers are missing or out of date.\n\nCoordination: clinics and outreach teams keep separate lists that are reconciled only monthly."
+            }
+          }
+        },
+        {
+          "id": "A3",
+          "handle": "Rationale for AI",
+          "prompt": "Why are you considering artificial intelligence instead of rule-based digital tools?",
+          "guidance": "A rule-based tool follows fixed instructions, for example: 'if age is under 5 and fever is present, flag as priority.' AI learns patterns from historical data and can handle more complex or variable situations. Explain why the problem you are trying to solve requires AI-level complexity rather than a simpler rule-based approach. If you are not sure, describe what a rule-based approach would miss.",
+          "examples": {
+            "crvs": {
+              "text": "Cause-of-death coding from verbal autopsy records cannot be reliably handled by a rule-based tool because the relationship between reported symptoms and the underlying cause of death is too complex and context-dependent to encode as fixed rules. For example, the combination of fever, difficulty breathing, and chest pain could indicate malaria, pneumonia, tuberculosis, heart failure, or sepsis, and the correct interpretation depends on the patient's age, medical history, geographic location, the season, and the specific combination and progression of symptoms as described by the family.\n\nA rule-based system that attempts to encode these distinctions would require thousands of nested conditions, would fail frequently on edge cases, and would be difficult to update as disease patterns change. The use of AI can identify patterns that distinguish one cause of death from another, including subtle combinations that would be difficult to capture through explicit rules. An existing open-source tool for verbal autopsy coding, SmartVA, has already demonstrated this approach in comparable settings, providing evidence that the problem is technically well-suited to an AI solution."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "Whether a child misses an appointment depends on many interacting factors - distance to the clinic, season, the caregiver's work schedule, past visit patterns, family size. Fixed rules like 'flag every child more than two weeks late' catch defaulters only after the fact; a model trained on historical visit records can rank risk before the appointment is missed."
+            }
+          }
+        },
+        {
+          "id": "A4",
+          "handle": "Constraints",
+          "prompt": "What regulatory, budgetary, institutional, or technical constraints will apply?",
+          "guidance": "Identify constraints at both the national and institutional level. These may include data protection or privacy laws, restrictions on sharing data with external providers, budget limits and funding timelines, organizational policies or approval processes, existing technology systems that cannot easily be changed, staffing or skill gaps, and any political or institutional sensitivities around the use of AI in this context.",
+          "chips": [
+            { "label": "Regulatory", "hint": "Data protection laws, approval bodies, restrictions on sharing data" },
+            { "label": "Budgetary", "hint": "Funding sources, timelines, long-term operational costs" },
+            { "label": "Institutional", "hint": "Mandates, approval processes, coordination between agencies" },
+            { "label": "Technical", "hint": "Legacy systems, integration limits, infrastructure" },
+            { "label": "Staffing", "hint": "Skill gaps, contract constraints, specialist availability" }
+          ],
+          "examples": {
+            "crvs": {
+              "text": "Regulatory: Our country's data protection laws classify cause-of-death records as sensitive health data. Any AI tool that processes these records must be reviewed and approved by the National Data Protection Authority before deployment. Sharing identified records with an external technology provider requires a formal data processing agreement and ministerial sign-off.\n\nBudgetary: The current development phase is funded by a two-year donor grant (ending December 2026). There is no confirmed government budget line for ongoing operational costs after the grant period. The Ministry of Finance has been briefed but has not committed to long-term funding.\n\nInstitutional: The Ministry of Health and the Civil Registration Authority have overlapping mandates for cause-of-death data. Both institutions must formally endorse the tool before it can be used in official registration processes. Historically, coordination between the two ministries has been slow.\n\nTechnical: The national civil registration database runs on a legacy platform that does not have a public API. Integration with any new tool will require custom development work with the original vendor, which has a longer lead time and higher cost.\n\nStaffing: The Ministry has only two data scientists on staff, both on short-term contracts. There is currently no internal capacity to build or maintain a custom AI model without external support."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "Regulatory: the immunization registry contains identifiable child records governed by national health-data rules.\n\nBudgetary: funded through the annual EPI budget; no dedicated AI line.\n\nInstitutional: sign-off needed from both the EPI program and the district health office.\n\nTechnical: the registry runs on DHIS2; any tool must read from it without modifying it.\n\nStaffing: one data officer per district, no in-house data scientists."
+            }
+          }
+        },
+        {
+          "id": "A5",
+          "handle": "Success measures",
+          "prompt": "How would you define and measure success for this initiative?",
+          "guidance": "Try to be as specific and measurable as possible. For example: reducing cause-of-death coding time from several weeks to under 10 days, lowering miscoding rates from 15-20% to below 5%, or increasing the share of deaths coded within 30 days from around 60% to 90% or above. For each outcome, note how you would measure it, what data source you would use, and how frequently you would track it.",
+          "examples": {
+            "crvs": {
+              "text": "We would define success across two levels:\n\nProcess efficiency: Average time from verbal autopsy upload to coded record reduced from 47 days to 7-10 days (measured monthly from the civil registration database). The percentage of deaths coded within 30 days of occurrence increased from 61% to over 80% (measured quarterly).\n\nOutput quality: Miscoding rate, measured against a specialist gold-standard review of a random sample of 200 records per quarter, reduced from 18% to below 5%. Human coder override rate (cases where the coder rejects the AI suggestion) tracked monthly; a stable override rate of below 15% would indicate the AI is performing well."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "Raise the share of children fully immunized by 12 months from 78% to 90% within two years (measured quarterly from the registry); cut the defaulter rate per cohort from 22% to under 10%; keep the share of flagged children who actually receive a follow-up call above 80% (tracked monthly from outreach logs)."
+            }
+          }
+        },
+        {
+          "id": "A6",
+          "handle": "Business value & ROI",
+          "prompt": "How would you describe the business value of this initiative, and how do you expect to measure return on investment (ROI)?",
+          "guidance": "Try to be as specific and quantifiable as possible. Consider both direct financial returns (for example, in cost savings and revenue gains) and indirect benefits (such as time freed up, error reduction, and improved decision-making). Note how you would calculate ROI, what baseline data you would use, and over what time horizon you expect to see returns.",
+          "examples": {
+            "crvs": {
+              "text": "Cost savings: Current manual coding requires 12 FTE staff at an average cost of $38,000/year each, totalling $456,000 annually. AI-assisted coding is projected to reduce this to 4 FTE for oversight and quality assurance, a direct saving of approximately $304,000 per year. This would be tracked annually against the HR cost baseline.\n\nEfficiency gains: Reducing average coding time from 47 days to 7-10 days frees an estimated 1,600-1,800 staff-hours per quarter, which can be redeployed to data quality and stakeholder reporting activities. These hours will be logged monthly through the existing project management system.\n\nROI calculation: Total implementation and licensing cost is estimated at $180,000 in Year 1. Against projected savings of $304,000, this yields a net ROI of approximately 69% in the first year, rising to over 150% by Year 3 as onboarding costs reduce. ROI will be formally reviewed at 6 months and 12 months post-launch, using finance and HR records as the primary data sources."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "Each prevented defaulter saves an estimated $14 in outreach and catch-up costs. Targeting follow-up at the highest-risk 20% of children is projected to save roughly 1,000 staff-hours per district per year, against a one-off setup cost of about $25,000 - breaking even within the second year."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "B",
+      "type": "text",
+      "title": "Scope of the problem",
+      "subtitle": "In-depth questions",
+      "purpose": "Understand the use case at an in-depth level.",
+      "questions": [
+        {
+          "id": "B1",
+          "handle": "Current process",
+          "prompt": "How is this process currently handled?",
+          "guidance": "Describe the existing process step by step, including who carries it out, how long it takes, and what tools or methods are currently used. If the process varies across sites or regions, note the most common approach.",
+          "examples": {
+            "crvs": {
+              "text": "When a death occurs in the community, a community health worker (CHW) visits the family within 7 to 14 days and conducts a verbal autopsy interview using a standardized paper form.\n\nThe CHW then submits the completed form to the district health office, where a data entry clerk transcribes it into the national civil registration database, a process that typically takes 3 to 5 additional days.\n\nOnce in the database, the form joins a national queue reviewed by a central pool of 12 trained medical coders. Coders are responsible for all 47 districts and currently work through a backlog of approximately 8,000 forms per quarter. Each form is reviewed manually, and an ICD-10 cause-of-death code is assigned based on the coder's interpretation of the symptoms described.\n\nThe average time from CHW interview to final coding is 47 days. Approximately 15% of forms in some districts are still submitted on paper only and are not yet in the digital system."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "After each clinic day, a nurse updates the paper defaulter register; once a week she compiles a reminder list and gives it to the outreach team, who visit or call families over the following days. Coverage data is entered into DHIS2 monthly by the district data officer."
+            }
+          }
+        },
+        {
+          "id": "B2",
+          "handle": "Current users",
+          "prompt": "Who are the current users involved in this workflow (without application of AI)?",
+          "guidance": "Include all roles involved, for example: community health workers, data entry clerks, supervisors, district health officers, ministry officials, or beneficiaries. Note any differences in technical skill or literacy across these groups.",
+          "examples": {
+            "crvs": {
+              "text": "Community health workers (CHWs): Approximately 3,200 nationwide. Conduct the verbal autopsy interviews and complete the paper forms. They vary significantly in literacy and digital skills, many have only completed secondary school and have limited experience with digital tools.\n\nData entry clerks: One per district office (47 total). They transcribe paper forms into the digital system. They are comfortable with basic data entry but not with clinical terminology or coding logic.\n\nMedical coders: 12 nationally, all based at the Ministry of Health headquarters. Medical coders hold medical qualifications and are trained in ICD-10 coding.\n\nDistrict health officers: 47 nationwide. Oversee data quality at the district level and escalate problems. They generally use summary dashboards.\n\nMinistry of Health statisticians: 5 to 8 staff at the national level. They use the coded cause-of-death data to produce national health statistics and annual mortality reports. They are the downstream beneficiaries of improved coding quality but do not interact with the tool directly."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "Clinic nurses (compile lists, administer vaccines), community health workers (home visits and calls), the district data officer (registry entry and reports), and the EPI program manager (uses coverage reports; doesn't touch the tool directly)."
+            }
+          }
+        },
+        {
+          "id": "B3",
+          "handle": "Inputs & outputs",
+          "prompt": "Describe the required inputs and outputs at each stage of your proposed workflow.",
+          "guidance": "For each step in the process, describe what is needed to start it and what is produced when it is done. Where possible, note the format (such as image, text, or audio), the source, and who owns each input and output.",
+          "examples": {
+            "crvs": {
+              "text": "The workflow is mapped in four stages:\n\nStage 1: Data ingestion - Owner: Field registration team. Input: Verbal autopsy form submitted by field officer in PDF or structured CSV format, uploaded to the civil registration portal. Output: Validated, deduplicated record stored in the central database, flagged as pending coding.\n\nStage 2: AI coding - Owner: System. Input: Validated verbal autopsy record retrieved from the database, including cause-of-death narrative and structured symptom fields. Output: AI-generated ICD-10 cause of death code with a confidence score and supporting rationale.\n\nStage 3: Human review - Owner: Coding team. Input: AI-generated code and confidence score. Records below a confidence threshold of 80% are automatically routed to a human coder for review. Output: Confirmed or overridden ICD-10 code, with override reason logged.\n\nStage 4: Record finalization - Owner: Data management team. Input: Confirmed code and full record. Output: Finalized death record written back to the civil registration database and included in monthly statistical reporting."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "Stage 1 - data ingestion: visit records from the registry, refreshed weekly. Stage 2 - AI risk scoring: each upcoming appointment gets a risk score with the main contributing factors. Stage 3 - human review: nurses see a ranked list and choose whom to contact. Stage 4 - outcome logging: attended/missed status feeds back into next week's scoring."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "C",
+      "type": "ai_summary",
+      "title": "AI-generated problem summary",
+      "purpose": "Confirm the tool understood the use case before rating readiness.",
+      "aiLabel": "This summary is generated automatically based on the responses provided in Section A.",
+      "editable": true,
+      "confirmation": {
+        "id": "C1",
+        "prompt": "Does this summary accurately reflect your situation?",
+        "options": [
+          { "value": 2, "label": "Accurate" },
+          { "value": 1, "label": "Partially accurate" },
+          { "value": 0, "label": "Not accurate" }
+        ],
+        "sourceNote": "The source document's C1 scale reads '0 (no evidence) / 1 (partially meets the criteria) / 2 (fully meets the criteria)'; relabeled for an accuracy question per PRD section 7.1."
+      }
+    },
+    {
+      "id": "D1",
+      "type": "likert",
+      "title": "Data readiness",
+      "question": "Is the available data appropriate for building an AI tool?",
+      "items": [
+        {
+          "id": "D1.1",
+          "parent": null,
+          "statement": "We have enough historical records saved in a digital format to train the AI system what patterns to look for.",
+          "guidance": "AI tools learn by studying large numbers of past records. Records that only exist on paper or that were never saved to a computer cannot be used unless they are first converted to a digital format."
+        },
+        { "id": "D1.1.1", "parent": "D1.1", "statement": "Our data is stored in structured formats (e.g., spreadsheets, databases, or standardized digital forms)." },
+        { "id": "D1.1.2", "parent": "D1.1", "statement": "We have sufficient volume of historical records to train an AI model reliably." },
+        { "id": "D1.1.3", "parent": "D1.1", "statement": "Our data spans enough years to capture patterns, trends, and changes." },
+        {
+          "id": "D1.1.4",
+          "parent": "D1.1",
+          "statement": "Our records are paired with known, verified outcomes (e.g., confirmed causes of death) that an AI can learn to replicate.",
+          "na": {
+            "label": "N/A - our tool doesn't predict outcomes",
+            "helper": "Choose this if your use case is not a predictive tool (reviewer note: outcome-labeled data applies to predictive tools only)."
+          }
+        },
+        {
+          "id": "D1.2",
+          "parent": null,
+          "statement": "The available records represent the full range of real-world situations the AI will encounter, including different population groups, regions, and less common cases.",
+          "guidance": "An AI trained only on the most common or straightforward cases will struggle when it encounters anything outside that pattern."
+        },
+        { "id": "D1.2.1", "parent": "D1.2", "statement": "Our data includes records from all districts, provinces, or regions relevant to our context." },
+        { "id": "D1.2.2", "parent": "D1.2", "statement": "Our records represent relevant genders, age groups, ethnic backgrounds, geographic communities, and socioeconomic groups." },
+        { "id": "D1.2.3", "parent": "D1.2", "statement": "Our data includes examples of uncommon scenarios (e.g., rare causes of death, infant deaths, outbreak-related deaths)." },
+        {
+          "id": "D1.3",
+          "parent": null,
+          "statement": "The quality of our data is reliable; records are accurate, complete, and free from significant errors or duplicate entries.",
+          "guidance": "If errors, gaps, and duplicates are common and uncorrected, the AI will be trained on poor quality data sets and could produce unreliable results."
+        },
+        { "id": "D1.3.1", "parent": "D1.3", "statement": "The key fields our AI model needs to learn from are consistently completed across our records." },
+        { "id": "D1.3.2", "parent": "D1.3", "statement": "Our data has been checked for duplicate entries of the same person or event." },
+        { "id": "D1.3.3", "parent": "D1.3", "statement": "Data elements are recorded in the same way across different staff, sites, and time periods." },
+        { "id": "D1.3.4", "parent": "D1.3", "statement": "Our data collection system has validation rules in place that prevent obviously incorrect entries." },
+        { "id": "D1.3.5", "parent": "D1.3", "statement": "Our data reflects the current conditions, population, and processes the AI tool will be used in." },
+        {
+          "id": "D1.4",
+          "parent": null,
+          "statement": "The data needed for this AI tool can be accessed reliably and consistently.",
+          "guidance": "Building the AI tool is only the first step, it will need a steady and reliable supply of new data to remain accurate. Consider whether the data collection and storage process is formally managed, consistently followed, and stable for the foreseeable future."
+        },
+        { "id": "D1.4.1", "parent": "D1.4", "statement": "The approvals required to access our data are unlikely to cause significant delays to development." },
+        { "id": "D1.4.2", "parent": "D1.4", "statement": "Our data is updated frequently enough for the tool to remain accurate as real-world conditions change over time." }
+      ]
+    },
+    {
+      "id": "D2",
+      "type": "likert",
+      "title": "Safety",
+      "question": "Will the AI tool be accurate and used responsibly?",
+      "items": [
+        {
+          "id": "D2.1",
+          "parent": null,
+          "statement": "We have clearly defined the role the AI will play, and for any decision that affects a person's official record, a qualified person reviews or approves the AI's recommendation.",
+          "guidance": "Because there are different levels of human oversight (such as human in the loop, human on the loop etc.), it is important to determine where in the process human oversight is needed and at what level."
+        },
+        {
+          "id": "D2.2",
+          "parent": null,
+          "statement": "Using this data for AI is legally permitted, its recommendations comply with applicable regulations, and personal and health information is protected from unauthorised access or disclosure.",
+          "guidance": "If legal and policy requirements are not reviewed before deployment, the tool may operate without authorization, violate data protection laws, or expose your organisation to liability, particularly where an external provider processes personal or official records on your behalf."
+        }
+      ]
+    },
+    {
+      "id": "D3",
+      "type": "likert",
+      "title": "Country-level readiness",
+      "question": "Can this AI tool be scaled and sustained in this context?",
+      "items": [
+        {
+          "id": "D3.1",
+          "parent": null,
+          "statement": "Senior leaders within our organization and the relevant government bodies have formally committed their support, funding, and ongoing involvement to this initiative.",
+          "guidance": "Informal support is insufficient to sustain an AI initiative. Without formal leadership endorsement, a realistic budget covering both development and long-term maintenance, and active governance involvement, the project risks stalling mid-implementation."
+        },
+        {
+          "id": "D3.2",
+          "parent": null,
+          "statement": "Our country's laws and policies support the responsible use of AI for this purpose, including data protection and data-sharing rules.",
+          "guidance": "Perform a formal assessment of national AI policies, data protection legislation, and sector-specific regulations to ensure the intended application is explicitly authorized. Verify whether rules restrict data sharing with external providers and ensure all legal compliance requirements are documented in writing before initiating the development phase."
+        },
+        {
+          "id": "D3.3",
+          "parent": null,
+          "statement": "The technology infrastructure needed to run this AI tool, including devices, software, internet access, and data storage, is available or can realistically be put in place across all intended deployment locations.",
+          "guidance": "Evaluate the availability of hardware, connectivity, and storage across every intended site to prevent geographic disparities. Confirm whether device and internet reliability are sufficient beyond urban centers, as infrastructure gaps in remote districts can compromise equitable access and undermine the tool's overall reach."
+        },
+        {
+          "id": "D3.4",
+          "parent": null,
+          "statement": "People with the right skills to build, run, and maintain this tool exist in our organization or can be trained.",
+          "guidance": "Sustainable deployment requires assessing not only the technical skills for the build phase, but the ongoing capacity for daily operation, training, and troubleshooting as context evolves. Relying on external providers or a small specialist pool risks system failure if that critical capacity is lost or becomes unavailable."
+        }
+      ]
+    },
+    {
+      "id": "E",
+      "type": "results",
+      "title": "Final use case readiness assessment",
+      "aiLabel": "Ratings and reasoning are AI-generated from your answers.",
+      "presentation": "table",
+      "elements": [
+        { "id": "data_readiness", "label": "Data Readiness", "docId": "E1.1", "source": "D1" },
+        { "id": "safety", "label": "Safety", "docId": "E1.2", "source": "D2" },
+        { "id": "country_readiness", "label": "Country-Level Readiness", "docId": "E1.3", "source": "D3" },
+        { "id": "use_case_readiness", "label": "Use Case Readiness", "docId": "E1.4", "source": "AB" }
+      ],
+      "anchor": {
+        "note": "Server-side guardrail only, never displayed. Mean of answered 0/1/2 values per element; N/A excluded entirely, I-don't-know excluded from the mean but counted toward the idkRatio.",
+        "thresholds": { "redBelow": 0.75, "amberBelow": 1.5 },
+        "maxDeviationBands": 1,
+        "lowConfidenceIdkRatio": 0.5
+      },
+      "sourcePromptGuidance": "Section E should be auto-filled by artificial intelligence utilizing rankings from Section D1 for Data Readiness, D2 for Safety, D3 for Country-Level Readiness, and answers from Sections A and B for Use Case Readiness. Explain the reasoning behind how the rating was made to the user. Present the final version as a table."
+    }
+  ]
+}
