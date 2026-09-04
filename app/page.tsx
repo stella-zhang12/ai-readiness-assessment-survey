@@ -28,41 +28,58 @@ const quickExamples = [
 
 export default function Landing() {
   return (
-    <main className="mx-auto max-w-3xl px-6 py-14">
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/jhu-logo.png"
-          alt="Johns Hopkins University"
-          width={786}
-          height={191}
-          className="h-9 w-auto"
-        />
-        <span
-          className="hidden h-8 w-px bg-line sm:block"
-          aria-hidden="true"
-        />
-        <span className="text-sm font-semibold uppercase tracking-widest text-spirit-dark">
-          Center for Global Digital Health Innovation
-        </span>
-      </div>
+    <main>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/campus-banner.jpg"
+        alt="Gilman Hall clock tower, Johns Hopkins University"
+        width={1800}
+        height={700}
+        className="h-40 w-full border-b-4 border-heritage object-cover sm:h-52"
+      />
 
-      <h1 className="mt-8 text-4xl font-bold leading-tight text-heritage">
-        AI Use Case Scoping &amp; Readiness Assessment{" "}
-        <span className="ml-1 inline-block rounded border border-washline bg-wash px-2 py-0.5 align-middle text-sm font-semibold text-spirit-dark">
-          Beta
-        </span>
-      </h1>
+      <div className="mx-auto max-w-3xl px-6 py-12">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-4">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/jhu-seal.png"
+            alt=""
+            width={208}
+            height={280}
+            className="h-16 w-auto"
+          />
+          <div className="flex flex-col gap-1.5">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/jhu-logo.png"
+              alt="Johns Hopkins University"
+              width={786}
+              height={191}
+              className="h-8 w-auto"
+            />
+            <span className="text-xs font-semibold uppercase tracking-widest text-spirit-dark">
+              Center for Global Digital Health Innovation
+            </span>
+          </div>
+        </div>
 
-      <div className="mt-5 max-w-measure space-y-3 text-lg text-ink-soft">
-        <p>Thinking about using AI in your health program?</p>
-        <p>
-          This tool helps your team find out — before anything gets built —
-          whether one specific idea is ready. You answer questions about the
-          idea together. The tool returns a readiness read across four areas:
-          the use case itself, your data, safety, and your country context.
-        </p>
-      </div>
+        <h1 className="mt-8 text-4xl font-bold leading-tight text-heritage">
+          AI Use Case Scoping &amp; Readiness Assessment{" "}
+          <span className="ml-1 inline-block rounded border border-washline bg-wash px-2 py-0.5 align-middle text-sm font-semibold text-spirit-dark">
+            Beta
+          </span>
+        </h1>
+
+        <div className="mt-5 max-w-measure space-y-3 text-lg text-ink-soft">
+          <p>
+            A structured self-assessment for health-sector and civil
+            registration (CRVS) programs considering the adoption of artificial
+            intelligence. The instrument evaluates a single, clearly defined
+            use case and produces a readiness profile across four elements —
+            Use Case, Data, Safety, and Country-Level Readiness — to inform
+            planning and investment decisions prior to development.
+          </p>
+        </div>
 
       <div className="mt-8 max-w-measure rounded-xl border border-washline bg-wash p-5">
         <h2 className="font-bold text-heritage">What counts as a use case?</h2>
@@ -138,6 +155,11 @@ export default function Landing() {
           patient data.
         </li>
       </ul>
+
+        <p className="mt-6 text-xs text-ink-muted">
+          Banner photo: Gilman Hall, Johns Hopkins University (public domain).
+        </p>
+      </div>
     </main>
   );
 }
