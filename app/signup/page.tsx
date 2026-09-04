@@ -106,6 +106,12 @@ export default function SignupPage() {
           >
             {busy ? "Creating account…" : "Create account"}
           </button>
+
+          <p className="text-xs leading-relaxed text-ink-muted">
+            This beta uses AI to generate summaries and readiness ratings, and
+            records time spent in the tool to help the research team improve
+            it. AI can make mistakes — cross-check important results.
+          </p>
         </form>
       )}
 
