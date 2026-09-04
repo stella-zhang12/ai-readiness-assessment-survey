@@ -26,49 +26,69 @@ const quickExamples = [
   },
 ];
 
+const elements = [
+  "Use Case",
+  "Data",
+  "Safety",
+  "Country-Level Readiness",
+];
+
 export default function Landing() {
   return (
     <main>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/campus-banner.jpg"
-        alt="Gilman Hall clock tower, Johns Hopkins University"
-        width={1800}
-        height={700}
-        className="h-40 w-full border-b-4 border-heritage object-cover sm:h-52"
-      />
-
-      <div className="mx-auto max-w-3xl px-6 py-12">
-        <div className="flex flex-col gap-2.5">
+      <div className="mx-auto max-w-3xl px-6 py-10">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/jhu-bsph-logo.png"
             alt="Johns Hopkins Bloomberg School of Public Health"
             width={345}
             height={94}
-            className="h-12 w-auto"
+            style={{ height: "40px", width: "auto" }}
           />
+          <span className="hidden h-8 w-px bg-line sm:block" aria-hidden="true" />
           <span className="text-xs font-semibold uppercase tracking-widest text-spirit-dark">
             Center for Global Digital Health Innovation
           </span>
         </div>
 
-        <h1 className="mt-8 text-4xl font-bold leading-tight text-heritage">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/campus-banner.jpg"
+          alt="Gilman Hall clock tower, Johns Hopkins University"
+          width={1800}
+          height={700}
+          className="mt-7 h-44 w-full rounded-xl object-cover sm:h-52"
+          style={{ objectPosition: "center 40%" }}
+        />
+
+        <h1 className="mt-9 text-4xl font-bold leading-tight text-heritage">
           AI Use Case Scoping &amp; Readiness Assessment{" "}
           <span className="ml-1 inline-block rounded border border-washline bg-wash px-2 py-0.5 align-middle text-sm font-semibold text-spirit-dark">
             Beta
           </span>
         </h1>
 
-        <div className="mt-5 max-w-measure space-y-3 text-lg text-ink-soft">
-          <p>
-            A structured self-assessment for health-sector and civil
-            registration (CRVS) programs considering the adoption of artificial
-            intelligence. The instrument evaluates a single, clearly defined
-            use case and produces a readiness profile across four elements —
-            Use Case, Data, Safety, and Country-Level Readiness — to inform
-            planning prior to development.
-          </p>
+        <p className="mt-5 max-w-measure font-serif text-2xl leading-snug text-ink">
+          Know whether an AI use case is ready —{" "}
+          <em className="text-heritage">before it&apos;s built.</em>
+        </p>
+
+        <p className="mt-4 max-w-measure text-base text-ink-soft">
+          A structured team assessment for health and CRVS programs: define
+          one specific use case, work through it together, and get a clear
+          readiness profile across four elements.
+        </p>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          {elements.map((el) => (
+            <span
+              key={el}
+              className="rounded-full border border-washline bg-wash px-3.5 py-1 text-sm font-semibold text-heritage"
+            >
+              {el}
+            </span>
+          ))}
         </div>
 
       <div className="mt-8 max-w-measure rounded-xl border border-washline bg-wash p-5">
