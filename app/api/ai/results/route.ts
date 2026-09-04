@@ -185,26 +185,29 @@ export async function POST(req: Request) {
   const valid = allQids(instrument);
   const gaps = buildGaps(instrument, ctx.answers);
 
-  // ---- follow-ups (both versions) ----
-  let followups: Followups;
-  try {
-    const { system, user } = followupsPrompts(gaps);
-    followups = await callStructured<Followups>({
-      system,
-      user,
-      schema: FOLLOWUPS_SCHEMA,
-      maxTokens: 1200,
-      effort: "medium",
-    });
-    followups.todos = (followups.todos ?? [])
-      .filter((t) => !t.qid || valid.has(t.qid))
-      .slice(0, 8);
-  } catch {
-    followups = fallbackFollowups(instrument, ctx.answers);
-  }
-  await storeAiOutput(ctx, "followups", followups, MODEL, PROMPT_VERSION);
+  // ---- follow-ups (both versions); runs concurrently with the judgment ----
+  const followupsPromise: Promise<Followups> = (async () => {
+    try {
+      const { system, user } = followupsPrompts(gaps);
+      const out = await callStructured<Followups>({
+        system,
+        user,
+        schema: FOLLOWUPS_SCHEMA,
+        maxTokens: 900,
+        effort: "low",
+      });
+      out.todos = (out.todos ?? [])
+        .filter((t) => !t.qid || valid.has(t.qid))
+        .slice(0, 8);
+      return out;
+    } catch {
+      return fallbackFollowups(instrument, ctx.answers);
+    }
+  })();
 
   if (!isDiagnostic) {
+    const followups = await followupsPromise;
+    await storeAiOutput(ctx, "followups", followups, MODEL, PROMPT_VERSION);
     return NextResponse.json({ judgment: null, followups });
   }
 
@@ -243,6 +246,7 @@ export async function POST(req: Request) {
             : `${user}\n\nIMPORTANT: your previous attempt failed validation. Ratings must faithfully track the team's own ratings, and every element needs at least 2 drivers citing the exact question IDs provided above.`,
         schema: JUDGMENT_SCHEMA,
         maxTokens: 3000,
+        effort: "medium",
       });
       judgment = validateJudgment(raw, anchors, valid);
     } catch {
@@ -250,6 +254,9 @@ export async function POST(req: Request) {
     }
   }
   if (!judgment) judgment = fallbackJudgment(anchors);
+
+  const followups = await followupsPromise;
+  await storeAiOutput(ctx, "followups", followups, MODEL, PROMPT_VERSION);
 
   // Cap E1.4 confidence when the team said the summary missed the mark (PRD G3).
   if (c1 !== undefined && c1 <= 1) {
