@@ -18,12 +18,14 @@ export function ReviewStep({
   assessmentId,
   onJump,
   onBack,
+  guest = false,
 }: {
   instrument: Instrument;
   answers: AnswerMap;
   assessmentId: string;
   onJump: (sectionId: string) => void;
   onBack: () => void;
+  guest?: boolean;
 }) {
   const summaries: SectionSummary[] = [];
 
@@ -94,15 +96,29 @@ export function ReviewStep({
         ))}
       </ul>
 
-      <div className="mt-8 rounded-xl border border-washline bg-wash p-5">
-        <h2 className="font-bold text-heritage">Next: your readiness results</h2>
-        <p className="mt-1.5 text-sm text-ink-soft">
-          The AI reads everything your team wrote and rated, then rates each
-          of the four elements with its reasoning — plus a suggested
-          follow-up list. Takes about half a minute. Results are labeled
-          AI-generated and can be regenerated any time.
-        </p>
-      </div>
+      {guest ? (
+        <div className="mt-8 rounded-xl border border-status-amber bg-status-amberbg p-5">
+          <h2 className="font-bold text-status-amber">
+            Readiness results need an account
+          </h2>
+          <p className="mt-1.5 text-sm text-status-amber">
+            The AI-generated readiness table is only available for saved
+            assessments. Guest answers are not saved and won&apos;t carry
+            over — to get results, create a free account and re-enter your
+            answers (printing this tab first can help).
+          </p>
+        </div>
+      ) : (
+        <div className="mt-8 rounded-xl border border-washline bg-wash p-5">
+          <h2 className="font-bold text-heritage">Next: your readiness results</h2>
+          <p className="mt-1.5 text-sm text-ink-soft">
+            The AI reads everything your team wrote and rated, then rates each
+            of the four elements with its reasoning — plus a suggested
+            follow-up list. Takes about half a minute. Results are labeled
+            AI-generated and can be regenerated any time.
+          </p>
+        </div>
+      )}
 
       <div className="mt-8 flex items-center gap-4">
         <button
@@ -112,18 +128,29 @@ export function ReviewStep({
         >
           Back
         </button>
-        <Link
-          href={`/a/${assessmentId}/results`}
-          className="rounded-md bg-heritage px-6 py-2.5 font-semibold text-white hover:bg-heritage-deep"
-        >
-          Generate readiness results
-        </Link>
-        <Link
-          href="/dashboard"
-          className="text-sm font-semibold text-spirit-dark underline underline-offset-2"
-        >
-          Finish later
-        </Link>
+        {guest ? (
+          <Link
+            href="/signup"
+            className="rounded-md bg-heritage px-6 py-2.5 font-semibold text-white hover:bg-heritage-deep"
+          >
+            Create a free account
+          </Link>
+        ) : (
+          <>
+            <Link
+              href={`/a/${assessmentId}/results`}
+              className="rounded-md bg-heritage px-6 py-2.5 font-semibold text-white hover:bg-heritage-deep"
+            >
+              Generate readiness results
+            </Link>
+            <Link
+              href="/dashboard"
+              className="text-sm font-semibold text-spirit-dark underline underline-offset-2"
+            >
+              Finish later
+            </Link>
+          </>
+        )}
       </div>
     </section>
   );

@@ -23,12 +23,15 @@ import type { AiSummarySection } from "@/lib/instrument";
 function MilestoneRecap({
   assessmentId,
   sectionId,
+  guest,
 }: {
   assessmentId: string;
   sectionId: string;
+  guest?: boolean;
 }) {
   const [recap, setRecap] = useState<string | null>(null);
   useEffect(() => {
+    if (guest) return; // AI features need an account
     const ctrl = new AbortController();
     const timeout = setTimeout(() => ctrl.abort(), 9000);
     fetch("/api/ai/recap", {
@@ -45,7 +48,7 @@ function MilestoneRecap({
       clearTimeout(timeout);
       ctrl.abort();
     };
-  }, [assessmentId, sectionId]);
+  }, [assessmentId, sectionId, guest]);
 
   if (!recap) return null;
   return (
@@ -68,6 +71,8 @@ type Props = {
   userId: string;
   initialAnswers: AnswerMap;
   initialStepKey: string | null;
+  /** Guest mode: nothing is written to the database (see /try). */
+  guest?: boolean;
 };
 
 export function AssessmentRunner({
@@ -77,6 +82,7 @@ export function AssessmentRunner({
   userId,
   initialAnswers,
   initialStepKey,
+  guest = false,
 }: Props) {
   const instrument = useMemo(() => getInstrument(version), [version]);
   const steps = useMemo(() => buildSteps(instrument), [instrument]);
@@ -89,11 +95,13 @@ export function AssessmentRunner({
 
   const supabase = useMemo(() => createClient(), []);
   const timers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+  const stepKeyRef = useRef(steps[stepIndexForKey(steps, initialStepKey)].key);
 
   // ------------------------------------------------------------------ saving
 
   const persist = useCallback(
     async (questionId: string, value: AnswerValue) => {
+      if (guest) return; // guest mode: nothing leaves the browser
       setSaveState("saving");
       const { error } = await supabase.from("responses").upsert(
         {
@@ -106,13 +114,34 @@ export function AssessmentRunner({
       );
       setSaveState(error ? "error" : "saved");
     },
-    [supabase, assessmentId, userId]
+    [supabase, assessmentId, userId, guest]
+  );
+
+  // Guest sessions survive an accidental refresh via sessionStorage only.
+  const answersRef = useRef(answers);
+  answersRef.current = answers;
+  const storeGuest = useCallback(
+    (stepKey: string) => {
+      if (!guest) return;
+      try {
+        sessionStorage.setItem(
+          `guest:${version}`,
+          JSON.stringify({ answers: answersRef.current, stepKey })
+        );
+      } catch {}
+    },
+    [guest, version]
   );
 
   /** Update local state immediately; write to the database debounced. */
   const setAnswer = useCallback(
     (questionId: string, value: AnswerValue, debounceMs = 700) => {
       setAnswers((prev) => ({ ...prev, [questionId]: value }));
+      if (guest) {
+        answersRef.current = { ...answersRef.current, [questionId]: value };
+        storeGuest(stepKeyRef.current);
+        return;
+      }
       const existing = timers.current.get(questionId);
       if (existing) clearTimeout(existing);
       timers.current.set(
@@ -120,7 +149,7 @@ export function AssessmentRunner({
         setTimeout(() => persist(questionId, value), debounceMs)
       );
     },
-    [persist]
+    [persist, guest, storeGuest]
   );
 
   // ------------------------------------------------------- timing (PRD §10)
@@ -144,6 +173,7 @@ export function AssessmentRunner({
   );
 
   useEffect(() => {
+    if (guest) return; // no timing collection for guests
     const tick = setInterval(() => {
       if (document.visibilityState === "visible") activeSeconds.current += 1;
     }, 1000);
@@ -161,7 +191,7 @@ export function AssessmentRunner({
       // component unmount = leaving the assessment
       flushTiming(currentSection.current);
     };
-  }, [flushTiming]);
+  }, [flushTiming, guest]);
 
   // -------------------------------------------------------------- navigation
 
@@ -174,13 +204,18 @@ export function AssessmentRunner({
         currentSection.current = nextSection;
       }
       setIdx(clamped);
+      stepKeyRef.current = steps[clamped].key;
       window.scrollTo({ top: 0 });
+      if (guest) {
+        storeGuest(steps[clamped].key);
+        return;
+      }
       void supabase
         .from("assessments")
         .update({ current_step: steps[clamped].key, updated_by: userId })
         .eq("id", assessmentId);
     },
-    [steps, supabase, assessmentId, userId, flushTiming]
+    [steps, supabase, assessmentId, userId, flushTiming, guest, storeGuest]
   );
 
   const jumpToSection = useCallback(
@@ -206,21 +241,37 @@ export function AssessmentRunner({
       </div>
 
       <div className="no-print fixed right-4 top-3 z-10 flex items-center gap-4 text-xs text-ink-muted">
-        <span aria-live="polite">
-          {saveState === "saving" && "Saving…"}
-          {saveState === "saved" && "Saved ✓"}
-          {saveState === "error" && (
-            <span className="font-semibold text-status-red">
-              Couldn&apos;t save — check your connection
+        {guest ? (
+          <>
+            <span className="rounded-full border border-status-amber bg-status-amberbg px-2.5 py-0.5 font-semibold text-status-amber">
+              Guest — nothing is saved
             </span>
-          )}
-        </span>
-        <Link
-          href="/dashboard"
-          className="font-semibold text-spirit-dark underline underline-offset-2"
-        >
-          Save &amp; finish later
-        </Link>
+            <Link
+              href="/signup"
+              className="font-semibold text-spirit-dark underline underline-offset-2"
+            >
+              Sign up to save
+            </Link>
+          </>
+        ) : (
+          <>
+            <span aria-live="polite">
+              {saveState === "saving" && "Saving…"}
+              {saveState === "saved" && "Saved ✓"}
+              {saveState === "error" && (
+                <span className="font-semibold text-status-red">
+                  Couldn&apos;t save — check your connection
+                </span>
+              )}
+            </span>
+            <Link
+              href="/dashboard"
+              className="font-semibold text-spirit-dark underline underline-offset-2"
+            >
+              Save &amp; finish later
+            </Link>
+          </>
+        )}
       </div>
 
       <div className="no-print fixed left-4 top-3 z-10 max-w-[40%] truncate text-xs text-ink-muted">
@@ -253,6 +304,7 @@ export function AssessmentRunner({
             <MilestoneRecap
               assessmentId={assessmentId}
               sectionId={step.key.replace("milestone:", "")}
+              guest={guest}
             />
             <div className="mt-8 flex items-center justify-center gap-4">
               <button
@@ -297,6 +349,7 @@ export function AssessmentRunner({
             onRateC1={(v) => setAnswer("C1", { rating: v }, 150)}
             onContinue={() => goTo(idx + 1)}
             onBack={() => goTo(idx - 1)}
+            guest={guest}
           />
         )}
 
@@ -319,6 +372,7 @@ export function AssessmentRunner({
             assessmentId={assessmentId}
             onJump={jumpToSection}
             onBack={() => goTo(idx - 1)}
+            guest={guest}
           />
         )}
 
@@ -330,6 +384,7 @@ export function AssessmentRunner({
             assessmentId={assessmentId}
             userId={userId}
             onBack={() => goTo(idx - 1)}
+            guest={guest}
           />
         )}
       </main>

@@ -13,6 +13,7 @@ export function SummaryStep({
   onRateC1,
   onContinue,
   onBack,
+  guest = false,
 }: {
   section: AiSummarySection;
   assessmentId: string;
@@ -23,6 +24,7 @@ export function SummaryStep({
   onRateC1: (v: number) => void;
   onContinue: () => void;
   onBack: () => void;
+  guest?: boolean;
 }) {
   const [generating, setGenerating] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -53,11 +55,16 @@ export function SummaryStep({
   );
 
   useEffect(() => {
+    if (guest) {
+      // Guest mode: AI needs an account; offer the stitched template instead.
+      if (!summaryText && fallbackText) onSaveText(fallbackText);
+      return;
+    }
     if (!summaryText && !started.current) {
       started.current = true;
       void generate(false);
     }
-  }, [summaryText, generate]);
+  }, [summaryText, generate, guest, fallbackText, onSaveText]);
 
   return (
     <section>
@@ -68,9 +75,11 @@ export function SummaryStep({
         Did we understand your problem correctly?
       </h1>
       <p className="mt-2 max-w-measure text-sm text-ink-muted">
-        {failed
-          ? "The AI summary couldn't be generated just now — here's a starting point stitched from your answers. Edit it freely."
-          : section.aiLabel + " Edit it until it's right — your edited version is what the readiness judgment uses."}
+        {guest
+          ? "The AI-written summary needs an account — in guest mode, here's a starting point stitched from your own answers. Edit it freely."
+          : failed
+            ? "The AI summary couldn't be generated just now — here's a starting point stitched from your answers. Edit it freely."
+            : section.aiLabel + " Edit it until it's right — your edited version is what the readiness judgment uses."}
       </p>
 
       {generating ? (
@@ -86,19 +95,21 @@ export function SummaryStep({
               rows={4}
               className="w-full resize-y rounded-lg border border-line p-3.5 text-base leading-relaxed focus:border-spirit focus:outline-none"
             />
-            {!failed && (
+            {!failed && !guest && (
               <span className="absolute -top-2.5 right-3 rounded-full bg-spirit px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
                 AI-generated
               </span>
             )}
           </div>
-          <button
-            type="button"
-            onClick={() => generate(true)}
-            className="mt-2 text-xs font-semibold text-spirit-dark underline underline-offset-2"
-          >
-            Generate again
-          </button>
+          {!guest && (
+            <button
+              type="button"
+              onClick={() => generate(true)}
+              className="mt-2 text-xs font-semibold text-spirit-dark underline underline-offset-2"
+            >
+              Generate again
+            </button>
+          )}
         </>
       )}
 

@@ -15,6 +15,7 @@ export function TranscriptStep({
   assessmentId,
   userId,
   onBack,
+  guest = false,
 }: {
   instrument: Instrument;
   title: string;
@@ -22,6 +23,7 @@ export function TranscriptStep({
   assessmentId: string;
   userId: string;
   onBack: () => void;
+  guest?: boolean;
 }) {
   const supabase = useMemo(() => createClient(), []);
   const [completed, setCompleted] = useState(false);
@@ -29,7 +31,7 @@ export function TranscriptStep({
   const fetched = useRef(false);
 
   useEffect(() => {
-    if (fetched.current) return;
+    if (guest || fetched.current) return;
     fetched.current = true;
     fetch("/api/ai/results", {
       method: "POST",
@@ -43,7 +45,7 @@ export function TranscriptStep({
         }
       })
       .catch(() => {});
-  }, [assessmentId]);
+  }, [assessmentId, guest]);
 
   async function markComplete() {
     await supabase
@@ -86,19 +88,20 @@ export function TranscriptStep({
           >
             Print / Save as PDF
           </button>
-          {!completed ? (
-            <button
-              type="button"
-              onClick={markComplete}
-              className="rounded-md border border-heritage px-5 py-2 text-sm font-semibold text-heritage hover:bg-wash"
-            >
-              Mark complete
-            </button>
-          ) : (
-            <span className="text-sm font-semibold text-status-green">
-              Marked complete ✓
-            </span>
-          )}
+          {!guest &&
+            (!completed ? (
+              <button
+                type="button"
+                onClick={markComplete}
+                className="rounded-md border border-heritage px-5 py-2 text-sm font-semibold text-heritage hover:bg-wash"
+              >
+                Mark complete
+              </button>
+            ) : (
+              <span className="text-sm font-semibold text-status-green">
+                Marked complete ✓
+              </span>
+            ))}
           <button
             type="button"
             onClick={onBack}
@@ -107,12 +110,18 @@ export function TranscriptStep({
             Back
           </button>
           <Link
-            href="/dashboard"
+            href={guest ? "/" : "/dashboard"}
             className="text-sm font-semibold text-spirit-dark underline underline-offset-2"
           >
-            Dashboard
+            {guest ? "Home" : "Dashboard"}
           </Link>
         </div>
+        {guest && (
+          <p className="mt-3 text-xs font-semibold text-status-amber">
+            Guest mode: this transcript disappears when the tab closes — print
+            it now if you want to keep it.
+          </p>
+        )}
       </div>
 
       {/* Printable transcript */}

@@ -129,6 +129,16 @@ export default function Landing() {
           off.
         </span>
       </div>
+      <p className="mt-3 text-sm text-ink-muted">
+        Just looking?{" "}
+        <Link
+          href="/try"
+          className="font-semibold text-spirit-dark underline underline-offset-2"
+        >
+          Try it without an account
+        </Link>{" "}
+        — nothing you enter is saved.
+      </p>
 
       </div>
     </main>
