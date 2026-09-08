@@ -70,8 +70,8 @@ export default function TryPage() {
           className="font-semibold text-spirit-dark underline underline-offset-2"
         >
           Create a free account
-        </Link>{" "}
-        instead — it takes a minute.
+        </Link>
+        .
       </p>
 
       <div className="mt-8 grid gap-4">
