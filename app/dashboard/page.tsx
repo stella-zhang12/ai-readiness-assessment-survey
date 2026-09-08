@@ -105,10 +105,12 @@ export default async function DashboardPage() {
             {rows.map((a) => {
               const instrument = getInstrument(a.version);
               const editor = a.updated_by ?? a.created_by;
+              const hasResults =
+                a.status === "complete" && a.version === "diagnostic";
               return (
                 <li key={a.id}>
                   <Link
-                    href={`/a/${a.id}`}
+                    href={hasResults ? `/a/${a.id}/results` : `/a/${a.id}`}
                     className="block rounded-xl border border-line p-4 transition-colors hover:border-spirit"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
@@ -118,11 +120,17 @@ export default async function DashboardPage() {
                       </span>
                     </div>
                     <p className="mt-1.5 text-sm text-ink-muted">
-                      {a.status === "complete"
-                        ? "Complete"
-                        : a.current_step
-                          ? `In progress · ${a.current_step}`
-                          : "Not started"}
+                      {hasResults ? (
+                        <span className="font-semibold text-spirit-dark">
+                          Complete — view results →
+                        </span>
+                      ) : a.status === "complete" ? (
+                        "Complete"
+                      ) : a.current_step ? (
+                        `In progress · ${a.current_step}`
+                      ) : (
+                        "Not started"
+                      )}
                       {" · "}last edited by {names.get(editor) ?? "a teammate"}{" "}
                       on {formatWhen(a.updated_at)}
                     </p>

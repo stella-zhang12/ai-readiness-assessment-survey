@@ -78,10 +78,10 @@ export function ResultsView({
     return (
       <main className="mx-auto max-w-2xl px-6 py-24 text-center">
         <h1 className="text-2xl font-bold text-heritage">
-          Judging readiness…
+          Reviewing your answers…
         </h1>
         <p className="mx-auto mt-3 max-w-md text-sm text-ink-soft">
-          The AI is reading your team&apos;s answers and ratings and writing
+          The AI is reviewing your team&apos;s answers and ratings and writing
           the reasoning for each element. This usually takes 15–30 seconds.
         </p>
         <div className="mx-auto mt-8 h-1.5 w-48 overflow-hidden rounded-full bg-line">

@@ -243,7 +243,7 @@
           "statement": "Our records are paired with known, verified outcomes (e.g., confirmed causes of death) that an AI can learn to replicate.",
           "na": {
             "label": "N/A - our tool doesn't predict outcomes",
-            "helper": "Choose this if your use case is not a predictive tool (reviewer note: outcome-labeled data applies to predictive tools only)."
+            "helper": "Choose N/A if your use case is not a predictive tool."
           }
         },
         {
