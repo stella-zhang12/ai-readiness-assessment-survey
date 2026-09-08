@@ -64,7 +64,7 @@ export function ReviewStep({
       </h1>
       <p className="mt-2 max-w-measure text-sm text-ink-soft">
         {totalGaps === 0 && totalIdk === 0
-          ? "Every question is answered. Nice work."
+          ? "Every question is answered."
           : `You have ${totalGaps} unanswered and ${totalIdk} "don't know" ${
               totalGaps + totalIdk === 1 ? "answer" : "answers"
             }. That's fine — you can still finish. Jump back if your team wants to fill any in.`}

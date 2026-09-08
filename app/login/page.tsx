@@ -79,7 +79,7 @@ function LoginForm() {
           <p className="font-semibold text-heritage">Check your email</p>
           <p className="mt-1 text-sm text-ink-soft">
             We sent a sign-in link to <strong>{email}</strong>. It signs you in
-            and drops you exactly where you left off.
+            and returns you to where you left off.
           </p>
         </div>
       ) : (
@@ -129,9 +129,9 @@ function LoginForm() {
       )}
 
       <p className="mt-8 text-sm text-ink-muted">
-        New here?{" "}
+        Don&apos;t have an account?{" "}
         <Link href="/signup" className="font-semibold text-spirit-dark underline underline-offset-2">
-          Create an account
+          Create one
         </Link>
       </p>
     </main>

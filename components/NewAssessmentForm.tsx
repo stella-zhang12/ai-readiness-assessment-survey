@@ -53,10 +53,10 @@ export function NewAssessmentForm({
             New assessment
           </p>
           <h1 className="mt-3 text-2xl font-bold text-heritage">
-            What should we call this project?
+            Name your assessment
           </h1>
           <p className="mt-1.5 text-sm text-ink-muted">
-            Just a working name — you can change it later.
+            A working name for the use case — you can change it later.
           </p>
           <form
             className="mt-6 flex gap-2"

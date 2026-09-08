@@ -74,7 +74,7 @@ export function TranscriptStep({
           Brainstorm complete
         </p>
         <h1 className="mt-3 text-2xl font-bold text-heritage">
-          Here&apos;s everything your team wrote
+          Your Brainstorm transcript
         </h1>
         <p className="mt-2 max-w-measure text-sm text-ink-soft">
           {answeredCount} of 17 questions answered. Print it, share it, or come

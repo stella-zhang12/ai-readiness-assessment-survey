@@ -67,7 +67,7 @@ export default async function DashboardPage() {
 
   return (
     <>
-      <AppHeader teamName={team.name} />
+      <AppHeader />
       <main className="mx-auto max-w-4xl px-6 py-10">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
@@ -96,8 +96,9 @@ export default async function DashboardPage() {
           <div className="mt-4 rounded-xl border border-dashed border-line p-10 text-center">
             <p className="font-semibold text-ink-soft">No assessments yet</p>
             <p className="mx-auto mt-1 max-w-md text-sm text-ink-muted">
-              Start your first one — a quick Brainstorm (~10–15 min) or the full
-              Diagnostic (~30–45 min) with an AI readiness read at the end.
+              Start your first: a quick Brainstorm (~10–15 min) or the full
+              Diagnostic (~30–45 min), which ends with an AI-generated
+              readiness profile.
             </p>
           </div>
         ) : (
@@ -120,19 +121,18 @@ export default async function DashboardPage() {
                       </span>
                     </div>
                     <p className="mt-1.5 text-sm text-ink-muted">
-                      {hasResults ? (
-                        <span className="font-semibold text-spirit-dark">
-                          Complete — view results →
-                        </span>
-                      ) : a.status === "complete" ? (
-                        "Complete"
-                      ) : a.current_step ? (
-                        `In progress · ${a.current_step}`
-                      ) : (
-                        "Not started"
-                      )}
+                      {a.status === "complete"
+                        ? "Complete"
+                        : a.current_step
+                          ? `In progress · ${a.current_step}`
+                          : "Not started"}
                       {" · "}last edited by {names.get(editor) ?? "a teammate"}{" "}
                       on {formatWhen(a.updated_at)}
+                      {hasResults && (
+                        <span className="ml-1.5 font-semibold text-spirit-dark">
+                          · View results →
+                        </span>
+                      )}
                     </p>
                   </Link>
                 </li>

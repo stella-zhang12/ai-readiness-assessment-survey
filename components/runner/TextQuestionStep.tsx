@@ -22,7 +22,7 @@ function ExampleToggle({
   return (
     <details className="group mt-4 rounded-lg border border-washline bg-wash">
       <summary className="cursor-pointer list-none px-4 py-2.5 text-sm font-semibold text-spirit-dark">
-        Show me an example{" "}
+        See an example{" "}
         <span className="inline-block transition-transform group-open:rotate-90">
           ›
         </span>

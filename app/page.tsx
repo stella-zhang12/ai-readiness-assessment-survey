@@ -130,7 +130,7 @@ export default function Landing() {
         </span>
       </div>
       <p className="mt-3 text-sm text-ink-muted">
-        Just looking?{" "}
+        Want to explore first?{" "}
         <Link
           href="/try"
           className="font-semibold text-spirit-dark underline underline-offset-2"
