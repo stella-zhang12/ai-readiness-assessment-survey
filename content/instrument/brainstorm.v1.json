@@ -38,7 +38,7 @@
           "id": "V1-S1.Q2",
           "handle": "Today's process & pain points",
           "prompt": "How is this process handled today? What are the pain points?",
-          "helper": "Walk through the current process, then where it hurts - use the suggestions below to structure your answer.",
+          "helper": "Describe how the process works today, then identify the main challenges. Use the categories below to structure your answer.",
           "helperDraft": true,
           "chips": [
             { "label": "Current process", "hint": "Who does what today, step by step" },
@@ -79,7 +79,7 @@
           "id": "V1-S1.Q4",
           "handle": "Primary users",
           "prompt": "Who are the primary users?",
-          "helper": "Everyone who would touch the tool or its output, from field staff to managers.",
+          "helper": "Include everyone involved with the tool or its output, from field staff to program managers.",
           "helperDraft": true,
           "examples": {
             "crvs": {
