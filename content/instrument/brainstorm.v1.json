@@ -41,12 +41,30 @@
           "helper": "Describe how the process works today, then identify the main challenges. Use the categories below to structure your answer.",
           "helperDraft": true,
           "chips": [
-            { "label": "Current process", "hint": "Who does what today, step by step" },
-            { "label": "Time taken", "hint": "How long does the process take? Where do delays occur?" },
-            { "label": "Staff workload", "hint": "Is the process too labor-intensive or dependent on too few specialists?" },
-            { "label": "Quality issues", "hint": "Are errors, inconsistencies, or omissions common?" },
-            { "label": "Data limitations", "hint": "Is the data incomplete, inconsistent, or not in a usable format?" },
-            { "label": "Coordination challenges", "hint": "Are there handoff problems between teams, systems, or locations?" }
+            {
+              "label": "Current process",
+              "hint": "Who does what today, step by step"
+            },
+            {
+              "label": "Time taken",
+              "hint": "How long does the process take? Where do delays occur?"
+            },
+            {
+              "label": "Staff workload",
+              "hint": "Is the process too labor-intensive or dependent on too few specialists?"
+            },
+            {
+              "label": "Quality issues",
+              "hint": "Are errors, inconsistencies, or omissions common?"
+            },
+            {
+              "label": "Data limitations",
+              "hint": "Is the data incomplete, inconsistent, or not in a usable format?"
+            },
+            {
+              "label": "Coordination challenges",
+              "hint": "Are there handoff problems between teams, systems, or locations?"
+            }
           ],
           "examples": {
             "crvs": {
@@ -95,14 +113,29 @@
           "id": "V1-S1.Q5",
           "handle": "Constraints",
           "prompt": "What are the identified regulatory, budget, and technical constraints?",
-          "helper": "Identify the laws, budgets, approvals, legacy systems, or skill gaps that will shape what you can build. Use the categories below to structure your answer.",
+          "helper": "Identify the constraints that will shape what you can build. Use the categories below to structure your answer.",
           "helperDraft": true,
           "chips": [
-            { "label": "Regulatory", "hint": "Data protection laws, approval bodies, restrictions on sharing data" },
-            { "label": "Budgetary", "hint": "Funding sources, timelines, long-term operational costs" },
-            { "label": "Institutional", "hint": "Mandates, approval processes, coordination between agencies" },
-            { "label": "Technical", "hint": "Legacy systems, integration limits, infrastructure" },
-            { "label": "Staffing", "hint": "Skill gaps, contract constraints, specialist availability" }
+            {
+              "label": "Regulatory",
+              "hint": "Data protection laws, approval bodies, restrictions on sharing data"
+            },
+            {
+              "label": "Budgetary",
+              "hint": "Funding sources, timelines, long-term operational costs"
+            },
+            {
+              "label": "Institutional",
+              "hint": "Mandates, approval processes, coordination between agencies"
+            },
+            {
+              "label": "Technical",
+              "hint": "Legacy systems, integration limits, infrastructure"
+            },
+            {
+              "label": "Staffing",
+              "hint": "Skill gaps, contract constraints, specialist availability"
+            }
           ],
           "examples": {
             "crvs": {
@@ -198,7 +231,7 @@
           "id": "V1-S3.Q1",
           "handle": "AI capability",
           "prompt": "What is the AI capability required (classification, prediction, generation, extraction, etc.)?",
-          "helper": "Indicate which kind of task this is: classification, prediction, generation, or extraction.",
+          "helper": "Indicate which of these capabilities the tool primarily requires.",
           "helperDraft": true,
           "examples": {
             "crvs": {
@@ -232,7 +265,7 @@
           "id": "V1-S3.Q3",
           "handle": "Expected output",
           "prompt": "What is the expected output?",
-          "helper": "Describe exactly what the AI produces - for example, a code, a score, a document, or a flag.",
+          "helper": "Describe exactly what the AI produces and in what form.",
           "helperDraft": true,
           "examples": {
             "crvs": {
