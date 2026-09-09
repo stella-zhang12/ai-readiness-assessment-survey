@@ -103,12 +103,7 @@ export default function Landing() {
       <div className="mt-8 max-w-measure divide-y divide-line border-y border-line">
         {versions.map((v) => (
           <div key={v.id} className="grid gap-1 py-4 sm:grid-cols-[9.5rem_1fr]">
-            <div>
-              <h2 className="text-lg font-bold text-heritage">{v.title}</h2>
-              <p className="text-xs tabular-nums text-ink-muted">
-                ~{v.estimatedMinutes} minutes
-              </p>
-            </div>
+            <h2 className="text-lg font-bold text-heritage">{v.title}</h2>
             <p className="text-sm leading-relaxed text-ink-soft sm:pt-1">
               {v.chooserDescription}
             </p>
