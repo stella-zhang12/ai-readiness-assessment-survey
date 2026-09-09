@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { brainstorm, diagnostic } from "@/lib/instrument";
+import { AuthCatcher } from "@/components/AuthCatcher";
 
 const versions = [brainstorm, diagnostic];
 
@@ -29,6 +30,7 @@ const quickExamples = [
 export default function Landing() {
   return (
     <main>
+      <AuthCatcher />
       <div className="mx-auto max-w-3xl px-6 py-10">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}

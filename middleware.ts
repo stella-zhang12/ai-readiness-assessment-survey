@@ -51,6 +51,21 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Signed-in visitors hitting the landing page go straight to their
+  // dashboard (also catches emailed links that fall back to the site root).
+  // Auth params in the URL are left for the landing page's AuthCatcher.
+  if (
+    user &&
+    path === "/" &&
+    !request.nextUrl.searchParams.has("code") &&
+    !request.nextUrl.searchParams.has("error")
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/dashboard";
+    url.search = "";
+    return NextResponse.redirect(url);
+  }
+
   return response;
 }
 
