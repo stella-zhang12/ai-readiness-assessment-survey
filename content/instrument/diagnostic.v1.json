@@ -43,11 +43,6 @@
           "guidance": "For example: classifying cause of death from verbal autopsy records; predicting which children are at risk of missing a vaccination appointment; extracting structured information from handwritten health facility reports.",
           "opener": true,
           "openerNudge": "Be specific: one input, one output. What goes in, what comes out, and who uses it?",
-          "exampleChips": [
-            "Classifying cause of death from verbal autopsy records",
-            "Predicting which children are at risk of missing a vaccination appointment",
-            "Extracting structured information from handwritten health facility reports"
-          ],
           "examples": {
             "crvs": {
               "text": "Following a death in the community, we want to determine the most likely cause of death from completed verbal autopsy records, structured interview forms filled out by community health workers. The system would analyze the symptoms, circumstances, and other details recorded in each form to suggest an ICD-10 cause-of-death code. A trained health officer would then confirm or override the suggestion before it is entered into the official national death register.",

@@ -233,9 +233,9 @@ export function AssessmentRunner({
 
   return (
     <div className="min-h-screen">
-      <div className="no-print fixed inset-x-0 top-0 z-10 h-1 bg-line">
+      <div className="no-print fixed inset-x-0 top-0 z-10 h-1.5 bg-line">
         <div
-          className="h-full bg-heritage transition-all duration-300"
+          className="h-full rounded-r-full bg-heritage transition-all duration-300"
           style={{ width: `${progress}%` }}
         />
       </div>
