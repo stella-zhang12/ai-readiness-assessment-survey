@@ -51,7 +51,7 @@ export default function Landing() {
           alt="Gilman Hall clock tower, Johns Hopkins University"
           width={1800}
           height={700}
-          className="mt-7 h-44 w-full rounded-xl object-cover sm:h-52"
+          className="mt-7 h-44 w-full border-b-2 border-heritage object-cover sm:h-52"
           style={{ objectPosition: "center 40%" }}
         />
 
@@ -67,7 +67,7 @@ export default function Landing() {
           assessment of whether a proposed AI use case is ready to build.
         </p>
 
-      <div className="mt-8 max-w-measure rounded-xl border border-washline bg-wash p-5">
+      <div className="mt-8 max-w-measure border-l-2 border-heritage bg-wash p-5">
         <h2 className="font-bold text-heritage">What counts as a use case?</h2>
         <p className="mt-2 text-sm leading-relaxed text-ink-soft">
           One specific task you would hand to an AI:{" "}
@@ -98,19 +98,16 @@ export default function Landing() {
         </details>
       </div>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2">
+      <div className="mt-8 max-w-measure divide-y divide-line border-y border-line">
         {versions.map((v) => (
-          <div
-            key={v.id}
-            className="rounded-xl border border-line p-5 transition-colors hover:border-spirit"
-          >
-            <div className="flex items-baseline justify-between">
-              <h2 className="text-xl font-bold text-heritage">{v.title}</h2>
-              <span className="text-sm text-ink-muted">
-                ~{v.estimatedMinutes} min
-              </span>
+          <div key={v.id} className="grid gap-1 py-4 sm:grid-cols-[9.5rem_1fr]">
+            <div>
+              <h2 className="text-lg font-bold text-heritage">{v.title}</h2>
+              <p className="text-xs tabular-nums text-ink-muted">
+                ~{v.estimatedMinutes} minutes
+              </p>
             </div>
-            <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+            <p className="text-sm leading-relaxed text-ink-soft sm:pt-1">
               {v.chooserDescription}
             </p>
           </div>

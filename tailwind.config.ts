@@ -8,6 +8,19 @@ const config: Config = {
     "./lib/**/*.{ts,tsx}",
   ],
   theme: {
+    // Squared corners across the app: remap the radius scale so existing
+    // rounded-* utilities render crisp (max 4px) instead of the default
+    // soft-card look. rounded-full stays a true pill.
+    borderRadius: {
+      none: "0",
+      sm: "1px",
+      DEFAULT: "2px",
+      md: "2px",
+      lg: "3px",
+      xl: "4px",
+      "2xl": "4px",
+      full: "9999px",
+    },
     extend: {
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
