@@ -78,7 +78,7 @@ export function TranscriptStep({
         </h1>
         <p className="mt-2 max-w-measure text-sm text-ink-soft">
           {answeredCount} of 17 questions answered. Print it, share it, or come
-          back and edit — everything stays saved.
+          back and edit; everything stays saved.
         </p>
         <div className="mt-5 flex flex-wrap items-center gap-4">
           <button
@@ -118,7 +118,7 @@ export function TranscriptStep({
         </div>
         {guest && (
           <p className="mt-3 text-xs font-semibold text-status-amber">
-            Guest mode: this transcript disappears when the tab closes — print
+            Guest mode: this transcript disappears when the tab closes. Print
             it now if you want to keep it.
           </p>
         )}
@@ -129,7 +129,7 @@ export function TranscriptStep({
         <div className="hidden print:block">
           <h1 className="text-2xl font-bold">{title}</h1>
           <p className="text-sm">
-            AI Use Case Scoping &amp; Readiness Assessment (Beta) — Brainstorm
+            AI Use Case Scoping &amp; Readiness Assessment (Beta): Brainstorm
             transcript
           </p>
         </div>
@@ -151,8 +151,8 @@ export function TranscriptStep({
                         </dt>
                         <dd className="mt-1 whitespace-pre-line text-sm leading-relaxed text-ink-soft">
                           {v?.idk
-                            ? "— marked “I don't know”"
-                            : v?.text?.trim() || "— not answered"}
+                            ? "Marked “I don't know”"
+                            : v?.text?.trim() || "Not answered"}
                         </dd>
                       </div>
                     );
@@ -174,7 +174,7 @@ export function TranscriptStep({
               {aiTodos.map((t, i) => (
                 <li key={i} className="text-sm text-ink-soft">
                   <span className="font-semibold text-ink">{t.action}</span>{" "}
-                  <span className="text-ink-muted">— {t.why}</span>
+                  <span className="text-ink-muted">· {t.why}</span>
                 </li>
               ))}
             </ol>

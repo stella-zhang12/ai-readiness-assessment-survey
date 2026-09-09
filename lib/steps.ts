@@ -55,7 +55,7 @@ export function buildSteps(instrument: Instrument): Step[] {
           kind: "question",
           key: q.id,
           sectionId: ts.id,
-          sectionTitle: ts.subtitle ? `${ts.title} — ${ts.subtitle}` : ts.title,
+          sectionTitle: ts.subtitle ? `${ts.title} · ${ts.subtitle}` : ts.title,
           q,
           indexInSection: qi,
           sectionSize: ts.questions.length,

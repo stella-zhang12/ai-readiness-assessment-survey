@@ -39,7 +39,7 @@ export function NewAssessmentForm({
       .single();
     if (error || !data) {
       setBusy(null);
-      setError(error?.message ?? "Something went wrong — try again.");
+      setError(error?.message ?? "Something went wrong. Try again.");
       return;
     }
     router.push(`/a/${data.id}`);
@@ -56,7 +56,7 @@ export function NewAssessmentForm({
             Name your assessment
           </h1>
           <p className="mt-1.5 text-sm text-ink-muted">
-            A working name for the use case — you can change it later.
+            A working name for the use case; you can change it later.
           </p>
           <form
             className="mt-6 flex gap-2"
@@ -92,7 +92,7 @@ export function NewAssessmentForm({
             Select an assessment type
           </h1>
           <p className="mt-1.5 text-sm text-ink-muted">
-            Not sure which? Start with the Brainstorm — you can always run the
+            Not sure which? Start with the Brainstorm; you can always run the
             Diagnostic afterwards.
           </p>
 

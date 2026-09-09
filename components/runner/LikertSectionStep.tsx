@@ -122,7 +122,7 @@ export function LikertSectionStep({
       </h1>
       <p className="mt-1.5 text-sm text-ink-muted">
         Rate each statement for your use case. If your team doesn&apos;t know,
-        say so — that&apos;s useful information too.
+        say so; that&apos;s useful information too.
       </p>
 
       <div className="mt-6 space-y-6">
@@ -204,7 +204,7 @@ export function LikertSectionStep({
         </button>
         {answered < section.items.length && (
           <span className="text-xs text-ink-muted">
-            You can continue with unrated statements — they&apos;ll show on the
+            You can continue with unrated statements; they&apos;ll show on the
             review screen.
           </span>
         )}

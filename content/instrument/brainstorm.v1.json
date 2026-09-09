@@ -20,10 +20,10 @@
           "id": "V1-S1.Q1",
           "handle": "Use case",
           "prompt": "Describe the use case",
-          "helper": "In one or two sentences, describe what the AI would do - its input, its output, and who would use it.",
+          "helper": "In one or two sentences, describe what the AI would do: its input, its output, and who would use it.",
           "helperDraft": true,
           "opener": true,
-          "openerNudge": "Be specific: one input and one output - what goes in, what comes out, and who uses it.",
+          "openerNudge": "Be specific about the single input, the single output, and who uses it.",
           "examples": {
             "crvs": {
               "text": "Following a death in the community, we want to determine the most likely cause of death from completed verbal autopsy records, structured interview forms filled out by community health workers. The system would analyze the symptoms, circumstances, and other details recorded in each form to suggest an ICD-10 cause-of-death code. A trained health officer would then confirm or override the suggestion before it is entered into the official national death register."
@@ -89,7 +89,7 @@
             },
             "healthcare": {
               "draft": true,
-              "text": "Whether a child misses an appointment depends on many interacting factors - distance to the clinic, season, the caregiver's work schedule, past visit patterns, family size. Fixed rules like 'flag every child more than two weeks late' catch defaulters only after the fact; a model trained on historical visit records can rank risk before the appointment is missed."
+              "text": "Whether a child misses an appointment depends on many interacting factors: distance to the clinic, season, the caregiver's work schedule, past visit patterns, family size. Fixed rules like 'flag every child more than two weeks late' catch defaulters only after the fact; a model trained on historical visit records can rank risk before the appointment is missed."
             }
           }
         },
@@ -178,11 +178,11 @@
           "helperDraft": true,
           "examples": {
             "crvs": {
-              "text": "Stage 1 - data ingestion (field registration team): verbal autopsy form uploaded to the civil registration portal; output is a validated, deduplicated record flagged as pending coding.\n\nStage 2 - AI coding (system): the validated record goes in; an ICD-10 suggestion with a confidence score and rationale comes out.\n\nStage 3 - human review (coding team): records below an 80% confidence threshold are routed to a human coder; output is a confirmed or overridden code with the override reason logged.\n\nStage 4 - record finalization (data management team): the confirmed code is written back to the civil registration database and included in monthly statistical reporting."
+              "text": "Stage 1: data ingestion (field registration team): verbal autopsy form uploaded to the civil registration portal; output is a validated, deduplicated record flagged as pending coding.\n\nStage 2: AI coding (system): the validated record goes in; an ICD-10 suggestion with a confidence score and rationale comes out.\n\nStage 3: human review (coding team): records below an 80% confidence threshold are routed to a human coder; output is a confirmed or overridden code with the override reason logged.\n\nStage 4: record finalization (data management team): the confirmed code is written back to the civil registration database and included in monthly statistical reporting."
             },
             "healthcare": {
               "draft": true,
-              "text": "Stage 1 - data ingestion: visit records from the registry, refreshed weekly. Stage 2 - AI risk scoring: each upcoming appointment gets a risk score with the main contributing factors. Stage 3 - human review: nurses see a ranked list and choose whom to contact. Stage 4 - outcome logging: attended/missed status feeds back into next week's scoring."
+              "text": "Stage 1: data ingestion: visit records from the registry, refreshed weekly. Stage 2: AI risk scoring: each upcoming appointment gets a risk score with the main contributing factors. Stage 3: human review: nurses see a ranked list and choose whom to contact. Stage 4: outcome logging: attended/missed status feeds back into next week's scoring."
             }
           }
         },

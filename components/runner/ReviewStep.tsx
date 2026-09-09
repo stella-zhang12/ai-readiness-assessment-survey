@@ -34,7 +34,7 @@ export function ReviewStep({
       const ids = s.questions.map((q) => q.id);
       summaries.push({
         id: s.id,
-        label: s.subtitle ? `${s.title} — ${s.subtitle}` : s.title,
+        label: s.subtitle ? `${s.title} · ${s.subtitle}` : s.title,
         total: ids.length,
         unanswered: ids.filter((id) => !isAnswered(answers[id])).length,
         idk: ids.filter((id) => answers[id]?.idk).length,
@@ -60,14 +60,14 @@ export function ReviewStep({
         Review
       </p>
       <h1 className="mt-3 text-2xl font-bold text-heritage">
-        Almost there — a quick check
+        Almost there: a quick check
       </h1>
       <p className="mt-2 max-w-measure text-sm text-ink-soft">
         {totalGaps === 0 && totalIdk === 0
           ? "Every question is answered."
           : `You have ${totalGaps} unanswered and ${totalIdk} "don't know" ${
               totalGaps + totalIdk === 1 ? "answer" : "answers"
-            }. That's fine — you can still finish. Jump back if your team wants to fill any in.`}
+            }. That's fine; you can still finish. Jump back if your team wants to fill any in.`}
       </p>
 
       <ul className="mt-6 space-y-2">
@@ -104,7 +104,7 @@ export function ReviewStep({
           <p className="mt-1.5 text-sm text-status-amber">
             The AI-generated readiness table is only available for saved
             assessments. Guest answers are not saved and won&apos;t carry
-            over — to get results, create a free account and re-enter your
+            over. To get results, create a free account and re-enter your
             answers (printing this tab first can help).
           </p>
         </div>
@@ -113,7 +113,7 @@ export function ReviewStep({
           <h2 className="font-bold text-heritage">Next: your readiness results</h2>
           <p className="mt-1.5 text-sm text-ink-soft">
             The AI reads everything your team wrote and rated, then rates each
-            of the four elements with its reasoning — plus a suggested
+            of the four elements with its reasoning, plus a suggested
             follow-up list. Takes about half a minute. Results are labeled
             AI-generated and can be regenerated any time.
           </p>

@@ -76,10 +76,10 @@ export function SummaryStep({
       </h1>
       <p className="mt-2 max-w-measure text-sm text-ink-muted">
         {guest
-          ? "The AI-written summary needs an account — in guest mode, here's a starting point stitched from your own answers. Edit it freely."
+          ? "The AI-written summary needs an account. In guest mode, here's a starting point stitched from your own answers. Edit it freely."
           : failed
-            ? "The AI summary couldn't be generated just now — here's a starting point stitched from your answers. Edit it freely."
-            : section.aiLabel + " Edit it until it's right — your edited version is what the readiness judgment uses."}
+            ? "The AI summary couldn't be generated just now, so here's a starting point stitched from your answers. Edit it freely."
+            : section.aiLabel + " Edit it until it's right; your edited version is what the readiness judgment uses."}
       </p>
 
       {generating ? (

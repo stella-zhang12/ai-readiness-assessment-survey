@@ -244,7 +244,7 @@ export function AssessmentRunner({
         {guest ? (
           <>
             <span className="rounded-full border border-status-amber bg-status-amberbg px-2.5 py-0.5 font-semibold text-status-amber">
-              Guest — nothing is saved
+              Guest: nothing is saved
             </span>
             <Link
               href="/signup"
@@ -260,7 +260,7 @@ export function AssessmentRunner({
               {saveState === "saved" && "Saved ✓"}
               {saveState === "error" && (
                 <span className="font-semibold text-status-red">
-                  Couldn&apos;t save — check your connection
+                  Couldn&apos;t save. Check your connection
                 </span>
               )}
             </span>
@@ -311,7 +311,7 @@ export function AssessmentRunner({
               ✓
             </p>
             <h1 className="mt-5 text-2xl font-bold text-heritage">
-              {step.doneTitle} — done
+              {step.doneTitle} complete
             </h1>
             <p className="mx-auto mt-2 max-w-sm text-ink-soft">
               Next up: {step.nextTitle}. Everything so far is saved.

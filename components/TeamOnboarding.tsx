@@ -21,7 +21,7 @@ export function TeamOnboarding({ userId }: { userId: string }) {
     if (error) {
       setError(
         error.message.includes("invalid invite code")
-          ? "That invite code doesn't match any team. Check it with whoever shared it — codes are 8 characters."
+          ? "That invite code doesn't match any team. Check it with whoever shared it; codes are 8 characters."
           : error.message
       );
       return;

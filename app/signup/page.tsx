@@ -53,7 +53,7 @@ export default function SignupPage() {
           <p className="font-semibold text-heritage">Check your email</p>
           <p className="mt-1 text-sm text-ink-soft">
             We sent a confirmation link to <strong>{email}</strong>. Click it to
-            finish creating your account — it will bring you back here to join
+            finish creating your account; it will bring you back here to join
             your team.
           </p>
         </div>
@@ -110,7 +110,7 @@ export default function SignupPage() {
           <p className="text-xs leading-relaxed text-ink-muted">
             This beta uses AI to generate summaries and readiness ratings, and
             records time spent in the tool to help the research team improve
-            it. AI can make mistakes — cross-check important results. The tool
+            it. AI can make mistakes; cross-check important results. The tool
             asks about your data but never collects it; please don&apos;t enter
             personal or patient records.
           </p>

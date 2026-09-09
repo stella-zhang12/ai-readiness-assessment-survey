@@ -47,13 +47,13 @@ export default function TryPage() {
         Try the assessment
       </p>
       <h1 className="mt-3 text-2xl font-bold text-heritage">
-        Guest mode — nothing is saved
+        Guest mode: nothing is saved
       </h1>
       <div className="mt-4 rounded-xl border border-status-amber bg-status-amberbg p-4 text-sm text-status-amber">
         <p className="font-semibold">Before you start:</p>
         <ul className="mt-1.5 list-disc space-y-1 pl-5">
           <li>
-            Your answers live only in this browser tab — closing it discards
+            Your answers live only in this browser tab; closing it discards
             everything.
           </li>
           <li>No team sharing, no resuming later, no saved results.</li>

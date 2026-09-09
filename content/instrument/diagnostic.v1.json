@@ -2,11 +2,11 @@
   "id": "diagnostic",
   "version": 1,
   "title": "Diagnostic",
-  "chooserDescription": "The full assessment. Shows you how ready your use case is - and where the gaps are.",
+  "chooserDescription": "The full assessment. Shows you how ready your use case is and where the gaps are.",
   "estimatedMinutes": "30-45",
   "source": "Revised Version of AI Readiness (Re-Scoped).docx",
   "sourceNotes": [
-    "Sub-use-case machinery (C2 loop, Section D main-vs-sub branching, question-count preview) removed per product decision - one use case per assessment.",
+    "Sub-use-case machinery (C2 loop, Section D main-vs-sub branching, question-count preview) removed per product decision: one use case per assessment.",
     "Source typos corrected in transcription: 'qualtity' (D1.3 guidance), doubled colon (D2.1 guidance), A5 example 'three levels' with two bullets.",
     "The document's stray reference to a 'D4' block is treated as a typo (no D4 exists).",
     "Per lab review (2026-09-09): inline example lists removed from all question guidance (A1-A6, B2, B3); examples appear only in each question's example toggle."
@@ -59,9 +59,9 @@
           "id": "A1",
           "handle": "Use case",
           "prompt": "Please describe the use case.",
-          "guidance": "In one or two sentences, describe what the AI would do - its input, its output, and who would use it.",
+          "guidance": "In one or two sentences, describe what the AI would do: its input, its output, and who would use it.",
           "opener": true,
-          "openerNudge": "Be specific: one input and one output - what goes in, what comes out, and who uses it.",
+          "openerNudge": "Be specific about the single input, the single output, and who uses it.",
           "examples": {
             "crvs": {
               "text": "Following a death in the community, we want to determine the most likely cause of death from completed verbal autopsy records, structured interview forms filled out by community health workers. The system would analyze the symptoms, circumstances, and other details recorded in each form to suggest an ICD-10 cause-of-death code. A trained health officer would then confirm or override the suggestion before it is entered into the official national death register.",
@@ -121,7 +121,7 @@
             },
             "healthcare": {
               "draft": true,
-              "text": "Whether a child misses an appointment depends on many interacting factors - distance to the clinic, season, the caregiver's work schedule, past visit patterns, family size. Fixed rules like 'flag every child more than two weeks late' catch defaulters only after the fact; a model trained on historical visit records can rank risk before the appointment is missed."
+              "text": "Whether a child misses an appointment depends on many interacting factors: distance to the clinic, season, the caregiver's work schedule, past visit patterns, family size. Fixed rules like 'flag every child more than two weeks late' catch defaulters only after the fact; a model trained on historical visit records can rank risk before the appointment is missed."
             }
           }
         },
@@ -242,7 +242,7 @@
             },
             "healthcare": {
               "draft": true,
-              "text": "Stage 1 - data ingestion: visit records from the registry, refreshed weekly. Stage 2 - AI risk scoring: each upcoming appointment gets a risk score with the main contributing factors. Stage 3 - human review: nurses see a ranked list and choose whom to contact. Stage 4 - outcome logging: attended/missed status feeds back into next week's scoring."
+              "text": "Stage 1: data ingestion: visit records from the registry, refreshed weekly. Stage 2: AI risk scoring: each upcoming appointment gets a risk score with the main contributing factors. Stage 3: human review: nurses see a ranked list and choose whom to contact. Stage 4: outcome logging: attended/missed status feeds back into next week's scoring."
             }
           }
         }
@@ -307,7 +307,7 @@
           "parent": "D1.1",
           "statement": "Our records are paired with known, verified outcomes (e.g., confirmed causes of death) that an AI can learn to replicate.",
           "na": {
-            "label": "N/A - our tool doesn't predict outcomes",
+            "label": "N/A: our tool doesn't predict outcomes",
             "helper": "Choose N/A if your use case is not a predictive tool."
           }
         },

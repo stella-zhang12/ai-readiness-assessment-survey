@@ -74,7 +74,7 @@ export default function Landing() {
           <strong>one kind of input goes in, one kind of output comes out</strong>.
           &ldquo;Suggest a cause of death from a completed verbal autopsy
           form&rdquo; is a use case. &ldquo;Modernize our health data
-          system&rdquo; is not — that&apos;s many use cases, and each one would
+          system&rdquo; is not; that&apos;s many use cases, and each one would
           be assessed on its own.
         </p>
         <details className="group mt-3">
@@ -122,7 +122,7 @@ export default function Landing() {
           Sign in to begin
         </Link>
         <span className="text-sm text-ink-muted">
-          Works as a team — share one assessment, pick up where anyone left
+          Works as a team: share one assessment and pick up where anyone left
           off.
         </span>
       </div>
@@ -134,7 +134,7 @@ export default function Landing() {
         >
           Try it without an account
         </Link>{" "}
-        — nothing you enter is saved.
+        (nothing you enter is saved).
       </p>
 
       </div>

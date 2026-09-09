@@ -98,7 +98,7 @@ export function ResultsView({
           Couldn&apos;t generate results
         </h1>
         <p className="mx-auto mt-3 max-w-md text-sm text-ink-soft">
-          Something went wrong talking to the AI. Your answers are all saved —
+          Something went wrong talking to the AI. Your answers are all saved;
           try again in a moment.
         </p>
         <button
@@ -193,7 +193,7 @@ export function ResultsView({
                   {el.confidence !== "high" && (
                     <p className="text-xs text-ink-muted">
                       {el.confidence === "low"
-                        ? "Low confidence — your team marked many questions as unknown"
+                        ? "Low confidence: your team marked many questions as unknown"
                         : "Medium confidence"}
                     </p>
                   )}
@@ -286,7 +286,7 @@ export function ResultsView({
 
       <p className="mt-6 max-w-measure text-xs text-ink-muted">
         {diagnostic.disclaimer} Results are advisory input to your team&apos;s
-        decision — never an approval or rejection of a project.
+        decision, never an approval or rejection of a project.
       </p>
     </main>
   );

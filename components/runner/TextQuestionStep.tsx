@@ -126,7 +126,7 @@ export function TextQuestionStep({
         <div className="mt-5 rounded-lg border border-washline bg-wash p-4 text-sm text-ink-soft">
           Marked as{" "}
           <strong className="text-heritage">&ldquo;I don&apos;t know&rdquo;</strong>{" "}
-          — it will show up in your follow-up list.{" "}
+          and will appear in your follow-up list.{" "}
           <button
             type="button"
             onClick={() => onChange({ text: "" })}
@@ -194,7 +194,7 @@ export function TextQuestionStep({
             }}
             className="ml-auto text-sm text-ink-muted underline underline-offset-2 hover:text-ink-soft"
           >
-            Skip — I don&apos;t know
+            Skip (I don&apos;t know)
           </button>
         )}
       </div>

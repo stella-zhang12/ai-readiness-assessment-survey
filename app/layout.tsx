@@ -20,7 +20,7 @@ const sourceSerif = Source_Serif_4({
 export const metadata: Metadata = {
   title: "AI Readiness Assessment (Beta)",
   description:
-    "A guided assessment of whether a proposed AI use case is ready to build — for health-sector and CRVS teams. Johns Hopkins Bloomberg School of Public Health.",
+    "A guided assessment of whether a proposed AI use case is ready to build, for health-sector and CRVS teams. Johns Hopkins Bloomberg School of Public Health.",
 };
 
 export default function RootLayout({
