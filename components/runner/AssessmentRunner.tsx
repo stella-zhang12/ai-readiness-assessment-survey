@@ -274,11 +274,26 @@ export function AssessmentRunner({
         )}
       </div>
 
-      <div className="no-print fixed left-4 top-3 z-10 max-w-[40%] truncate text-xs text-ink-muted">
-        {title}
+      <div className="no-print fixed left-4 top-3 z-10 flex max-w-[45%] items-center gap-2 text-xs text-ink-muted">
+        <Link
+          href={guest ? "/" : "/dashboard"}
+          className="shrink-0 font-semibold text-spirit-dark underline-offset-2 hover:underline"
+        >
+          ← {guest ? "Home" : "Dashboard"}
+        </Link>
+        <span aria-hidden="true">·</span>
+        <span className="truncate">{title}</span>
       </div>
 
-      <main className="mx-auto max-w-2xl px-6 pb-24 pt-20">
+      <main
+        className={`mx-auto w-full max-w-2xl px-6 ${
+          step.kind === "question" ||
+          step.kind === "milestone" ||
+          step.kind === "summary_placeholder"
+            ? "flex min-h-[88vh] flex-col justify-center py-20"
+            : "pb-24 pt-20"
+        }`}
+      >
         {step.kind === "question" && (
           <TextQuestionStep
             key={step.key}
