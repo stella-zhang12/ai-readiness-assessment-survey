@@ -20,10 +20,10 @@
           "id": "V1-S1.Q1",
           "handle": "Use case",
           "prompt": "Describe the use case",
-          "helper": "One or two sentences on what the AI would do - its input, its output, and who would use it.",
+          "helper": "In one or two sentences, describe what the AI would do - its input, its output, and who would use it.",
           "helperDraft": true,
           "opener": true,
-          "openerNudge": "Be specific: one input, one output. What goes in, what comes out, and who uses it?",
+          "openerNudge": "Be specific: one input and one output - what goes in, what comes out, and who uses it.",
           "examples": {
             "crvs": {
               "text": "Following a death in the community, we want to determine the most likely cause of death from completed verbal autopsy records, structured interview forms filled out by community health workers. The system would analyze the symptoms, circumstances, and other details recorded in each form to suggest an ICD-10 cause-of-death code. A trained health officer would then confirm or override the suggestion before it is entered into the official national death register."
@@ -63,7 +63,7 @@
           "id": "V1-S1.Q3",
           "handle": "Rationale for AI",
           "prompt": "Why are we considering using AI instead of a rule-based solution?",
-          "helper": "A rule-based tool follows fixed instructions; AI learns patterns from historical data. Why does this problem need the latter?",
+          "helper": "A rule-based tool follows fixed instructions, while AI learns patterns from historical data. Explain why this problem requires the latter.",
           "helperDraft": true,
           "examples": {
             "crvs": {
@@ -95,7 +95,7 @@
           "id": "V1-S1.Q5",
           "handle": "Constraints",
           "prompt": "What are the identified regulatory, budget, and technical constraints?",
-          "helper": "Laws, budgets, approvals, legacy systems, or skill gaps that will shape what you can build.",
+          "helper": "Identify the laws, budgets, approvals, legacy systems, or skill gaps that will shape what you can build. Use the categories below to structure your answer.",
           "helperDraft": true,
           "chips": [
             { "label": "Regulatory", "hint": "Data protection laws, approval bodies, restrictions on sharing data" },
@@ -118,7 +118,7 @@
           "id": "V1-S1.Q6",
           "handle": "Success measures",
           "prompt": "How will you measure success?",
-          "helper": "Aim for numbers: what improves, by how much, measured how and how often.",
+          "helper": "Be as quantitative as possible: what improves, by how much, and how and how often it would be measured.",
           "helperDraft": true,
           "examples": {
             "crvs": {
@@ -157,7 +157,7 @@
           "id": "V1-S2.Q2",
           "handle": "Decomposition",
           "prompt": "Can this workflow be decomposed into smaller, independent use cases?",
-          "helper": "Could parts of this workflow stand alone as smaller, simpler tools?",
+          "helper": "Consider whether parts of this workflow could stand alone as smaller, simpler tools.",
           "helperDraft": true,
           "examples": {
             "crvs": {
@@ -174,7 +174,7 @@
           "id": "V1-S2.Q3",
           "handle": "Dependencies",
           "prompt": "What are the dependencies between workflow stages?",
-          "helper": "Which steps can't start until another finishes? Where do delays cascade?",
+          "helper": "Identify which steps cannot start until another finishes, and where delays would cascade.",
           "helperDraft": true,
           "examples": {
             "crvs": {
@@ -198,7 +198,7 @@
           "id": "V1-S3.Q1",
           "handle": "AI capability",
           "prompt": "What is the AI capability required (classification, prediction, generation, extraction, etc.)?",
-          "helper": "Classification, prediction, generation, extraction - which kind of task is this?",
+          "helper": "Indicate which kind of task this is: classification, prediction, generation, or extraction.",
           "helperDraft": true,
           "examples": {
             "crvs": {
@@ -215,7 +215,7 @@
           "id": "V1-S3.Q2",
           "handle": "Input data",
           "prompt": "Please define the input data (sources, format, volume).",
-          "helper": "Where the data comes from, what format it's in, and roughly how much there is.",
+          "helper": "Describe where the data comes from, what format it is in, and roughly how much of it exists.",
           "helperDraft": true,
           "examples": {
             "crvs": {
@@ -232,7 +232,7 @@
           "id": "V1-S3.Q3",
           "handle": "Expected output",
           "prompt": "What is the expected output?",
-          "helper": "What exactly the AI produces - a code, a score, a document, a flag.",
+          "helper": "Describe exactly what the AI produces - for example, a code, a score, a document, or a flag.",
           "helperDraft": true,
           "examples": {
             "crvs": {
@@ -249,7 +249,7 @@
           "id": "V1-S3.Q4",
           "handle": "Human review",
           "prompt": "Where does human review/approval occur?",
-          "helper": "Where a person checks, approves, or overrides the AI before anything becomes official.",
+          "helper": "Identify where a person checks, approves, or overrides the AI's output before anything becomes official.",
           "helperDraft": true,
           "examples": {
             "crvs": {
@@ -273,7 +273,7 @@
           "id": "V1-S4.Q1",
           "handle": "Historical data",
           "prompt": "What kind of historical data do we have? Is the data labeled?",
-          "helper": "What past records exist, and whether they include the 'right answers' an AI could learn from.",
+          "helper": "Describe what past records exist and whether they include the verified outcomes an AI could learn from.",
           "helperDraft": true,
           "examples": {
             "crvs": {
@@ -290,7 +290,7 @@
           "id": "V1-S4.Q2",
           "handle": "Data quality",
           "prompt": "What is the quality of the data (completeness, accuracy, bias considerations)?",
-          "helper": "How complete and accurate the records are, and whether any groups are under-represented.",
+          "helper": "Assess how complete and accurate the records are, and whether any groups are under-represented.",
           "helperDraft": true,
           "examples": {
             "crvs": {
@@ -307,7 +307,7 @@
           "id": "V1-S4.Q3",
           "handle": "Data governance",
           "prompt": "What are the data governance requirements (privacy, security, compliance requirements)?",
-          "helper": "Privacy, security, and compliance rules that apply to using this data.",
+          "helper": "Identify the privacy, security, and compliance requirements that apply to using this data.",
           "helperDraft": true,
           "examples": {
             "crvs": {
@@ -324,7 +324,7 @@
           "id": "V1-S4.Q4",
           "handle": "Integration",
           "prompt": "What are the data integration points (real-time vs batch integration)?",
-          "helper": "Whether the tool needs live data feeds or periodic batches, and from which systems.",
+          "helper": "Specify whether the tool needs live data feeds or periodic batches, and from which systems.",
           "helperDraft": true,
           "examples": {
             "crvs": {
