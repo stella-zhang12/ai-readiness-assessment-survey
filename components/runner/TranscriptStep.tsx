@@ -5,6 +5,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { Instrument } from "@/lib/instrument";
 import { isAnswered, type AnswerMap } from "@/lib/steps";
+import { FeedbackPanel } from "@/components/FeedbackPanel";
 
 type Todo = { qid: string | null; action: string; why: string };
 
@@ -122,6 +123,7 @@ export function TranscriptStep({
             it now if you want to keep it.
           </p>
         )}
+        {!guest && <FeedbackPanel assessmentId={assessmentId} />}
       </div>
 
       {/* Printable transcript */}

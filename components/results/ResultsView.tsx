@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { diagnostic } from "@/lib/instrument";
 import type { Followups, Judgment } from "@/lib/ai/prompts";
+import { FeedbackPanel } from "@/components/FeedbackPanel";
 
 const LEVEL_STYLE: Record<string, string> = {
   green: "bg-status-greenbg text-status-green border-status-green",
@@ -273,6 +274,8 @@ export function ResultsView({
           </ol>
         </section>
       )}
+
+      <FeedbackPanel assessmentId={assessmentId} />
 
       <div className="no-print mt-10 flex items-center gap-4 border-t border-line pt-5">
         <button
