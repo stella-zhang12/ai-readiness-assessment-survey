@@ -46,18 +46,36 @@ export function SectionHub({
       <h1 className="mt-2 text-3xl font-bold leading-tight text-heritage">
         {title}
       </h1>
-      <p className="mt-2 max-w-measure text-sm text-ink-soft">
-        Work through the four sections in any order; your answers save as you
-        go. Open a section to continue where you left off.
-        {!guest &&
-          " Each time you return here, your answers are reviewed for completeness, with suggestions for anything worth adding."}
-      </p>
-      {guest && (
-        <p className="mt-2 text-xs text-ink-muted">
-          Completeness checks need an account; in guest mode you only see
-          your progress counts.
-        </p>
-      )}
+      <div className="mt-6 grid gap-x-6 gap-y-4 border-y border-line py-5 sm:grid-cols-3">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-wider text-spirit-dark">
+            1 · Answer four sections
+          </p>
+          <p className="mt-1 text-sm leading-snug text-ink-soft">
+            Your use case, your data, safety, and the country context. Take
+            them in any order.
+          </p>
+        </div>
+        <div>
+          <p className="text-xs font-bold uppercase tracking-wider text-spirit-dark">
+            2 · Pause anytime
+          </p>
+          <p className="mt-1 text-sm leading-snug text-ink-soft">
+            Answers save as you type. Anyone on your team can pick up where
+            you left off.
+          </p>
+        </div>
+        <div>
+          <p className="text-xs font-bold uppercase tracking-wider text-spirit-dark">
+            3 · Close the gaps
+          </p>
+          <p className="mt-1 text-sm leading-snug text-ink-soft">
+            {guest
+              ? "Progress counts below show how far along each section is."
+              : "Each time you return here, a short review of every started section shows what is still missing."}
+          </p>
+        </div>
+      </div>
 
       {allDone && (
         <p className="mt-4 border-l-2 border-status-green bg-status-greenbg px-3 py-2 text-sm font-semibold text-status-green">
@@ -65,7 +83,10 @@ export function SectionHub({
         </p>
       )}
 
-      <div className="mt-8 divide-y divide-line border-y border-line">
+      <h2 className="mt-8 text-sm font-semibold uppercase tracking-wider text-ink-muted">
+        Progress by section
+      </h2>
+      <div className="mt-2 divide-y divide-line border-y border-line">
         {sections.map((s, i) => {
           const { answered, total } = totals[i];
           const started = answered > 0;
