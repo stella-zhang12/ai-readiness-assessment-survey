@@ -160,8 +160,21 @@ export function CombinedRunner({
 
   // -------------------------------------------------------------- navigation
 
+  /** Write any debounced answers immediately, so the completeness check
+   * (which reads the database) never grades a stale answer set. */
+  const flushPendingSaves = useCallback(() => {
+    if (guest) return;
+    for (const [questionId, timer] of timers.current) {
+      clearTimeout(timer);
+      const value = answersRef.current[questionId];
+      if (value !== undefined) void persist(questionId, value);
+    }
+    timers.current.clear();
+  }, [guest, persist]);
+
   const setLocation = useCallback(
     (nextIdx: number | null) => {
+      flushPendingSaves();
       const key = nextIdx === null ? HUB_KEY : steps[nextIdx].key;
       const nextSection = nextIdx === null ? HUB_KEY : steps[nextIdx].sectionId;
       if (nextSection !== currentSection.current) {
@@ -180,7 +193,16 @@ export function CombinedRunner({
         .update({ current_step: key, updated_by: userId })
         .eq("id", assessmentId);
     },
-    [steps, supabase, assessmentId, userId, flushTiming, guest, storeGuest]
+    [
+      steps,
+      supabase,
+      assessmentId,
+      userId,
+      flushTiming,
+      guest,
+      storeGuest,
+      flushPendingSaves,
+    ]
   );
 
   const goToQuestion = useCallback(

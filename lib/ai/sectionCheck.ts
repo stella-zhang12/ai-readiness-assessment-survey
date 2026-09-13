@@ -298,9 +298,25 @@ ${transcript || "(none)"}
 Not yet answered (context only, do not grade): ${unanswered || "(none)"}`;
 }
 
-/** Stable hash of a section's answers, used to reuse unchanged checks. */
+/** Sort object keys so client state and jsonb round-trips hash alike. */
+function canonical(v: unknown): unknown {
+  if (Array.isArray(v)) return v.map(canonical);
+  if (v && typeof v === "object") {
+    return Object.fromEntries(
+      Object.keys(v as Record<string, unknown>)
+        .sort()
+        .map((k) => [k, canonical((v as Record<string, unknown>)[k])])
+    );
+  }
+  return v;
+}
+
+/** Stable hash of a section's answers, used to reuse unchanged checks.
+ * Computed identically on the client (skip re-fetch) and server (cache). */
 export function hashSectionAnswers(ids: string[], answers: AnswerMap): string {
-  const payload = JSON.stringify(ids.map((id) => [id, answers[id] ?? null]));
+  const payload = JSON.stringify(
+    ids.map((id) => [id, canonical(answers[id] ?? null)])
+  );
   let h = 5381;
   for (let i = 0; i < payload.length; i++) {
     h = ((h << 5) + h + payload.charCodeAt(i)) | 0;

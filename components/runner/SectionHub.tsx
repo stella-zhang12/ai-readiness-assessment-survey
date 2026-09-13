@@ -1,8 +1,9 @@
 "use client";
 
 import type { Instrument, SurveySection } from "@/lib/instrument";
-import { surveySections } from "@/lib/instrument";
+import { surveyQuestionIds, surveySections } from "@/lib/instrument";
 import { sectionProgress, type AnswerMap } from "@/lib/steps";
+import { hashSectionAnswers } from "@/lib/ai/sectionCheck";
 import { SectionCheck } from "./SectionCheck";
 
 /**
@@ -51,30 +52,30 @@ export function SectionHub({
       <div className="mt-6 grid gap-x-6 gap-y-4 border-y border-line py-5 sm:grid-cols-3">
         <div>
           <p className="text-xs font-bold uppercase tracking-wider text-spirit-dark">
-            1 · Answer four sections
+            1 · Complete the four sections
           </p>
           <p className="mt-1 text-sm leading-snug text-ink-soft">
-            Your use case, your data, safety, and the country context. Take
-            them in any order.
+            Work through Use Case, Data, Safety, and Country Context in any
+            order.
           </p>
         </div>
         <div>
           <p className="text-xs font-bold uppercase tracking-wider text-spirit-dark">
-            2 · Pause anytime
+            2 · Pause and return anytime
           </p>
           <p className="mt-1 text-sm leading-snug text-ink-soft">
-            Answers save as you type. Anyone on your team can pick up where
-            you left off.
+            Your progress is saved as you go, so you or your teammates can
+            continue later.
           </p>
         </div>
         <div>
           <p className="text-xs font-bold uppercase tracking-wider text-spirit-dark">
-            3 · Close the gaps
+            3 · Review and close gaps
           </p>
           <p className="mt-1 text-sm leading-snug text-ink-soft">
             {guest
-              ? "Progress counts below show how far along each section is."
-              : "Each time you return here, a short review of every started section shows what is still missing."}
+              ? "Progress counts below show which sections are complete and which still need answers."
+              : "Each time you return, you'll see a short summary of what is complete and what information is still missing in each section."}
           </p>
         </div>
       </div>
@@ -165,6 +166,10 @@ export function SectionHub({
                   assessmentId={assessmentId}
                   sectionId={s.id}
                   answeredCount={answered}
+                  answersHash={hashSectionAnswers(
+                    surveyQuestionIds(s),
+                    answers
+                  )}
                   confirmedHash={answers[`${s.id}.check_confirmed`]?.choice}
                   onConfirm={(hash) => onConfirmCheck(s.id, hash)}
                   onEnterSection={() => onEnterSection(s.id)}

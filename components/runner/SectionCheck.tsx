@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type { SectionCheck as Check } from "@/lib/ai/sectionCheck";
 
 const STATUS_STYLE: Record<string, string> = {
@@ -17,16 +17,22 @@ const STATUS_LABEL: Record<string, string> = {
   not_applicable: "N/A",
 };
 
+/** Session-lived cache: returning to the progress page with unchanged
+ * answers shows the existing check instantly, with no re-fetch. */
+const memory = new Map<string, { hash: string; check: Check }>();
+
 /**
  * Completeness check rendered under a section on the progress page.
  * Each question row is clickable and jumps straight to that question.
- * Runs whenever the page opens; the server reuses the stored check unless
- * this section's answers changed since the last run.
+ * A section is only re-checked when its answers actually changed: the
+ * parent passes a fingerprint of the current answers, matched first
+ * against this session's cache and then against the server's stored copy.
  */
 export function SectionCheck({
   assessmentId,
   sectionId,
   answeredCount,
+  answersHash,
   confirmedHash,
   onConfirm,
   onEnterSection,
@@ -35,24 +41,34 @@ export function SectionCheck({
   assessmentId: string;
   sectionId: string;
   answeredCount: number;
+  /** Fingerprint of this section's current answers. */
+  answersHash: string;
   /** Hash stored when the team last confirmed the checkpoint. */
   confirmedHash?: string;
   onConfirm: (hash: string) => void;
   onEnterSection: () => void;
   onGoToQuestion: (qid: string) => void;
 }) {
+  const cacheKey = `${assessmentId}:${sectionId}`;
   const [state, setState] = useState<
     | { phase: "loading" }
     | { phase: "error" }
     | { phase: "done"; check: Check; hash: string }
-  >({ phase: "loading" });
-  const started = useRef(false);
+  >(() => {
+    const hit = memory.get(cacheKey);
+    return hit && hit.hash === answersHash
+      ? { phase: "done", check: hit.check, hash: hit.hash }
+      : { phase: "loading" };
+  });
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     if (answeredCount === 0) return;
-    if (started.current && attempt === 0) return;
-    started.current = true;
+    const hit = memory.get(cacheKey);
+    if (hit && hit.hash === answersHash && attempt === 0) {
+      setState({ phase: "done", check: hit.check, hash: hit.hash });
+      return;
+    }
     const ctrl = new AbortController();
     setState({ phase: "loading" });
     fetch("/api/ai/section-check", {
@@ -62,15 +78,20 @@ export function SectionCheck({
       signal: ctrl.signal,
     })
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error("failed"))))
-      .then((d) =>
-        setState({ phase: "done", check: d.check as Check, hash: d.answersHash })
-      )
+      .then((d) => {
+        memory.set(cacheKey, { hash: d.answersHash, check: d.check as Check });
+        setState({
+          phase: "done",
+          check: d.check as Check,
+          hash: d.answersHash,
+        });
+      })
       .catch(() => {
         if (!ctrl.signal.aborted) setState({ phase: "error" });
       });
     return () => ctrl.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [assessmentId, sectionId, answeredCount > 0, attempt]);
+  }, [cacheKey, answersHash, answeredCount > 0, attempt]);
 
   if (answeredCount === 0) return null;
 
