@@ -107,6 +107,13 @@ check("S2.Q1 and S2.Q6 have conditional follow-ups",
     cSecs.S2.questions.find((q) => q.id === "S2.Q6")?.followup?.when === "yes");
 check("S3/S4 questions are all open text",
   [...cSecs.S3.questions, ...cSecs.S4.questions].every((q) => q.kind === "text"));
+check("every combined text question has crvs + healthcare examples",
+  [...cSecs.S1.questions, ...cSecs.S3.questions, ...cSecs.S4.questions]
+    .filter((q) => q.kind === "text")
+    .every((q) => q.examples?.crvs?.text && q.examples?.healthcare?.text));
+check("challenges and constraints questions have 5 chips",
+  (cSecs.S1.questions.find((q) => q.id === "S1.Q3")?.chips?.length ?? 0) === 5 &&
+    (cSecs.S4.questions.find((q) => q.id === "S4.Q5")?.chips?.length ?? 0) === 5);
 const combinedIds = combined.sections.flatMap((s) =>
   s.questions.flatMap((q) => (q.kind === "grid" ? [q.id, ...q.statements.map((st) => st.id)] : [q.id])));
 check("combined ids unique", new Set(combinedIds).size === combinedIds.length);

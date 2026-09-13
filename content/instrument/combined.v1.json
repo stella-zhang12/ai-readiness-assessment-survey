@@ -9,7 +9,8 @@
     "Single combined version replacing the separate Brainstorm and Diagnostic instruments, per lab decision after the 2026-09 showcase.",
     "Three questions added per lab-approved gap review (2026-09-13): S2.Q4 data permissions, S2.Q7 recorded outcomes, S3.Q3/S3.Q4 accuracy monitoring and mistake handling.",
     "Source typos corrected in transcription: doubled question mark on the success question; 'How would this information produced be used' reworded to 'How would the information produced be used'; hyphens-as-dashes in the infrastructure question replaced with commas.",
-    "AI summary (Section C) and the readiness results are intentionally absent: paused pending new lab instructions."
+    "AI summary (Section C) and the readiness results are intentionally absent: paused pending new lab instructions.",
+    "Example toggles (CRVS + healthcare) and answer-structure chips restored per user request (2026-09-13). Examples reuse v1 instrument texts where the question maps directly; examples for new or substantially reworded questions are Claude-drafted and flagged draft pending lab review. S4.Q5 chip 'Funding' replaces v1's 'Budgetary' to match the question's own wording."
   ],
   "disclaimer": "AI can make mistakes, so accuracy should be cross-checked.",
   "sections": [
@@ -24,21 +25,70 @@
           "id": "S1.Q1",
           "handle": "Task for AI",
           "prompt": "What task are you hoping AI could help with? What would you like AI to do?",
-          "opener": true
+          "opener": true,
+          "examples": {
+            "crvs": {
+              "text": "Following a death in the community, we want to determine the most likely cause of death from completed verbal autopsy records, structured interview forms filled out by community health workers. The system would analyze the symptoms, circumstances, and other details recorded in each form to suggest an ICD-10 cause-of-death code. A trained health officer would then confirm or override the suggestion before it is entered into the official national death register."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "A district immunization program wants to predict which children are likely to miss their next vaccination appointment, using each child's registration and visit history from the electronic immunization registry. The system would flag high-risk children each week so community health workers can call or visit their caregivers before the appointment is missed."
+            }
+          }
         },
         {
           "kind": "text",
           "id": "S1.Q2",
           "handle": "Today's process",
           "prompt": "How is this task handled today?",
-          "helper": "Please describe the main steps, including who is involved and any tools, systems, or records you currently use."
+          "helper": "Please describe the main steps, including who is involved and any tools, systems, or records you currently use.",
+          "examples": {
+            "crvs": {
+              "text": "When a death occurs in the community, a community health worker (CHW) visits the family within 7 to 14 days and conducts a verbal autopsy interview using a standardized paper form.\n\nThe CHW then submits the completed form to the district health office, where a data entry clerk transcribes it into the national civil registration database, a process that typically takes 3 to 5 additional days.\n\nOnce in the database, the form joins a national queue reviewed by a central pool of 12 trained medical coders. Coders are responsible for all 47 districts and currently work through a backlog of approximately 8,000 forms per quarter. Each form is reviewed manually, and an ICD-10 cause-of-death code is assigned based on the coder's interpretation of the symptoms described.\n\nThe average time from CHW interview to final coding is 47 days. Approximately 15% of forms in some districts are still submitted on paper only and are not yet in the digital system."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "After each clinic day, a nurse updates the paper defaulter register; once a week she compiles a reminder list and gives it to the outreach team, who visit or call families over the following days. Coverage data is entered into DHIS2 monthly by the district data officer."
+            }
+          }
         },
         {
           "kind": "text",
           "id": "S1.Q3",
           "handle": "Main challenges",
           "prompt": "What are the main challenges with the current process?",
-          "helper": "For example, does it take too much time, require too much staff effort, lead to delays or errors, or make it difficult to reach everyone who needs the service?"
+          "helper": "For example, does it take too much time, require too much staff effort, lead to delays or errors, or make it difficult to reach everyone who needs the service? Use the categories below to structure your answer.",
+          "chips": [
+            {
+              "label": "Time taken",
+              "hint": "How long does the process take? Where do delays occur?"
+            },
+            {
+              "label": "Staff workload",
+              "hint": "Is the process too labor-intensive or dependent on too few specialists?"
+            },
+            {
+              "label": "Quality issues",
+              "hint": "Are errors, inconsistencies, or omissions common? How are they detected and corrected?"
+            },
+            {
+              "label": "Data limitations",
+              "hint": "Is the data incomplete, inconsistent, inaccessible, or not in a usable format?"
+            },
+            {
+              "label": "Coordination challenges",
+              "hint": "Are there handoff problems between teams, systems, or locations?"
+            }
+          ],
+          "examples": {
+            "crvs": {
+              "text": "Time: The average time from verbal autopsy interview to a coded cause-of-death entry is 47 days. The main bottleneck is the central coding queue, forms sit waiting for one of the 12 coders to become available. In peak periods such as after disease outbreaks, the queue can grow to over 90 days.\n\nStaff workload: The 12 coders are responsible for approximately 32,000 verbal autopsy records per year across all 47 districts. Each coder reviews an average of 12 to 15 records per day. Coder availability is constrained by recruitment difficulties and budget, two coder posts have been vacant for over 18 months.\n\nQuality: An internal audit comparing coder assignments against specialist review found an 18% miscoding rate, concentrated in causes of death that require distinguishing between clinically similar conditions, for example, malaria versus sepsis, or neonatal asphyxia versus neonatal infection. Miscoding is not currently tracked systematically.\n\nData limitations: Approximately 15% of verbal autopsy forms in rural districts are still submitted on paper and have not been digitized. Of the digital records, around 23% are missing the deceased's age and 8% contain duplicate entries, both of which cause coding errors or delays.\n\nCoordination: Because all coding is centralized, district health officers have no visibility into where their forms are in the queue or when coding will be completed. There is no feedback mechanism. When a coder identifies a form that is incomplete or unclear, there is no formal process for querying the originating CHW or district office."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "Time: reminder lists are compiled by hand at each clinic, taking nurses 2-3 hours per week.\n\nStaff workload: follow-up visits are spread evenly, so workers spend much of their time on families who would have attended anyway.\n\nQuality: about a quarter of defaulting children are never followed up because they are not identified in time.\n\nData limitations: some caregiver phone numbers are missing or out of date.\n\nCoordination: clinics and outreach teams keep separate lists that are reconciled only monthly."
+            }
+          }
         },
         {
           "kind": "text",
@@ -52,6 +102,15 @@
               "AI system: a digital tool that can analyze information and identify patterns without every possible rule being written in advance. Example: an AI tool uses the child's temperature, respiratory rate, symptoms, medical history, and other information together to identify whether the child may be at high risk.",
               "An AI system may be more useful when the task requires interpreting more complex information, recognizing patterns, making predictions, or generating new content."
             ]
+          },
+          "examples": {
+            "crvs": {
+              "text": "Cause-of-death coding from verbal autopsy records cannot be reliably handled by a rule-based tool because the relationship between reported symptoms and the underlying cause of death is too complex and context-dependent to encode as fixed rules. For example, the combination of fever, difficulty breathing, and chest pain could indicate malaria, pneumonia, tuberculosis, heart failure, or sepsis, and the correct interpretation depends on the patient's age, medical history, geographic location, the season, and the specific combination and progression of symptoms as described by the family.\n\nA rule-based system that attempts to encode these distinctions would require thousands of nested conditions, would fail frequently on edge cases, and would be difficult to update as disease patterns change. An existing open-source tool for verbal autopsy coding, SmartVA, has already demonstrated this approach in comparable settings."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "Whether a child misses an appointment depends on many interacting factors: distance to the clinic, season, the caregiver's work schedule, past visit patterns, family size. Fixed rules like 'flag every child more than two weeks late' catch defaulters only after the fact; a model trained on historical visit records can rank risk before the appointment is missed."
+            }
           }
         },
         {
@@ -66,6 +125,15 @@
             "max": 5,
             "minLabel": "0 = no experience or comfort using AI",
             "maxLabel": "5 = very comfortable and experienced using AI"
+          },
+          "examples": {
+            "crvs": {
+              "text": "Community health workers (CHWs): Approximately 3,200 nationwide. Conduct the verbal autopsy interviews and complete the paper forms. They vary significantly in literacy and digital skills, many have only completed secondary school and have limited experience with digital tools.\n\nData entry clerks: One per district office (47 total). They transcribe paper forms into the digital system. They are comfortable with basic data entry but not with clinical terminology or coding logic.\n\nMedical coders: 12 nationally, all based at the Ministry of Health headquarters. Medical coders hold medical qualifications and are trained in ICD-10 coding. They would be the main direct users of the tool.\n\nDistrict health officers: 47 nationwide. Oversee data quality at the district level and escalate problems. They generally use summary dashboards.\n\nMinistry of Health statisticians: 5 to 8 staff at the national level. They use the coded cause-of-death data to produce national health statistics and annual mortality reports. They are the downstream beneficiaries of improved coding quality but do not interact with the tool directly."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "Clinic nurses (compile lists, administer vaccines), community health workers (home visits and calls), the district data officer (registry entry and reports), and the EPI program manager (uses coverage reports; doesn't touch the tool directly)."
+            }
           }
         },
         {
@@ -73,28 +141,67 @@
           "id": "S1.Q6",
           "handle": "Inputs",
           "prompt": "Would any information be provided to the AI tool?",
-          "helper": "For example, would the AI need paper records, electronic health records, reports, images, laboratory results, or other information as inputs?"
+          "helper": "For example, would the AI need paper records, electronic health records, reports, images, laboratory results, or other information as inputs?",
+          "examples": {
+            "crvs": {
+              "draft": true,
+              "text": "Digitized verbal autopsy forms from the civil registration database: structured symptom fields plus a free-text narrative, roughly 32,000 records per year across 47 districts, available today as CSV exports."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "The electronic immunization registry: one row per child per scheduled visit (demographics, past attendance, distance to clinic), refreshed weekly, around 40,000 active records per district."
+            }
+          }
         },
         {
           "kind": "text",
           "id": "S1.Q7",
           "handle": "Outputs",
           "prompt": "Would the AI tool produce anything?",
-          "helper": "For example, provide a recommendation, identify a patient at risk, summarize information, complete a form, generate an alert, or other outputs."
+          "helper": "For example, provide a recommendation, identify a patient at risk, summarize information, complete a form, generate an alert, or other outputs.",
+          "examples": {
+            "crvs": {
+              "draft": true,
+              "text": "A suggested ICD-10 cause-of-death code with a confidence score and the main form fields that drove the suggestion, written back as a pending code for a human coder to confirm."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "A ranked weekly list of children at high risk of missing their next appointment, with the main risk factors shown next to each name."
+            }
+          }
         },
         {
           "kind": "text",
           "id": "S1.Q8",
           "handle": "Use in practice",
           "prompt": "How would the information produced be used in practice?",
-          "helper": "Who would review it or act on it, and what would happen next?"
+          "helper": "Who would review it or act on it, and what would happen next?",
+          "examples": {
+            "crvs": {
+              "draft": true,
+              "text": "The suggested code appears in the national coding queue. A medical coder confirms or overrides it, and the confirmed code is written back to the civil registration database and included in monthly mortality statistics."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "Nurses see the ranked list at the start of each week and decide which families to call or visit. Outreach outcomes are logged back into the registry, which also feeds the next week's list."
+            }
+          }
         },
         {
           "kind": "text",
           "id": "S1.Q9",
           "handle": "Success outcomes",
           "prompt": "What outcomes would indicate that the application of AI in this process has been successful?",
-          "helper": "If the AI solution worked well, what would be different or better than the current process? For example, less staff time, fewer errors, faster services, better quality of care, or reaching more people. Please provide specific quantitative and/or qualitative goals."
+          "helper": "If the AI solution worked well, what would be different or better than the current process? For example, less staff time, fewer errors, faster services, better quality of care, or reaching more people. Please provide specific quantitative and/or qualitative goals.",
+          "examples": {
+            "crvs": {
+              "text": "We would define success across two levels:\n\nProcess efficiency: Average time from verbal autopsy upload to coded record reduced from 47 days to 7-10 days (measured monthly from the civil registration database). The percentage of deaths coded within 30 days of occurrence increased from 61% to over 80% (measured quarterly).\n\nOutput quality: Miscoding rate, measured against a specialist gold-standard review of a random sample of 200 records per quarter, reduced from 18% to below 5%. Human coder override rate (cases where the coder rejects the AI suggestion) tracked monthly; a stable override rate of below 15% would indicate the AI is performing well."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "Raise the share of children fully immunized by 12 months from 78% to 90% within two years (measured quarterly from the registry); cut the defaulter rate per cohort from 22% to under 10%; keep the share of flagged children who actually receive a follow-up call above 80% (tracked monthly from outreach logs)."
+            }
+          }
         }
       ]
     },
@@ -297,28 +404,68 @@
           "id": "S3.Q1",
           "handle": "Human review",
           "prompt": "Where do you anticipate human review or approval to occur in the new process with AI integration?",
-          "helper": "For example, should a health worker review every recommendation, only high-risk or uncertain cases, or only certain types of decisions?"
+          "helper": "For example, should a health worker review every recommendation, only high-risk or uncertain cases, or only certain types of decisions?",
+          "examples": {
+            "crvs": {
+              "draft": true,
+              "text": "Every AI suggestion is reviewed: codes above the 80% confidence threshold get a light-touch confirmation, and anything below is fully re-coded by a medical coder. Nothing enters the official death register without a person approving it."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "Nurses decide who is actually contacted; the tool proposes, staff decide. No family is flagged or contacted automatically."
+            }
+          }
         },
         {
           "kind": "text",
           "id": "S3.Q2",
           "handle": "Data governance",
           "prompt": "What data governance requirements apply in your country or setting?",
-          "helper": "For example, requirements related to legal use of data, privacy, security, data sharing, regulatory compliance, and protection of personal or health information."
+          "helper": "For example, requirements related to legal use of data, privacy, security, data sharing, regulatory compliance, and protection of personal or health information.",
+          "examples": {
+            "crvs": {
+              "draft": true,
+              "text": "Cause-of-death records are classified as sensitive health data. Processing requires National Data Protection Authority approval, and sharing identified records with an external provider needs a formal data processing agreement and ministerial sign-off."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "The registry holds identifiable child records under national health-data rules; any new use needs EPI program approval, and the data cannot leave government infrastructure."
+            }
+          }
         },
         {
           "kind": "text",
           "id": "S3.Q3",
           "handle": "Accuracy monitoring",
           "prompt": "How would you monitor whether the AI tool remains accurate once it is in use?",
-          "helper": "For example, would someone regularly review a sample of the AI's outputs, track how often staff override its suggestions, or compare its results against a trusted source?"
+          "helper": "For example, would someone regularly review a sample of the AI's outputs, track how often staff override its suggestions, or compare its results against a trusted source?",
+          "examples": {
+            "crvs": {
+              "draft": true,
+              "text": "Each quarter, a specialist panel re-codes a random sample of 200 AI-suggested records and compares the results. The coder override rate is tracked monthly; a rising rate triggers a review of the model."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "Each month the team compares the children the tool flagged against the appointments actually missed. If the tool starts missing many defaulters, or flagging too many children who would have attended anyway, it is retrained or paused."
+            }
+          }
         },
         {
           "kind": "text",
           "id": "S3.Q4",
           "handle": "Handling mistakes",
           "prompt": "What would happen when the AI tool makes a mistake?",
-          "helper": "For example, how would an incorrect suggestion or record be identified and corrected, and who would be responsible for fixing it?"
+          "helper": "For example, how would an incorrect suggestion or record be identified and corrected, and who would be responsible for fixing it?",
+          "examples": {
+            "crvs": {
+              "draft": true,
+              "text": "The human coder's decision always wins: an incorrect suggestion is overridden before registration and the override reason is logged. If a wrong code is discovered after registration, the data management team corrects the record, and the coding unit reviews recurring error patterns with the tool's developers."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "A wrongly flagged family is simply not contacted, and the nurse can mark the flag as incorrect. Repeated errors are reported to the district data officer, who can pause the weekly list until the problem is fixed."
+            }
+          }
         }
       ]
     },
@@ -333,35 +480,106 @@
           "id": "S4.Q1",
           "handle": "Leadership support",
           "prompt": "Do senior leaders in your organization and relevant government agencies support this AI initiative?",
-          "helper": "For example, have they committed to providing leadership, funding, or ongoing involvement?"
+          "helper": "For example, have they committed to providing leadership, funding, or ongoing involvement?",
+          "examples": {
+            "crvs": {
+              "draft": true,
+              "text": "The Ministry of Health and the Civil Registration Authority have both endorsed the pilot in writing, and a joint steering committee meets quarterly. A government budget line for operations after the donor grant ends is under negotiation but not yet confirmed."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "The EPI program manager sponsors the tool and the district health office has committed staff time for the pilot. National-level endorsement would be needed before any scale-up beyond the district."
+            }
+          }
         },
         {
           "kind": "text",
           "id": "S4.Q2",
           "handle": "Laws and policies",
           "prompt": "Are there national or regional laws, policies, or guidelines that would apply to this AI solution?",
-          "helper": "For example, policies related to responsible AI use, data protection, privacy, or data sharing."
+          "helper": "For example, policies related to responsible AI use, data protection, privacy, or data sharing.",
+          "examples": {
+            "crvs": {
+              "draft": true,
+              "text": "Our data protection law classifies cause-of-death records as sensitive health data, so the tool must be approved by the National Data Protection Authority before deployment. There is a national digital health strategy, but no AI-specific policy yet."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "National health-data rules govern the immunization registry, and a ministry eHealth policy covers new digital tools. There is no AI-specific guidance yet, so the program would follow the general data protection law."
+            }
+          }
         },
         {
           "kind": "text",
           "id": "S4.Q3",
           "handle": "Infrastructure",
           "prompt": "Is the necessary technology infrastructure available to support this AI solution?",
-          "helper": "For example, are the required devices, software, internet connectivity, and data storage available, or could they realistically be put in place, across the locations where the solution would be used?"
+          "helper": "For example, are the required devices, software, internet connectivity, and data storage available, or could they realistically be put in place, across the locations where the solution would be used?",
+          "examples": {
+            "crvs": {
+              "draft": true,
+              "text": "Coders work at headquarters with reliable connectivity and government servers have capacity for the model. The main gap: the civil registration database runs on a legacy platform with no public API, so integration would run through scheduled file transfers built by the original vendor."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "Clinics have tablets and mobile data sufficient for a weekly list, though connectivity is unreliable in two remote districts. The registry already runs on DHIS2 on national infrastructure, and the tool would read from it without modifying it."
+            }
+          }
         },
         {
           "kind": "text",
           "id": "S4.Q4",
           "handle": "Skills",
           "prompt": "Are there people in your organization with the skills needed to implement, operate, and maintain the AI solution?",
-          "helper": "If not, could existing staff be trained or could additional technical support be obtained?"
+          "helper": "If not, could existing staff be trained or could additional technical support be obtained?",
+          "examples": {
+            "crvs": {
+              "draft": true,
+              "text": "The Ministry has two data scientists, both on short-term contracts, so external support would be needed to build and maintain the model. Coders and district health officers can be trained to use and supervise the tool."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "There are no in-house data scientists. One data officer per district could run the weekly process after training, with a technical partner maintaining the model under a support agreement."
+            }
+          }
         },
         {
           "kind": "text",
           "id": "S4.Q5",
           "handle": "Implementation challenges",
           "prompt": "What regulatory, financial, or technical challenges could make it difficult to implement or sustain this AI solution?",
-          "helper": "Please describe any important constraints related to regulations, funding, infrastructure, technology, or staffing."
+          "helper": "Please describe any important constraints related to regulations, funding, infrastructure, technology, or staffing. Use the categories below to structure your answer.",
+          "chips": [
+            {
+              "label": "Regulatory",
+              "hint": "Data protection laws, approval bodies, restrictions on sharing data"
+            },
+            {
+              "label": "Funding",
+              "hint": "Funding sources, timelines, long-term operational costs"
+            },
+            {
+              "label": "Institutional",
+              "hint": "Mandates, approval processes, coordination between agencies"
+            },
+            {
+              "label": "Technical",
+              "hint": "Legacy systems, integration limits, infrastructure"
+            },
+            {
+              "label": "Staffing",
+              "hint": "Skill gaps, contract constraints, specialist availability"
+            }
+          ],
+          "examples": {
+            "crvs": {
+              "text": "Regulatory: Our country's data protection laws classify cause-of-death records as sensitive health data. Any AI tool that processes these records must be reviewed and approved by the National Data Protection Authority before deployment. Sharing identified records with an external technology provider requires a formal data processing agreement and ministerial sign-off.\n\nFunding: The current development phase is funded by a two-year donor grant (ending December 2026). There is no confirmed government budget line for ongoing operational costs after the grant period. The Ministry of Finance has been briefed but has not committed to long-term funding.\n\nInstitutional: The Ministry of Health and the Civil Registration Authority have overlapping mandates for cause-of-death data. Both institutions must formally endorse the tool before it can be used in official registration processes. Historically, coordination between the two ministries has been slow.\n\nTechnical: The national civil registration database runs on a legacy platform that does not have a public API. Integration with any new tool will require custom development work with the original vendor, which has a longer lead time and higher cost.\n\nStaffing: The Ministry has only two data scientists on staff, both on short-term contracts. There is currently no internal capacity to build or maintain a custom AI model without external support."
+            },
+            "healthcare": {
+              "draft": true,
+              "text": "Regulatory: the immunization registry contains identifiable child records governed by national health-data rules.\n\nFunding: funded through the annual EPI budget; no dedicated AI line.\n\nInstitutional: sign-off needed from both the EPI program and the district health office.\n\nTechnical: the registry runs on DHIS2; any tool must read from it without modifying it.\n\nStaffing: one data officer per district, no in-house data scientists."
+            }
+          }
         }
       ]
     }
