@@ -3,23 +3,31 @@
 import type { Instrument, SurveySection } from "@/lib/instrument";
 import { surveySections } from "@/lib/instrument";
 import { sectionProgress, type AnswerMap } from "@/lib/steps";
+import { SectionCheck } from "./SectionCheck";
 
 /**
  * The structured section summary page (the survey's home screen).
  * Lists the four sections with answered/total counts; each expands to show
- * the section's definition and an overview of its questions. Every question
- * page links back here.
+ * the section's definition and an overview of its questions, and (for
+ * signed-in teams) an AI completeness check of what has been entered so
+ * far. Every question page links back here.
  */
 export function SectionHub({
   instrument,
   title,
   answers,
   onEnterSection,
+  assessmentId,
+  guest = false,
+  onConfirmCheck,
 }: {
   instrument: Instrument;
   title: string;
   answers: AnswerMap;
   onEnterSection: (sectionId: string) => void;
+  assessmentId: string;
+  guest?: boolean;
+  onConfirmCheck: (sectionId: string, hash: string) => void;
 }) {
   const sections = surveySections(instrument);
   const totals = sections.map((s) => sectionProgress(s, answers));
@@ -41,7 +49,15 @@ export function SectionHub({
       <p className="mt-2 max-w-measure text-sm text-ink-soft">
         Work through the four sections in any order; your answers save as you
         go. Open a section to continue where you left off.
+        {!guest &&
+          " Each time you return here, the AI reviews what you have entered and points out anything worth adding."}
       </p>
+      {guest && (
+        <p className="mt-2 text-xs text-ink-muted">
+          AI completeness checks need an account; in guest mode you only see
+          your progress counts.
+        </p>
+      )}
 
       {allDone && (
         <p className="mt-4 border-l-2 border-status-green bg-status-greenbg px-3 py-2 text-sm font-semibold text-status-green">
@@ -120,6 +136,17 @@ export function SectionHub({
                   </ol>
                 </div>
               </details>
+
+              {!guest && (
+                <SectionCheck
+                  assessmentId={assessmentId}
+                  sectionId={s.id}
+                  answeredCount={answered}
+                  confirmedHash={answers[`${s.id}.check_confirmed`]?.choice}
+                  onConfirm={(hash) => onConfirmCheck(s.id, hash)}
+                  onEnterSection={() => onEnterSection(s.id)}
+                />
+              )}
             </div>
           );
         })}

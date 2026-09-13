@@ -307,6 +307,11 @@ export function CombinedRunner({
             title={title}
             answers={answers}
             onEnterSection={enterSection}
+            assessmentId={assessmentId}
+            guest={guest}
+            onConfirmCheck={(sectionId, hash) =>
+              setAnswer(`${sectionId}.check_confirmed`, { choice: hash }, 150)
+            }
           />
         )}
 

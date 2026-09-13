@@ -4,7 +4,11 @@ import type { AnswerMap, AnswerValue } from "@/lib/steps";
 export type AiContext = {
   supabase: Awaited<ReturnType<typeof createClient>>;
   userId: string;
-  assessment: { id: string; title: string; version: "brainstorm" | "diagnostic" };
+  assessment: {
+    id: string;
+    title: string;
+    version: "brainstorm" | "diagnostic" | "combined";
+  };
   answers: AnswerMap;
 };
 
@@ -52,7 +56,7 @@ export async function loadAiContext(
 
 export async function storeAiOutput(
   ctx: AiContext,
-  kind: "summary" | "recap" | "followups" | "final",
+  kind: "summary" | "recap" | "followups" | "final" | "section_check",
   content: unknown,
   model: string,
   promptVersion: string,
