@@ -16,6 +16,7 @@ import { TextQuestionStep } from "./TextQuestionStep";
 import { SelectOneStep } from "./SelectOneStep";
 import { SelectManyStep } from "./SelectManyStep";
 import { GridStep } from "./GridStep";
+import { QuestionFeedback } from "./QuestionFeedback";
 
 const HUB_KEY = "hub";
 
@@ -350,7 +351,19 @@ export function CombinedRunner({
           />
         )}
 
-        {step && step.q.kind === "text" && (
+        {step && (
+          <div className="relative">
+            {!guest && (
+              <QuestionFeedback
+                assessmentId={assessmentId}
+                userId={userId}
+                sectionId={step.sectionId}
+                questionId={step.q.id}
+                questionText={step.q.prompt}
+              />
+            )}
+
+        {step.q.kind === "text" && (
           <TextQuestionStep
             key={step.key}
             step={{
@@ -369,7 +382,7 @@ export function CombinedRunner({
           />
         )}
 
-        {step && step.q.kind === "select_one" && (
+        {step.q.kind === "select_one" && (
           <SelectOneStep
             key={step.key}
             q={step.q}
@@ -382,7 +395,7 @@ export function CombinedRunner({
           />
         )}
 
-        {step && step.q.kind === "select_many" && (
+        {step.q.kind === "select_many" && (
           <SelectManyStep
             key={step.key}
             q={step.q}
@@ -395,7 +408,7 @@ export function CombinedRunner({
           />
         )}
 
-        {step && step.q.kind === "grid" && (
+        {step.q.kind === "grid" && (
           <GridStep
             key={step.key}
             q={step.q}
@@ -406,6 +419,8 @@ export function CombinedRunner({
             onContinue={next}
             onBack={back}
           />
+        )}
+          </div>
         )}
       </main>
     </div>
