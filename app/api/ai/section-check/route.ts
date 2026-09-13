@@ -2,24 +2,31 @@ import { NextResponse } from "next/server";
 import { combined, surveyQuestionIds, surveySections } from "@/lib/instrument";
 import { loadAiContext, storeAiOutput } from "@/lib/ai/context";
 import { callStructured, PROMPT_VERSION } from "@/lib/ai/claude";
-
-// Latency matters here (the hub blocks on it visually), and the task is
-// light summarization, so this endpoint runs on Haiku rather than Opus.
-const CHECK_MODEL = "claude-haiku-4-5";
 import {
   buildSectionCheckUser,
+  classifySection,
   hashSectionAnswers,
+  questionLabels,
   CHECK_SCHEMA,
   SECTION_CHECK_SYSTEM,
+  type ModelCheck,
   type SectionCheck,
 } from "@/lib/ai/sectionCheck";
 
 export const maxDuration = 60;
 
+// Latency matters here (the progress page waits on it visually) and the
+// task is light summarization, so this endpoint runs on Haiku at
+// temperature 0 for repeatable grades.
+const CHECK_MODEL = "claude-haiku-4-5";
+
+// Bumped when the stored check shape changes; old cache rows regenerate.
+const CHECK_SHAPE = 2;
+
 /**
- * AI completeness check for one hub section. Results are cached against a
- * hash of the section's answers: revisiting the hub with unchanged answers
- * returns the stored check instantly; any edit triggers a fresh one.
+ * Completeness check for one progress-page section. "Not answered" and
+ * "N/A" statuses are decided in code; the model grades only answered
+ * questions. Results are cached against a hash of the section's answers.
  */
 export async function POST(request: Request) {
   let body: { assessmentId?: string; sectionId?: string };
@@ -58,9 +65,13 @@ export async function POST(request: Request) {
     .limit(1)
     .maybeSingle();
   const priorContent = prior?.content as
-    | { answersHash?: string; check?: SectionCheck }
+    | { answersHash?: string; shape?: number; check?: SectionCheck }
     | null;
-  if (priorContent?.answersHash === answersHash && priorContent.check) {
+  if (
+    priorContent?.answersHash === answersHash &&
+    priorContent.shape === CHECK_SHAPE &&
+    priorContent.check
+  ) {
     return NextResponse.json({
       check: priorContent.check,
       answersHash,
@@ -68,33 +79,65 @@ export async function POST(request: Request) {
     });
   }
 
+  const { answeredIds, fixed } = classifySection(section, ctx.answers);
+  const labels = questionLabels(section);
+
   try {
-    const check = await callStructured<SectionCheck>({
+    const model = await callStructured<ModelCheck>({
       system: SECTION_CHECK_SYSTEM,
-      user: buildSectionCheckUser(section, index + 1, ctx.answers),
+      user: buildSectionCheckUser(
+        section,
+        index + 1,
+        ctx.answers,
+        answeredIds,
+        fixed
+      ),
       schema: CHECK_SCHEMA as unknown as Record<string, unknown>,
-      maxTokens: 1600,
+      maxTokens: 1400,
       model: CHECK_MODEL,
+      temperature: 0,
     });
 
-    // Keep only rows for real question ids and cap follow-ups at five.
-    const validIds = new Set(ids);
-    const cleaned: SectionCheck = {
-      ...check,
-      items: check.items.filter((i) => validIds.has(i.qid)),
-      followups: check.followups.slice(0, 5),
+    // Merge: model grades for answered ids, deterministic rows for the
+    // rest, in instrument order. Model rows for unknown ids are dropped;
+    // answered ids the model skipped default to complete.
+    const graded = new Map(
+      model.items
+        .filter((i) => answeredIds.includes(i.qid))
+        .map((i) => [i.qid, i])
+    );
+    const fixedById = new Map(fixed.map((f) => [f.qid, f]));
+    const items = ids.map((qid) => {
+      const fx = fixedById.get(qid);
+      if (fx) return fx;
+      const g = graded.get(qid);
+      return {
+        qid,
+        question: labels.get(qid) ?? qid,
+        status: g?.status ?? ("complete" as const),
+        missing: g?.status === "partial" ? g.missing : "",
+      };
+    });
+
+    const check: SectionCheck = {
+      summary: model.summary,
+      items,
+      sufficient: items.every(
+        (i) => i.status === "complete" || i.status === "not_applicable"
+      ),
+      checkpoint: model.checkpoint,
     };
 
     await storeAiOutput(
       ctx,
       "section_check",
-      { answersHash, check: cleaned },
+      { answersHash, shape: CHECK_SHAPE, check },
       CHECK_MODEL,
       PROMPT_VERSION,
       section.id
     );
 
-    return NextResponse.json({ check: cleaned, answersHash, cached: false });
+    return NextResponse.json({ check, answersHash, cached: false });
   } catch (e) {
     console.error("section-check generation failed:", e);
     return NextResponse.json({ error: "generation failed" }, { status: 502 });

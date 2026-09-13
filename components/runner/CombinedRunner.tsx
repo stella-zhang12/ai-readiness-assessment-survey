@@ -183,6 +183,18 @@ export function CombinedRunner({
     [steps, supabase, assessmentId, userId, flushTiming, guest, storeGuest]
   );
 
+  const goToQuestion = useCallback(
+    (qid: string) => {
+      const i = steps.findIndex(
+        (s) =>
+          s.q.id === qid ||
+          (s.q.kind === "grid" && s.q.statements.some((st) => st.id === qid))
+      );
+      if (i >= 0) setLocation(i);
+    },
+    [steps, setLocation]
+  );
+
   const enterSection = useCallback(
     (sectionId: string) => {
       const inSection = steps
@@ -312,6 +324,7 @@ export function CombinedRunner({
             onConfirmCheck={(sectionId, hash) =>
               setAnswer(`${sectionId}.check_confirmed`, { choice: hash }, 150)
             }
+            onGoToQuestion={goToQuestion}
           />
         )}
 

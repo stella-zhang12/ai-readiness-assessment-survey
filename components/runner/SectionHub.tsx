@@ -20,6 +20,7 @@ export function SectionHub({
   assessmentId,
   guest = false,
   onConfirmCheck,
+  onGoToQuestion,
 }: {
   instrument: Instrument;
   title: string;
@@ -28,6 +29,7 @@ export function SectionHub({
   assessmentId: string;
   guest?: boolean;
   onConfirmCheck: (sectionId: string, hash: string) => void;
+  onGoToQuestion: (qid: string) => void;
 }) {
   const sections = surveySections(instrument);
   const totals = sections.map((s) => sectionProgress(s, answers));
@@ -166,6 +168,7 @@ export function SectionHub({
                   confirmedHash={answers[`${s.id}.check_confirmed`]?.choice}
                   onConfirm={(hash) => onConfirmCheck(s.id, hash)}
                   onEnterSection={() => onEnterSection(s.id)}
+                  onGoToQuestion={onGoToQuestion}
                 />
               )}
             </div>

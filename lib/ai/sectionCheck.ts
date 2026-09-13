@@ -1,24 +1,38 @@
 /**
- * AI completeness check for one section of the combined instrument,
- * shown on the section summary page (the hub). Prompt wording follows the
- * lab's specification (2026-09-13): summarize, assess per-question
- * completeness, surface gaps, ask at most five follow-ups, end with a
- * checkpoint the respondent confirms.
+ * Completeness check for one section of the combined instrument, shown on
+ * the progress page. Statuses are split for consistency:
+ *
+ *   - "not_answered" and "not_applicable" are decided deterministically in
+ *     code (an unanswered question can never flip status between runs);
+ *   - the model only grades ANSWERED questions as complete vs partial and
+ *     explains what is missing, at temperature 0.
+ *
+ * Prompt wording follows the lab's specification (2026-09-13): summarize,
+ * assess completeness, explain gaps, end with a checkpoint the respondent
+ * confirms.
  */
 
 import type { SurveySection, SurveyQuestion } from "@/lib/instrument";
-import type { AnswerMap, AnswerValue } from "@/lib/steps";
+import { isAnswered, type AnswerMap, type AnswerValue } from "@/lib/steps";
+
+export type CheckItem = {
+  qid: string;
+  question: string;
+  status: "complete" | "partial" | "not_answered" | "not_applicable";
+  missing: string;
+};
 
 export type SectionCheck = {
   summary: string;
-  items: {
-    qid: string;
-    question: string;
-    status: "complete" | "partial" | "not_answered" | "not_applicable";
-    missing: string;
-  }[];
-  followups: string[];
+  items: CheckItem[];
   sufficient: boolean;
+  checkpoint: string;
+};
+
+/** What the model itself returns (answered questions only). */
+export type ModelCheck = {
+  summary: string;
+  items: { qid: string; status: "complete" | "partial"; missing: string }[];
   checkpoint: string;
 };
 
@@ -33,34 +47,24 @@ export const CHECK_SCHEMA = {
     },
     items: {
       type: "array",
-      description: "One row per question (and per grid statement)",
+      description: "One row per ANSWERED question listed in the transcript",
       items: {
         type: "object",
         additionalProperties: false,
         properties: {
-          qid: { type: "string", description: "The question id shown in the transcript" },
-          question: { type: "string", description: "A very short label for the question" },
-          status: {
+          qid: {
             type: "string",
-            enum: ["complete", "partial", "not_answered", "not_applicable"],
+            description: "The question id shown in the transcript",
           },
+          status: { type: "string", enum: ["complete", "partial"] },
           missing: {
             type: "string",
-            description: "What is missing or unclear; empty string if nothing",
+            description:
+              "Short plain reason for what would make the answer complete; empty string when status is complete",
           },
         },
-        required: ["qid", "question", "status", "missing"],
+        required: ["qid", "status", "missing"],
       },
-    },
-    followups: {
-      type: "array",
-      description:
-        "Only the follow-up questions needed to resolve important gaps, five at most; empty if none",
-      items: { type: "string" },
-    },
-    sufficient: {
-      type: "boolean",
-      description: "True when the section is sufficiently complete to proceed",
     },
     checkpoint: {
       type: "string",
@@ -68,10 +72,10 @@ export const CHECK_SCHEMA = {
         "One checkpoint message: 'Based on your responses, my understanding is: [summary]. Is this accurate, or is there anything you would like to clarify before moving on?'",
     },
   },
-  required: ["summary", "items", "followups", "sufficient", "checkpoint"],
+  required: ["summary", "items", "checkpoint"],
 } as const;
 
-/** Per-section review criteria, verbatim from the lab's prompt spec. */
+/** Per-section review criteria, from the lab's prompt spec. */
 const CRITERIA: Record<string, { bullets: string[]; extra?: string }> = {
   S1: {
     bullets: [
@@ -126,34 +130,83 @@ const CRITERIA: Record<string, { bullets: string[]; extra?: string }> = {
 
 export const SECTION_CHECK_SYSTEM = `You are helping a health team assess readiness for a potential AI solution. You are reviewing one section of their intake questionnaire.
 
+Only the ANSWERED questions are shown to you in full; unanswered questions are listed separately for context and are handled by the system, not by you.
+
 Your tasks:
-1. Summarize the respondent's answers in 2 to 4 sentences.
-2. Assess the completeness of each question as: complete, partial (partially complete), not_answered, or not_applicable.
-3. Identify important gaps or unclear information.
-4. Ask only the follow-up questions needed to fill those gaps (maximum 5 at a time). If there are no important gaps, return no follow-up questions and mark the section sufficient.
-5. End with a checkpoint asking the respondent to confirm your summary is accurate, in this form: "Based on your responses, my understanding is: [1-2 sentence summary]. Is this accurate, or is there anything you would like to clarify before moving on?"
+1. Summarize what the respondent has said so far in 2 to 4 sentences.
+2. For each ANSWERED question, grade it: complete (the answer clearly covers what the question asks) or partial (something important is missing, vague, or marked as unknown). For partial answers, state in one short sentence what would make the answer complete.
+3. End with a checkpoint asking the respondent to confirm your summary is accurate, in this form: "Based on your responses, my understanding is: [1-2 sentence summary]. Is this accurate, or is there anything you would like to clarify before moving on?"
 
 Rules:
 - Use simple, nontechnical language.
 - Do not invent information. Base everything only on what the respondent wrote or selected.
-- Do not ask the respondent to repeat information they have already provided.
-- An answer of "Not sure" or a skipped question counts as an open unknown: use status partial (if partly answered) or not_answered, and note what is unknown.
-- Use not_applicable only where the respondent chose a Not applicable option or the question clearly does not apply to this use case.
-- Keep follow-up questions specific and answerable by a program team without technical AI knowledge.
+- Grade consistently: the same answer must always receive the same grade. When in genuine doubt between complete and partial, choose complete; reserve partial for answers with a concrete, nameable gap.
+- An answer of "Not sure", "I don't know", or a selection with no requested detail counts as partial, with the open unknown named in the missing field.
 - Write in plain sentences. Never use em dashes; use commas, colons, or separate sentences instead.`;
 
-function answerLines(q: SurveyQuestion, answers: AnswerMap): string[] {
+/** Short display label for every answerable id in a section. */
+export function questionLabels(section: SurveySection): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const q of section.questions) {
+    if (q.kind === "grid") {
+      for (const st of q.statements) map.set(st.id, st.label);
+    } else {
+      map.set(q.id, q.handle);
+    }
+  }
+  return map;
+}
+
+/** Deterministic split: which ids the model grades vs fixed statuses. */
+export function classifySection(
+  section: SurveySection,
+  answers: AnswerMap
+): { answeredIds: string[]; fixed: CheckItem[] } {
+  const labels = questionLabels(section);
+  const answeredIds: string[] = [];
+  const fixed: CheckItem[] = [];
+  for (const [qid, label] of labels) {
+    const v = answers[qid];
+    if (v?.na) {
+      fixed.push({
+        qid,
+        question: label,
+        status: "not_applicable",
+        missing: "",
+      });
+    } else if (isAnswered(v)) {
+      answeredIds.push(qid);
+    } else {
+      fixed.push({
+        qid,
+        question: label,
+        status: "not_answered",
+        missing: "Not answered yet.",
+      });
+    }
+  }
+  return { answeredIds, fixed };
+}
+
+function answerLines(
+  q: SurveyQuestion,
+  answers: AnswerMap,
+  include: Set<string>
+): string[] {
   const lines: string[] = [];
-  const optionLabel = (opts: { value: string; label: string }[] | undefined, v?: string) =>
-    opts?.find((o) => o.value === v)?.label;
+  const optionLabel = (
+    opts: { value: string; label: string }[] | undefined,
+    v?: string
+  ) => opts?.find((o) => o.value === v)?.label;
 
   if (q.kind === "grid") {
+    const rows = q.statements.filter((st) => include.has(st.id));
+    if (rows.length === 0) return lines;
     lines.push(`${q.id} · ${q.prompt}`);
-    for (const st of q.statements) {
+    for (const st of rows) {
       const v = answers[st.id];
       let rating = "(not answered)";
       if (v?.idk) rating = q.scale.idk.label;
-      else if (v?.na) rating = q.scale.na.label;
       else if (v?.rating !== undefined)
         rating =
           q.scale.options.find((o) => o.value === v.rating)?.label ??
@@ -165,13 +218,14 @@ function answerLines(q: SurveyQuestion, answers: AnswerMap): string[] {
     return lines;
   }
 
+  if (!include.has(q.id)) return lines;
   const v: AnswerValue | undefined = answers[q.id];
   lines.push(`${q.id} · ${q.prompt}`);
 
   if (q.kind === "text") {
-    if (v?.idk) lines.push(`  Answer: (skipped, respondent selected "I don't know")`);
+    if (v?.idk)
+      lines.push(`  Answer: (skipped, respondent selected "I don't know")`);
     else if (v?.text?.trim()) lines.push(`  Answer: ${v.text.trim()}`);
-    else lines.push("  Answer: (not answered)");
     if (q.scale) {
       lines.push(
         v?.scale !== undefined
@@ -192,7 +246,8 @@ function answerLines(q: SurveyQuestion, answers: AnswerMap): string[] {
       } else {
         const fl = optionLabel(q.followup.options, v?.followupChoice);
         lines.push(`  ${q.followup.prompt} ${fl ?? "(not answered)"}`);
-        if (v?.followupOther?.trim()) lines.push(`    Other: ${v.followupOther.trim()}`);
+        if (v?.followupOther?.trim())
+          lines.push(`    Other: ${v.followupOther.trim()}`);
       }
     }
     if (q.optionalText && v?.followupText?.trim())
@@ -204,7 +259,9 @@ function answerLines(q: SurveyQuestion, answers: AnswerMap): string[] {
       .map((c) => optionLabel(q.options, c))
       .filter(Boolean);
     lines.push(
-      labels.length ? `  Selected: ${labels.join("; ")}` : "  Selected: (not answered)"
+      labels.length
+        ? `  Selected: ${labels.join("; ")}`
+        : "  Selected: (not answered)"
     );
     if (v?.other?.trim()) lines.push(`  Other: ${v.other.trim()}`);
   }
@@ -215,28 +272,34 @@ function answerLines(q: SurveyQuestion, answers: AnswerMap): string[] {
 export function buildSectionCheckUser(
   section: SurveySection,
   sectionNumber: number,
-  answers: AnswerMap
+  answers: AnswerMap,
+  answeredIds: string[],
+  fixed: CheckItem[]
 ): string {
   const c = CRITERIA[section.id] ?? { bullets: [] };
+  const include = new Set(answeredIds);
   const transcript = section.questions
-    .flatMap((q) => answerLines(q, answers))
+    .flatMap((q) => answerLines(q, answers, include))
     .join("\n");
+  const unanswered = fixed
+    .filter((f) => f.status === "not_answered")
+    .map((f) => `${f.qid} (${f.question})`)
+    .join(", ");
   return `Section ${sectionNumber}: ${section.title}
 ${section.purpose}
 
-Check whether the responses clearly establish:
+This section as a whole checks whether the responses establish:
 ${c.bullets.map((b) => `- ${b}`).join("\n")}
 ${c.extra ? `\n${c.extra}\n` : ""}
-Respondent's answers (questions with no answer are shown as "(not answered)"):
+Answered questions to grade (one item per qid below):
 
-${transcript}`;
+${transcript || "(none)"}
+
+Not yet answered (context only, do not grade): ${unanswered || "(none)"}`;
 }
 
 /** Stable hash of a section's answers, used to reuse unchanged checks. */
-export function hashSectionAnswers(
-  ids: string[],
-  answers: AnswerMap
-): string {
+export function hashSectionAnswers(ids: string[], answers: AnswerMap): string {
   const payload = JSON.stringify(ids.map((id) => [id, answers[id] ?? null]));
   let h = 5381;
   for (let i = 0; i < payload.length; i++) {

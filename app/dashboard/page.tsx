@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 import { InviteCode } from "@/components/InviteCode";
+import { DeleteAssessmentButton } from "@/components/DeleteAssessmentButton";
 import { getInstrument } from "@/lib/instrument";
 
 type AssessmentRow = {
@@ -116,8 +117,14 @@ export default async function DashboardPage() {
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <span className="font-bold text-heritage">{a.title}</span>
-                      <span className="rounded border border-washline bg-wash px-2 py-0.5 text-xs font-semibold text-spirit-dark">
-                        {instrument.title}
+                      <span className="flex items-center gap-2">
+                        <span className="rounded border border-washline bg-wash px-2 py-0.5 text-xs font-semibold text-spirit-dark">
+                          {instrument.title}
+                        </span>
+                        <DeleteAssessmentButton
+                          assessmentId={a.id}
+                          title={a.title}
+                        />
                       </span>
                     </div>
                     <p className="mt-1.5 text-sm text-ink-muted">

@@ -20,6 +20,8 @@ type StructuredCall = {
   effort?: "low" | "medium" | "high";
   /** Override the default model (e.g. Haiku for light, latency-sensitive tasks). */
   model?: string;
+  /** Lower for repeatable judgments (e.g. completeness grading). */
+  temperature?: number;
 };
 
 export async function callStructured<T>({
@@ -29,12 +31,14 @@ export async function callStructured<T>({
   maxTokens,
   effort,
   model,
+  temperature,
 }: StructuredCall): Promise<T> {
   const base = {
     model: model ?? MODEL,
     max_tokens: maxTokens,
     system,
     messages: [{ role: "user" as const, content: user }],
+    ...(temperature !== undefined ? { temperature } : {}),
     output_config: {
       ...(effort ? { effort } : {}),
       format: { type: "json_schema", schema },

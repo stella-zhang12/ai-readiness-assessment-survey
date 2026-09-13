@@ -18,9 +18,10 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 /**
- * AI completeness check rendered under a section on the hub. Runs whenever
- * the hub is opened; the server reuses the stored check unless this
- * section's answers changed since the last run.
+ * Completeness check rendered under a section on the progress page.
+ * Each question row is clickable and jumps straight to that question.
+ * Runs whenever the page opens; the server reuses the stored check unless
+ * this section's answers changed since the last run.
  */
 export function SectionCheck({
   assessmentId,
@@ -29,6 +30,7 @@ export function SectionCheck({
   confirmedHash,
   onConfirm,
   onEnterSection,
+  onGoToQuestion,
 }: {
   assessmentId: string;
   sectionId: string;
@@ -37,6 +39,7 @@ export function SectionCheck({
   confirmedHash?: string;
   onConfirm: (hash: string) => void;
   onEnterSection: () => void;
+  onGoToQuestion: (qid: string) => void;
 }) {
   const [state, setState] = useState<
     | { phase: "loading" }
@@ -129,61 +132,31 @@ export function SectionCheck({
         </p>
 
         {check.items.length > 0 && (
-          <details className="group/table mt-3">
-            <summary className="cursor-pointer list-none text-xs font-semibold text-spirit-dark">
-              <span className="underline underline-offset-2">
-                Question-by-question detail
-              </span>{" "}
-              <span className="inline-block transition-transform group-open/table:rotate-90">
-                ›
-              </span>
-            </summary>
-            <div className="mt-2 divide-y divide-washline border-y border-washline">
-              {check.items.map((i) => (
-                <div
-                  key={i.qid}
-                  className="grid gap-x-3 gap-y-0.5 py-1.5 sm:grid-cols-[minmax(8rem,14rem)_auto_1fr] sm:items-baseline"
+          <div className="mt-3 divide-y divide-washline border-y border-washline">
+            {check.items.map((i) => (
+              <button
+                key={i.qid}
+                type="button"
+                onClick={() => onGoToQuestion(i.qid)}
+                title="Go to this question"
+                className="grid w-full gap-x-3 gap-y-0.5 py-2 text-left transition-colors hover:bg-wash sm:grid-cols-[minmax(8rem,13rem)_auto_1fr] sm:items-baseline"
+              >
+                <span className="text-xs font-semibold text-spirit-dark underline decoration-washline underline-offset-2">
+                  {i.question}
+                </span>
+                <span
+                  className={`justify-self-start whitespace-nowrap rounded-sm border px-1.5 py-px text-[11px] font-semibold ${STATUS_STYLE[i.status]}`}
                 >
-                  <span className="text-xs font-semibold text-ink">
-                    {i.question}
-                  </span>
-                  <span
-                    className={`justify-self-start whitespace-nowrap rounded-sm border px-1.5 py-px text-[11px] font-semibold ${STATUS_STYLE[i.status]}`}
-                  >
-                    {STATUS_LABEL[i.status]}
-                  </span>
-                  <span className="text-xs text-ink-muted">{i.missing}</span>
-                </div>
-              ))}
-            </div>
-          </details>
-        )}
-
-        {check.followups.length > 0 ? (
-          <div className="mt-3">
-            <p className="text-xs font-semibold uppercase tracking-wider text-ink-muted">
-              Follow-up questions
-            </p>
-            <ol className="mt-1.5 list-decimal space-y-1 pl-5">
-              {check.followups.map((f) => (
-                <li key={f} className="text-sm leading-relaxed text-ink-soft">
-                  {f}
-                </li>
-              ))}
-            </ol>
-            <button
-              type="button"
-              onClick={onEnterSection}
-              className="mt-2.5 text-sm font-semibold text-spirit-dark underline underline-offset-2"
-            >
-              Open the section to add detail
-            </button>
+                  {STATUS_LABEL[i.status]}
+                </span>
+                <span className="text-xs text-ink-muted">{i.missing}</span>
+              </button>
+            ))}
           </div>
-        ) : (
-          <p className="mt-3 text-sm text-ink-soft">
-            No follow-up questions; the section is sufficiently complete.
-          </p>
         )}
+        <p className="mt-1.5 text-[11px] text-ink-muted">
+          Click any question to go straight to it.
+        </p>
 
         <div className="mt-4 border-l-2 border-heritage bg-white px-3 py-2.5">
           <p className="max-w-measure text-sm leading-relaxed text-ink">
