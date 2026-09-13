@@ -155,7 +155,7 @@ export function SiteFeedback() {
         aria-expanded={open}
         className="rounded-md bg-heritage px-4 py-2 text-sm font-semibold text-white shadow-md transition-colors hover:bg-heritage-deep"
       >
-        {open ? "Close" : "Feedback"}
+        {open ? "Close" : "Survey feedback"}
       </button>
     </div>
   );
