@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Source_Sans_3, Source_Serif_4 } from "next/font/google";
+import { SiteFeedback } from "@/components/SiteFeedback";
 import "./globals.css";
 
 // Institutional pairing in the spirit of the JHU brand fonts (Gentona/Arnhem):
@@ -28,7 +29,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${sourceSans.variable} ${sourceSerif.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <SiteFeedback />
+      </body>
     </html>
   );
 }

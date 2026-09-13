@@ -1,34 +1,28 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { getFeedbackContext } from "@/lib/feedbackContext";
 
 const TYPES = [
-  { value: "confusing", label: "This question is confusing" },
-  { value: "term", label: "I don't understand a term" },
+  { value: "question_unclear", label: "A question is unclear or confusing" },
   { value: "options_dont_fit", label: "The answer options don't fit" },
-  { value: "not_working", label: "Something is not working" },
+  { value: "design", label: "Design or layout issue" },
+  { value: "navigation", label: "Hard to find or navigate something" },
+  { value: "broken", label: "Something is broken or not working" },
+  { value: "suggestion", label: "Suggestion or idea" },
   { value: "other", label: "Other" },
 ] as const;
 
 /**
- * Quiet per-question feedback trigger, shown at the top right of every
- * question page. Opens an inline panel; submitting records a row in
- * question_feedback and never touches the user's answers or position.
+ * Global pilot-feedback widget: a fixed Feedback button on every page.
+ * The panel triages by issue type; when the user is on a survey question,
+ * that question's context is attached to the report automatically.
+ * Submitting never touches answers or navigation, and works signed out.
  */
-export function QuestionFeedback({
-  assessmentId,
-  userId,
-  sectionId,
-  questionId,
-  questionText,
-}: {
-  assessmentId: string;
-  userId: string;
-  sectionId: string;
-  questionId: string;
-  questionText: string;
-}) {
+export function SiteFeedback() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [type, setType] = useState<string | null>(null);
   const [message, setMessage] = useState("");
@@ -37,14 +31,6 @@ export function QuestionFeedback({
   );
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Fresh question page = fresh panel.
-  useEffect(() => {
-    setOpen(false);
-    setType(null);
-    setMessage("");
-    setPhase("idle");
-  }, [questionId]);
-
   useEffect(
     () => () => {
       if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -52,16 +38,30 @@ export function QuestionFeedback({
     []
   );
 
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
+
   async function submit() {
     if (!type) return;
     setPhase("sending");
     const supabase = createClient();
-    const { error } = await supabase.from("question_feedback").insert({
-      assessment_id: assessmentId,
-      user_id: userId,
-      section_id: sectionId,
-      question_id: questionId,
-      question_text: questionText,
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const ctx = getFeedbackContext();
+    const { error } = await supabase.from("site_feedback").insert({
+      user_id: user?.id ?? null,
+      page: pathname ?? "/",
+      assessment_id: ctx.assessmentId ?? null,
+      section_id: ctx.sectionId ?? null,
+      question_id: ctx.questionId ?? null,
+      question_text: ctx.questionText ?? null,
       feedback_type: type,
       message: message.trim() || null,
     });
@@ -79,17 +79,9 @@ export function QuestionFeedback({
   }
 
   return (
-    <div className="absolute right-0 top-0 z-20 text-right">
-      {!open ? (
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className="text-xs text-ink-muted underline-offset-2 hover:text-spirit-dark hover:underline"
-        >
-          Something unclear?
-        </button>
-      ) : (
-        <div className="w-72 border border-line bg-white p-4 text-left shadow-sm sm:w-80">
+    <div className="no-print fixed bottom-4 right-4 z-40 flex flex-col items-end">
+      {open && (
+        <div className="mb-2 w-80 max-w-[calc(100vw-2rem)] border border-line bg-white p-4 text-left shadow-lg">
           {phase === "done" ? (
             <p className="text-sm font-semibold text-status-green">
               Thanks, your feedback has been recorded.
@@ -97,7 +89,10 @@ export function QuestionFeedback({
           ) : (
             <>
               <p className="text-sm font-semibold text-ink">
-                Is something unclear or not working here?
+                Is something unclear or not working?
+              </p>
+              <p className="mt-0.5 text-xs text-ink-muted">
+                This is a pilot; every report helps us improve it.
               </p>
               <div className="mt-2.5 grid gap-1.5">
                 {TYPES.map((t) => (
@@ -150,6 +145,18 @@ export function QuestionFeedback({
           )}
         </div>
       )}
+
+      <button
+        type="button"
+        onClick={() => {
+          setPhase("idle");
+          setOpen((o) => !o);
+        }}
+        aria-expanded={open}
+        className="rounded-md bg-heritage px-4 py-2 text-sm font-semibold text-white shadow-md transition-colors hover:bg-heritage-deep"
+      >
+        {open ? "Close" : "Feedback"}
+      </button>
     </div>
   );
 }

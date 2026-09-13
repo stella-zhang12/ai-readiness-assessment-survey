@@ -16,7 +16,10 @@ import { TextQuestionStep } from "./TextQuestionStep";
 import { SelectOneStep } from "./SelectOneStep";
 import { SelectManyStep } from "./SelectManyStep";
 import { GridStep } from "./GridStep";
-import { QuestionFeedback } from "./QuestionFeedback";
+import {
+  clearFeedbackContext,
+  setFeedbackContext,
+} from "@/lib/feedbackContext";
 
 const HUB_KEY = "hub";
 
@@ -236,6 +239,22 @@ export function CombinedRunner({
 
   const step = idx === null ? null : steps[idx];
 
+  // Tell the global feedback widget where the user is, so reports from
+  // question pages arrive with the question attached.
+  useEffect(() => {
+    setFeedbackContext(
+      step
+        ? {
+            assessmentId,
+            sectionId: step.sectionId,
+            questionId: step.q.id,
+            questionText: step.q.prompt,
+          }
+        : { assessmentId }
+    );
+    return () => clearFeedbackContext();
+  }, [assessmentId, step]);
+
   const next = useCallback(() => {
     if (idx === null || !step) return;
     const last = step.indexInSection === step.sectionSize - 1;
@@ -353,16 +372,6 @@ export function CombinedRunner({
 
         {step && (
           <div className="relative">
-            {!guest && (
-              <QuestionFeedback
-                assessmentId={assessmentId}
-                userId={userId}
-                sectionId={step.sectionId}
-                questionId={step.q.id}
-                questionText={step.q.prompt}
-              />
-            )}
-
         {step.q.kind === "text" && (
           <TextQuestionStep
             key={step.key}
