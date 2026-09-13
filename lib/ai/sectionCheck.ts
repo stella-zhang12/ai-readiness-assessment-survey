@@ -188,7 +188,7 @@ export function classifySection(
   return { answeredIds, fixed };
 }
 
-function answerLines(
+export function answerLines(
   q: SurveyQuestion,
   answers: AnswerMap,
   include: Set<string>
@@ -226,6 +226,7 @@ function answerLines(
     if (v?.idk)
       lines.push(`  Answer: (skipped, respondent selected "I don't know")`);
     else if (v?.text?.trim()) lines.push(`  Answer: ${v.text.trim()}`);
+    else lines.push("  Answer: (not answered)");
     if (q.scale) {
       lines.push(
         v?.scale !== undefined

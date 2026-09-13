@@ -9,7 +9,7 @@ import { getInstrument } from "@/lib/instrument";
 type AssessmentRow = {
   id: string;
   title: string;
-  version: "brainstorm" | "diagnostic";
+  version: "brainstorm" | "diagnostic" | "combined";
   status: "draft" | "complete";
   current_step: string | null;
   created_by: string;
@@ -107,12 +107,18 @@ export default async function DashboardPage() {
             {rows.map((a) => {
               const instrument = getInstrument(a.version);
               const editor = a.updated_by ?? a.created_by;
-              const hasResults =
-                a.status === "complete" && a.version === "diagnostic";
+              const resultsHref =
+                a.status === "complete"
+                  ? a.version === "diagnostic"
+                    ? `/a/${a.id}/results`
+                    : a.version === "combined"
+                      ? `/a/${a.id}/report`
+                      : null
+                  : null;
               return (
                 <li key={a.id}>
                   <Link
-                    href={hasResults ? `/a/${a.id}/results` : `/a/${a.id}`}
+                    href={resultsHref ?? `/a/${a.id}`}
                     className="block rounded-xl border border-line p-4 transition-colors hover:border-spirit"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
@@ -135,9 +141,9 @@ export default async function DashboardPage() {
                           : "Not started"}
                       {" · "}last edited by {names.get(editor) ?? "a teammate"}{" "}
                       on {formatWhen(a.updated_at)}
-                      {hasResults && (
+                      {resultsHref && (
                         <span className="ml-1.5 font-semibold text-spirit-dark">
-                          · View results →
+                          · View {a.version === "combined" ? "report" : "results"} →
                         </span>
                       )}
                     </p>

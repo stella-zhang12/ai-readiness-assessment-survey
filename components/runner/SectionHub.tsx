@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { Instrument, SurveySection } from "@/lib/instrument";
 import { surveyQuestionIds, surveySections } from "@/lib/instrument";
 import { sectionProgress, type AnswerMap } from "@/lib/steps";
@@ -181,6 +182,35 @@ export function SectionHub({
         })}
       </div>
 
+      <div className="mt-10 border-l-2 border-heritage bg-wash p-5">
+        <h2 className="font-bold text-heritage">Solution scoping report</h2>
+        <p className="mt-1 max-w-measure text-sm leading-relaxed text-ink-soft">
+          When you are ready, your answers are turned into a scoping report:
+          whether this use case fits an AI, hybrid, or simpler non-AI
+          solution, realistic options, a readiness assessment across the four
+          areas, and prioritized next steps.
+        </p>
+        {guest ? (
+          <p className="mt-3 text-sm font-semibold text-ink-muted">
+            The report needs an account, so it is not available in guest mode.
+          </p>
+        ) : (
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <Link
+              href={`/a/${assessmentId}/report`}
+              className="rounded-md bg-heritage px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-heritage-deep"
+            >
+              {allDone ? "Generate the report" : "Generate report anyway"}
+            </Link>
+            {!allDone && (
+              <span className="text-xs text-ink-muted">
+                Some sections are incomplete; the report will flag what is
+                missing.
+              </span>
+            )}
+          </div>
+        )}
+      </div>
     </section>
   );
 }

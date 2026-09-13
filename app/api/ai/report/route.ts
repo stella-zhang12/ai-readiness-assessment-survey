@@ -1,0 +1,113 @@
+import { NextResponse } from "next/server";
+import { combined } from "@/lib/instrument";
+import { answerableIds } from "@/lib/instrument";
+import { loadAiContext, storeAiOutput } from "@/lib/ai/context";
+import { callStructured, MODEL, PROMPT_VERSION } from "@/lib/ai/claude";
+import { hashSectionAnswers } from "@/lib/ai/sectionCheck";
+import {
+  buildReportUser,
+  REPORT_SCHEMA,
+  REPORT_SYSTEM,
+  type Report,
+} from "@/lib/ai/report";
+
+export const maxDuration = 120;
+
+const AREAS = ["use_case", "data", "safety", "country"] as const;
+
+/**
+ * Generates (or returns the cached) AI Solution Scoping Report from all
+ * four sections' answers. Cached against a hash of every answer; pass
+ * regenerate: true to force a fresh one. First successful generation
+ * marks the assessment complete.
+ */
+export async function POST(request: Request) {
+  let body: { assessmentId?: string; regenerate?: boolean };
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "invalid body" }, { status: 400 });
+  }
+
+  const ctx = await loadAiContext(body.assessmentId ?? "");
+  if ("error" in ctx) {
+    return NextResponse.json({ error: ctx.error }, { status: ctx.status });
+  }
+  if (ctx.assessment.version !== "combined") {
+    return NextResponse.json({ error: "wrong version" }, { status: 400 });
+  }
+
+  const ids = answerableIds(combined);
+  const answersHash = hashSectionAnswers(ids, ctx.answers);
+
+  if (!body.regenerate) {
+    const { data: prior } = await ctx.supabase
+      .from("ai_outputs")
+      .select("content")
+      .eq("assessment_id", ctx.assessment.id)
+      .eq("kind", "report")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const priorContent = prior?.content as
+      | { answersHash?: string; report?: Report }
+      | null;
+    if (priorContent?.answersHash === answersHash && priorContent.report) {
+      return NextResponse.json({
+        report: priorContent.report,
+        answersHash,
+        cached: true,
+      });
+    }
+  }
+
+  try {
+    const raw = await callStructured<Report>({
+      system: REPORT_SYSTEM,
+      user: buildReportUser(combined, ctx.answers),
+      schema: REPORT_SCHEMA as unknown as Record<string, unknown>,
+      maxTokens: 4000,
+      effort: "medium",
+    });
+
+    // Enforce shape limits in code (schema keeps to the supported subset):
+    // at most three options, exactly one row per readiness area.
+    const byArea = new Map(raw.readiness.map((r) => [r.area, r]));
+    const report: Report = {
+      ...raw,
+      options: raw.options.slice(0, 3),
+      readiness: AREAS.map(
+        (area) =>
+          byArea.get(area) ?? {
+            area,
+            assessment: "unable" as const,
+            findings: "Not assessed.",
+          }
+      ),
+    };
+
+    await storeAiOutput(
+      ctx,
+      "report",
+      { answersHash, report },
+      MODEL,
+      PROMPT_VERSION
+    );
+
+    // A generated report marks the assessment complete (still editable;
+    // regenerating after edits refreshes the report).
+    await ctx.supabase
+      .from("assessments")
+      .update({
+        status: "complete",
+        completed_at: new Date().toISOString(),
+        updated_by: ctx.userId,
+      })
+      .eq("id", ctx.assessment.id);
+
+    return NextResponse.json({ report, answersHash, cached: false });
+  } catch (e) {
+    console.error("report generation failed:", e);
+    return NextResponse.json({ error: "generation failed" }, { status: 502 });
+  }
+}

@@ -56,7 +56,7 @@ export async function loadAiContext(
 
 export async function storeAiOutput(
   ctx: AiContext,
-  kind: "summary" | "recap" | "followups" | "final" | "section_check",
+  kind: "summary" | "recap" | "followups" | "final" | "section_check" | "report",
   content: unknown,
   model: string,
   promptVersion: string,
