@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AssessmentRunner } from "@/components/runner/AssessmentRunner";
+import { CombinedRunner } from "@/components/runner/CombinedRunner";
 import type { AnswerMap, AnswerValue } from "@/lib/steps";
 
 export default async function AssessmentPage({
@@ -34,6 +35,19 @@ export default async function AssessmentPage({
     initialAnswers[r.question_id as string] = r.value as AnswerValue;
   }
 
+  if (assessment.version === "combined") {
+    return (
+      <CombinedRunner
+        assessmentId={assessment.id}
+        title={assessment.title}
+        userId={user.id}
+        initialAnswers={initialAnswers}
+        initialStepKey={assessment.current_step}
+      />
+    );
+  }
+
+  // Legacy Brainstorm/Diagnostic assessments keep their original flow.
   return (
     <AssessmentRunner
       assessmentId={assessment.id}

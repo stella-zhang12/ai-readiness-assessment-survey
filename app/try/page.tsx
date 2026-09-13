@@ -2,36 +2,31 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { brainstorm, diagnostic } from "@/lib/instrument";
-import { AssessmentRunner } from "@/components/runner/AssessmentRunner";
+import { CombinedRunner } from "@/components/runner/CombinedRunner";
 import type { AnswerMap } from "@/lib/steps";
-
-const versions = [brainstorm, diagnostic];
 
 type Saved = { answers: AnswerMap; stepKey: string | null };
 
-function load(version: string): Saved {
+function load(): Saved {
   try {
-    const raw = sessionStorage.getItem(`guest:${version}`);
+    const raw = sessionStorage.getItem("guest:combined");
     if (raw) return JSON.parse(raw) as Saved;
   } catch {}
   return { answers: {}, stepKey: null };
 }
 
 export default function TryPage() {
-  const [version, setVersion] = useState<"brainstorm" | "diagnostic" | null>(null);
+  const [started, setStarted] = useState(false);
   const [saved, setSaved] = useState<Saved | null>(null);
 
   useEffect(() => {
-    if (version) setSaved(load(version));
-  }, [version]);
+    if (started) setSaved(load());
+  }, [started]);
 
-  if (version && saved) {
+  if (started && saved) {
     return (
-      <AssessmentRunner
-        key={version}
-        assessmentId={`guest-${version}`}
-        version={version}
+      <CombinedRunner
+        assessmentId="guest-combined"
         title="Guest session"
         userId="guest"
         initialAnswers={saved.answers}
@@ -56,11 +51,7 @@ export default function TryPage() {
             Your answers live only in this browser tab; closing it discards
             everything.
           </li>
-          <li>No team sharing, no resuming later, no saved results.</li>
-          <li>
-            The AI features (problem summary and the readiness results) need
-            an account.
-          </li>
+          <li>No team sharing and no resuming later.</li>
         </ul>
       </div>
       <p className="mt-3 text-sm text-ink-muted">
@@ -74,31 +65,22 @@ export default function TryPage() {
         .
       </p>
 
-      <div className="mt-8 grid gap-4">
-        {versions.map((v) => (
-          <button
-            key={v.id}
-            type="button"
-            onClick={() => setVersion(v.id)}
-            className="rounded-xl border border-line p-5 text-left transition-colors hover:border-spirit"
-          >
-            <div className="flex items-baseline justify-between">
-              <span className="text-lg font-bold text-heritage">{v.title}</span>
-              <span className="text-sm text-ink-muted">
-                ~{v.estimatedMinutes} min
-              </span>
-            </div>
-            <p className="mt-1.5 text-sm text-ink-soft">{v.chooserDescription}</p>
-          </button>
-        ))}
-      </div>
-
-      <Link
-        href="/"
-        className="mt-8 inline-block text-sm font-semibold text-spirit-dark underline underline-offset-2"
+      <button
+        type="button"
+        onClick={() => setStarted(true)}
+        className="mt-8 rounded-md bg-heritage px-6 py-3 font-semibold text-white transition-colors hover:bg-heritage-deep"
       >
-        ← Back
-      </Link>
+        Start the assessment
+      </button>
+
+      <p className="mt-8">
+        <Link
+          href="/"
+          className="text-sm font-semibold text-spirit-dark underline underline-offset-2"
+        >
+          ← Back
+        </Link>
+      </p>
     </main>
   );
 }

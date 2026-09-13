@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { brainstorm, diagnostic } from "@/lib/instrument";
+import { combined, surveySections } from "@/lib/instrument";
 import { AuthCatcher } from "@/components/AuthCatcher";
 
-const versions = [brainstorm, diagnostic];
+const sections = surveySections(combined);
 
 const quickExamples = [
   {
@@ -100,15 +100,22 @@ export default function Landing() {
         </details>
       </div>
 
-      <div className="mt-8 max-w-measure divide-y divide-line border-y border-line">
-        {versions.map((v) => (
-          <div key={v.id} className="grid gap-1 py-4 sm:grid-cols-[9.5rem_1fr]">
-            <h2 className="text-lg font-bold text-heritage">{v.title}</h2>
-            <p className="text-sm leading-relaxed text-ink-soft sm:pt-1">
-              {v.chooserDescription}
-            </p>
-          </div>
-        ))}
+      <div className="mt-8 max-w-measure">
+        <p className="text-xs font-semibold uppercase tracking-widest text-spirit-dark">
+          Four sections
+        </p>
+        <div className="mt-2 divide-y divide-line border-y border-line">
+          {sections.map((s) => (
+            <div key={s.id} className="grid gap-1 py-4 sm:grid-cols-[11rem_1fr]">
+              <h2 className="text-base font-bold leading-snug text-heritage">
+                {s.title}
+              </h2>
+              <p className="text-sm leading-relaxed text-ink-soft">
+                {s.purpose}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="mt-10 flex flex-wrap items-center gap-4">

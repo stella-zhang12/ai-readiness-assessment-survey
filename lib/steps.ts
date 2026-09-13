@@ -1,16 +1,29 @@
 import type {
   Instrument,
   LikertSection,
+  SurveyQuestion,
+  SurveySection,
   TextQuestion,
   TextSection,
 } from "./instrument";
+import { surveyQuestionIds, surveySections } from "./instrument";
 
-/** One saved answer. Exactly one field is set. */
+/** One saved answer. Free-text and rating fields as in the PRD; the combined
+ * instrument adds selection fields (choice/choices/other), conditional
+ * follow-up fields, a companion numeric scale, and per-statement notes. */
 export type AnswerValue = {
   text?: string;
   rating?: number; // hidden 0/1/2 — labels live in the instrument JSON
   idk?: true;
   na?: true;
+  choice?: string;
+  choices?: string[];
+  other?: string;
+  followupText?: string;
+  followupChoice?: string;
+  followupOther?: string;
+  scale?: number;
+  note?: string;
 };
 
 export type AnswerMap = Record<string, AnswerValue>;
@@ -110,7 +123,58 @@ export function stepSectionId(step: Step): string {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Combined instrument (hub-based navigation)
+// ---------------------------------------------------------------------------
+
+/** One page of the combined survey: a single question or one statement grid. */
+export type CombinedStep = {
+  key: string;
+  sectionId: string;
+  sectionTitle: string;
+  q: SurveyQuestion;
+  indexInSection: number;
+  sectionSize: number;
+};
+
+export function buildCombinedSteps(instrument: Instrument): CombinedStep[] {
+  const steps: CombinedStep[] = [];
+  for (const s of surveySections(instrument)) {
+    s.questions.forEach((q, qi) => {
+      steps.push({
+        key: q.id,
+        sectionId: s.id,
+        sectionTitle: s.title,
+        q,
+        indexInSection: qi,
+        sectionSize: s.questions.length,
+      });
+    });
+  }
+  return steps;
+}
+
+/** Answered/total across a survey section (grid statements count singly). */
+export function sectionProgress(
+  section: SurveySection,
+  answers: AnswerMap
+): { answered: number; total: number } {
+  const ids = surveyQuestionIds(section);
+  return {
+    answered: ids.filter((id) => isAnswered(answers[id])).length,
+    total: ids.length,
+  };
+}
+
 export function isAnswered(v: AnswerValue | undefined): boolean {
   if (!v) return false;
-  return Boolean((v.text && v.text.trim().length > 0) || v.rating !== undefined || v.idk || v.na);
+  return Boolean(
+    (v.text && v.text.trim().length > 0) ||
+      v.rating !== undefined ||
+      v.idk ||
+      v.na ||
+      v.choice !== undefined ||
+      (v.choices && v.choices.length > 0) ||
+      v.scale !== undefined
+  );
 }

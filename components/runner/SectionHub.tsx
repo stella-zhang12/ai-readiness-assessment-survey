@@ -1,0 +1,131 @@
+"use client";
+
+import type { Instrument, SurveySection } from "@/lib/instrument";
+import { surveySections } from "@/lib/instrument";
+import { sectionProgress, type AnswerMap } from "@/lib/steps";
+
+/**
+ * The structured section summary page (the survey's home screen).
+ * Lists the four sections with answered/total counts; each expands to show
+ * the section's definition and an overview of its questions. Every question
+ * page links back here.
+ */
+export function SectionHub({
+  instrument,
+  title,
+  answers,
+  onEnterSection,
+}: {
+  instrument: Instrument;
+  title: string;
+  answers: AnswerMap;
+  onEnterSection: (sectionId: string) => void;
+}) {
+  const sections = surveySections(instrument);
+  const totals = sections.map((s) => sectionProgress(s, answers));
+  const allDone =
+    totals.length > 0 && totals.every((t) => t.answered === t.total);
+
+  function questionCount(s: SurveySection): number {
+    return sectionProgress(s, answers).total;
+  }
+
+  return (
+    <section>
+      <p className="text-xs font-semibold uppercase tracking-widest text-spirit-dark">
+        {instrument.title}
+      </p>
+      <h1 className="mt-2 text-3xl font-bold leading-tight text-heritage">
+        {title}
+      </h1>
+      <p className="mt-2 max-w-measure text-sm text-ink-soft">
+        Work through the four sections in any order; your answers save as you
+        go. Open a section to continue where you left off.
+      </p>
+
+      {allDone && (
+        <p className="mt-4 border-l-2 border-status-green bg-status-greenbg px-3 py-2 text-sm font-semibold text-status-green">
+          All sections complete. You can still revisit and edit any answer.
+        </p>
+      )}
+
+      <div className="mt-8 divide-y divide-line border-y border-line">
+        {sections.map((s, i) => {
+          const { answered, total } = totals[i];
+          const started = answered > 0;
+          const done = answered === total;
+          return (
+            <div key={s.id} className="py-5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <h2 className="text-lg font-bold text-heritage">
+                    {i + 1}. {s.title}
+                  </h2>
+                  <p
+                    className={`mt-0.5 text-xs tabular-nums ${
+                      done
+                        ? "font-semibold text-status-green"
+                        : "text-ink-muted"
+                    }`}
+                  >
+                    {answered} of {total} questions answered
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onEnterSection(s.id)}
+                  className={`shrink-0 rounded-md px-5 py-2 text-sm font-semibold transition-colors ${
+                    done
+                      ? "border border-heritage text-heritage hover:bg-wash"
+                      : "bg-heritage text-white hover:bg-heritage-deep"
+                  }`}
+                >
+                  {done ? "Review" : started ? "Continue" : "Start"}
+                </button>
+              </div>
+
+              <details className="group mt-2">
+                <summary className="cursor-pointer list-none text-sm font-semibold text-spirit-dark">
+                  <span className="underline underline-offset-2">
+                    About this section
+                  </span>{" "}
+                  <span className="inline-block transition-transform group-open:rotate-90">
+                    ›
+                  </span>
+                </summary>
+                <div className="mt-2 max-w-measure">
+                  <p className="text-sm leading-relaxed text-ink-soft">
+                    {s.purpose}
+                  </p>
+                  {s.intro && (
+                    <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+                      {s.intro}
+                    </p>
+                  )}
+                  <p className="mt-3 text-xs font-semibold uppercase tracking-wider text-ink-muted">
+                    The questions ({questionCount(s)})
+                  </p>
+                  <ol className="mt-1.5 space-y-1">
+                    {s.questions.map((q) => (
+                      <li key={q.id} className="text-sm text-ink-soft">
+                        · {q.prompt}
+                        {q.kind === "grid" && (
+                          <span className="text-ink-muted">
+                            {" "}
+                            ({q.statements.length} statements)
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              </details>
+            </div>
+          );
+        })}
+      </div>
+
+      <p className="mt-5 text-xs text-ink-muted">{instrument.disclaimer}</p>
+    </section>
+  );
+}

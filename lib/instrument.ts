@@ -9,6 +9,7 @@
 
 import brainstormJson from "@/content/instrument/brainstorm.v1.json";
 import diagnosticJson from "@/content/instrument/diagnostic.v1.json";
+import combinedJson from "@/content/instrument/combined.v1.json";
 import feedbackJson from "@/content/instrument/feedback.v1.json";
 
 // ---------------------------------------------------------------------------
@@ -36,6 +37,86 @@ export type TextQuestion = {
   exampleChips?: string[];
   chips?: QuestionChip[];
   examples?: { crvs?: ExampleVariant; healthcare?: ExampleVariant };
+  /** Collapsible explainer shown under the helper (combined instrument). */
+  info?: { title: string; body: string[] };
+  /** Companion numeric rating shown under the text box (combined instrument). */
+  scale?: {
+    prompt: string;
+    min: number;
+    max: number;
+    minLabel: string;
+    maxLabel: string;
+  };
+};
+
+// ------------------------------------------------------- combined instrument
+
+export type SelectOption = { value: string; label: string };
+
+export type SelectOneQuestion = {
+  kind: "select_one";
+  id: string;
+  handle: string;
+  prompt: string;
+  helper?: string;
+  options: SelectOption[];
+  /** Conditional follow-up shown when the chosen option matches `when`. */
+  followup?: {
+    when: string;
+    type: "text" | "select_one";
+    prompt: string;
+    options?: SelectOption[];
+    otherValue?: string;
+  };
+  /** Always-visible optional free-text line under the options. */
+  optionalText?: string;
+};
+
+export type SelectManyQuestion = {
+  kind: "select_many";
+  id: string;
+  handle: string;
+  prompt: string;
+  helper?: string;
+  options: SelectOption[];
+  /** Option value that reveals a write-in field. */
+  otherValue?: string;
+  /** Option values that clear all other selections when chosen. */
+  exclusive?: string[];
+};
+
+export type GridStatement = { id: string; label: string; statement: string };
+
+export type GridQuestion = {
+  kind: "grid";
+  id: string;
+  handle: string;
+  prompt: string;
+  helper?: string;
+  scale: {
+    options: { value: number; label: string; color: "green" | "amber" | "red" }[];
+    idk: { label: string };
+    na: { label: string };
+  };
+  explainLabel?: string;
+  statements: GridStatement[];
+};
+
+export type SurveyQuestion =
+  | (TextQuestion & { kind: "text" })
+  | SelectOneQuestion
+  | SelectManyQuestion
+  | GridQuestion;
+
+export type SurveySection = {
+  id: string;
+  type: "survey";
+  title: string;
+  /** The element definition shown on the section hub. */
+  purpose: string;
+  /** Extra intro paragraph (Data Readiness). */
+  intro?: string;
+  questions: SurveyQuestion[];
 };
 
 export type LikertItem = {
@@ -109,10 +190,11 @@ export type Section =
   | TextSection
   | LikertSection
   | AiSummarySection
-  | ResultsSection;
+  | ResultsSection
+  | SurveySection;
 
 export type Instrument = {
-  id: "brainstorm" | "diagnostic";
+  id: "brainstorm" | "diagnostic" | "combined";
   version: number;
   title: string;
   chooserDescription: string;
@@ -150,12 +232,25 @@ export type FeedbackSurvey = {
 
 export const brainstorm = brainstormJson as unknown as Instrument;
 export const diagnostic = diagnosticJson as unknown as Instrument;
+export const combined = combinedJson as unknown as Instrument;
 export const feedbackSurvey = feedbackJson as unknown as FeedbackSurvey;
 
 export function getInstrument(id: string): Instrument {
   if (id === "brainstorm") return brainstorm;
   if (id === "diagnostic") return diagnostic;
+  if (id === "combined") return combined;
   throw new Error(`Unknown instrument: ${id}`);
+}
+
+export function surveySections(i: Instrument): SurveySection[] {
+  return i.sections.filter((s): s is SurveySection => s.type === "survey");
+}
+
+/** Every answerable id in a survey section; grid statements count singly. */
+export function surveyQuestionIds(s: SurveySection): string[] {
+  return s.questions.flatMap((q) =>
+    q.kind === "grid" ? q.statements.map((st) => st.id) : [q.id]
+  );
 }
 
 /** e.g. "diagnostic.v1" — stored on each assessment row. */
@@ -178,6 +273,7 @@ export function answerableIds(i: Instrument): string[] {
     if (s.type === "text") ids.push(...s.questions.map((q) => q.id));
     else if (s.type === "likert") ids.push(...s.items.map((it) => it.id));
     else if (s.type === "ai_summary") ids.push(s.confirmation.id);
+    else if (s.type === "survey") ids.push(...surveyQuestionIds(s));
   }
   return ids;
 }

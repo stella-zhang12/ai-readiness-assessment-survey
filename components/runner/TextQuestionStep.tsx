@@ -78,10 +78,17 @@ export function TextQuestionStep({
     ref.current?.focus();
   }, [q.id]);
 
+  /** Merge into the saved value without resurrecting a cleared skip flag. */
+  function merge(patch: Partial<AnswerValue>): AnswerValue {
+    const base = { ...value };
+    delete base.idk;
+    return { ...base, ...patch };
+  }
+
   function insertChip(label: string) {
     const heading = `${label}: `;
     const next = text.length === 0 ? heading : `${text.trimEnd()}\n\n${heading}`;
-    onChange({ text: next });
+    onChange(merge({ text: next }));
     ref.current?.focus();
   }
 
@@ -103,6 +110,24 @@ export function TextQuestionStep({
 
       {q.openerNudge && (
         <p className="mt-2 text-sm font-semibold text-heritage">{q.openerNudge}</p>
+      )}
+
+      {q.info && (
+        <details className="group mt-4 rounded-lg border border-washline bg-wash">
+          <summary className="cursor-pointer list-none px-4 py-2.5 text-sm font-semibold text-spirit-dark">
+            {q.info.title}{" "}
+            <span className="inline-block transition-transform group-open:rotate-90">
+              ›
+            </span>
+          </summary>
+          <div className="space-y-2.5 border-t border-washline px-4 pb-4 pt-3">
+            {q.info.body.map((p) => (
+              <p key={p.slice(0, 24)} className="text-sm leading-relaxed text-ink-soft">
+                {p}
+              </p>
+            ))}
+          </div>
+        </details>
       )}
 
       {q.chips && q.chips.length > 0 && (
@@ -136,20 +161,51 @@ export function TextQuestionStep({
           </button>
         </div>
       ) : (
-        <textarea
-          ref={ref}
-          value={text}
-          onChange={(e) => onChange({ text: e.target.value })}
-          onKeyDown={(e) => {
-            if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-              e.preventDefault();
-              onContinue();
-            }
-          }}
-          rows={5}
-          placeholder="Type your answer…"
-          className="mt-5 w-full resize-y rounded-lg border border-line p-3.5 text-base leading-relaxed focus:border-spirit focus:outline-none"
-        />
+        <>
+          <textarea
+            ref={ref}
+            value={text}
+            onChange={(e) => onChange(merge({ text: e.target.value }))}
+            onKeyDown={(e) => {
+              if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+                e.preventDefault();
+                onContinue();
+              }
+            }}
+            rows={5}
+            placeholder="Type your answer…"
+            className="mt-5 w-full resize-y rounded-lg border border-line p-3.5 text-base leading-relaxed focus:border-spirit focus:outline-none"
+          />
+
+          {q.scale && (
+            <div className="mt-4 rounded-lg border border-line p-4">
+              <p className="text-sm font-semibold text-ink">{q.scale.prompt}</p>
+              <div className="mt-3 flex flex-wrap items-center gap-1.5">
+                {Array.from(
+                  { length: q.scale.max - q.scale.min + 1 },
+                  (_, i) => q.scale!.min + i
+                ).map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    aria-pressed={value?.scale === n}
+                    onClick={() => onChange(merge({ scale: n }))}
+                    className={`h-10 w-10 rounded-md border text-sm font-semibold tabular-nums transition-colors ${
+                      value?.scale === n
+                        ? "border-heritage bg-heritage text-white"
+                        : "border-line text-ink-soft hover:border-spirit"
+                    }`}
+                  >
+                    {n}
+                  </button>
+                ))}
+              </div>
+              <p className="mt-2 text-xs text-ink-muted">
+                {q.scale.minLabel} · {q.scale.maxLabel}
+              </p>
+            </div>
+          )}
+        </>
       )}
 
       {q.exampleChips && q.exampleChips.length > 0 && (

@@ -1,0 +1,369 @@
+{
+  "id": "combined",
+  "version": 1,
+  "title": "AI Readiness Assessment",
+  "chooserDescription": "One assessment, four sections: use case, data, safety, and country-level readiness.",
+  "estimatedMinutes": "20-30",
+  "source": "Questions_final.docx (lab revision, 2026-09-13)",
+  "sourceNotes": [
+    "Single combined version replacing the separate Brainstorm and Diagnostic instruments, per lab decision after the 2026-09 showcase.",
+    "Three questions added per lab-approved gap review (2026-09-13): S2.Q4 data permissions, S2.Q7 recorded outcomes, S3.Q3/S3.Q4 accuracy monitoring and mistake handling.",
+    "Source typos corrected in transcription: doubled question mark on the success question; 'How would this information produced be used' reworded to 'How would the information produced be used'; hyphens-as-dashes in the infrastructure question replaced with commas.",
+    "AI summary (Section C) and the readiness results are intentionally absent: paused pending new lab instructions."
+  ],
+  "disclaimer": "AI can make mistakes, so accuracy should be cross-checked.",
+  "sections": [
+    {
+      "id": "S1",
+      "type": "survey",
+      "title": "Use Case Definition",
+      "purpose": "Determining if the identified problem is technically and operationally suitable for an AI intervention.",
+      "questions": [
+        {
+          "kind": "text",
+          "id": "S1.Q1",
+          "handle": "Task for AI",
+          "prompt": "What task are you hoping AI could help with? What would you like AI to do?",
+          "opener": true
+        },
+        {
+          "kind": "text",
+          "id": "S1.Q2",
+          "handle": "Today's process",
+          "prompt": "How is this task handled today?",
+          "helper": "Please describe the main steps, including who is involved and any tools, systems, or records you currently use."
+        },
+        {
+          "kind": "text",
+          "id": "S1.Q3",
+          "handle": "Main challenges",
+          "prompt": "What are the main challenges with the current process?",
+          "helper": "For example, does it take too much time, require too much staff effort, lead to delays or errors, or make it difficult to reach everyone who needs the service?"
+        },
+        {
+          "kind": "text",
+          "id": "S1.Q4",
+          "handle": "Rule-based alternative",
+          "prompt": "Could these challenges be addressed by a simpler digital tool, such as a rule-based system, instead of AI?",
+          "info": {
+            "title": "Rule-based system vs AI system",
+            "body": [
+              "Rule-based system: a digital tool that follows instructions that people have set in advance. It gives the same response whenever the same conditions are met. Example: a tool identifies a child as high risk if their temperature is above 38°C and their respiratory rate is above a set threshold.",
+              "AI system: a digital tool that can analyze information and identify patterns without every possible rule being written in advance. Example: an AI tool uses the child's temperature, respiratory rate, symptoms, medical history, and other information together to identify whether the child may be at high risk.",
+              "An AI system may be more useful when the task requires interpreting more complex information, recognizing patterns, making predictions, or generating new content."
+            ]
+          }
+        },
+        {
+          "kind": "text",
+          "id": "S1.Q5",
+          "handle": "Primary users",
+          "prompt": "Who would primarily use the AI tool?",
+          "helper": "Examples of primary users include: community health workers, clinicians, facility managers, Ministry of Health staff, or patients.",
+          "scale": {
+            "prompt": "How comfortable are these users with using AI tools today?",
+            "min": 0,
+            "max": 5,
+            "minLabel": "0 = no experience or comfort using AI",
+            "maxLabel": "5 = very comfortable and experienced using AI"
+          }
+        },
+        {
+          "kind": "text",
+          "id": "S1.Q6",
+          "handle": "Inputs",
+          "prompt": "Would any information be provided to the AI tool?",
+          "helper": "For example, would the AI need paper records, electronic health records, reports, images, laboratory results, or other information as inputs?"
+        },
+        {
+          "kind": "text",
+          "id": "S1.Q7",
+          "handle": "Outputs",
+          "prompt": "Would the AI tool produce anything?",
+          "helper": "For example, provide a recommendation, identify a patient at risk, summarize information, complete a form, generate an alert, or other outputs."
+        },
+        {
+          "kind": "text",
+          "id": "S1.Q8",
+          "handle": "Use in practice",
+          "prompt": "How would the information produced be used in practice?",
+          "helper": "Who would review it or act on it, and what would happen next?"
+        },
+        {
+          "kind": "text",
+          "id": "S1.Q9",
+          "handle": "Success outcomes",
+          "prompt": "What outcomes would indicate that the application of AI in this process has been successful?",
+          "helper": "If the AI solution worked well, what would be different or better than the current process? For example, less staff time, fewer errors, faster services, better quality of care, or reaching more people. Please provide specific quantitative and/or qualitative goals."
+        }
+      ]
+    },
+    {
+      "id": "S2",
+      "type": "survey",
+      "title": "Data Readiness",
+      "purpose": "Evaluating if available datasets (registers, certificates, facility notifications) are representative, high-quality, and accessible for model training.",
+      "intro": "AI models often need existing data for training before they can be tested and implemented. The following questions will help us understand what data are currently available and whether they are suitable for the proposed use case.",
+      "questions": [
+        {
+          "kind": "select_one",
+          "id": "S2.Q1",
+          "handle": "Historical data access",
+          "prompt": "Does your team currently have access to historical data that could be used for this AI solution?",
+          "options": [
+            { "value": "yes", "label": "Yes" },
+            { "value": "no", "label": "No" },
+            { "value": "not_sure", "label": "Not sure" }
+          ],
+          "followup": {
+            "when": "yes",
+            "type": "text",
+            "prompt": "What data are available?"
+          }
+        },
+        {
+          "kind": "select_many",
+          "id": "S2.Q2",
+          "handle": "Data formats",
+          "prompt": "In what form is the data available?",
+          "helper": "Select all that apply.",
+          "options": [
+            { "value": "paper", "label": "Paper records" },
+            { "value": "spreadsheets", "label": "Spreadsheets, such as Excel or CSV files" },
+            { "value": "databases", "label": "Electronic databases" },
+            { "value": "ehis", "label": "Electronic health information systems" },
+            { "value": "digital_forms", "label": "Standardized digital forms" },
+            { "value": "documents", "label": "PDF or Word documents" },
+            { "value": "images", "label": "Images or photographs" },
+            { "value": "audio", "label": "Audio recordings" },
+            { "value": "other", "label": "Other" },
+            { "value": "not_sure", "label": "Not sure" }
+          ],
+          "otherValue": "other",
+          "exclusive": ["not_sure"]
+        },
+        {
+          "kind": "select_many",
+          "id": "S2.Q3",
+          "handle": "Data storage",
+          "prompt": "Where is the data currently stored?",
+          "helper": "Select all that apply.",
+          "options": [
+            { "value": "facilities", "label": "At individual health facilities" },
+            { "value": "district", "label": "District or regional systems" },
+            { "value": "national", "label": "National Ministry of Health systems" },
+            { "value": "ehis", "label": "Electronic health information system" },
+            { "value": "local_servers", "label": "Local computers or servers" },
+            { "value": "cloud", "label": "Cloud-based storage" },
+            { "value": "paper_archives", "label": "Paper records or archives" },
+            { "value": "external_partner", "label": "With an external partner or organization" },
+            { "value": "other", "label": "Other" },
+            { "value": "not_sure", "label": "Not sure" }
+          ],
+          "otherValue": "other",
+          "exclusive": ["not_sure"]
+        },
+        {
+          "kind": "select_one",
+          "id": "S2.Q4",
+          "handle": "Data permissions",
+          "prompt": "Could your team get permission to use this data for an AI project?",
+          "options": [
+            { "value": "have_access", "label": "We already have access to the data" },
+            { "value": "straightforward", "label": "Approvals would be needed but are likely to be straightforward" },
+            { "value": "difficult", "label": "Approvals would be needed and may be slow or difficult" },
+            { "value": "not_sure", "label": "Not sure" }
+          ],
+          "optionalText": "Optional: What approvals would be needed, and how long do they usually take?"
+        },
+        {
+          "kind": "select_one",
+          "id": "S2.Q5",
+          "handle": "Amount of data",
+          "prompt": "How much historical data is available?",
+          "options": [
+            { "value": "lt1y", "label": "Less than 1 year" },
+            { "value": "1_2y", "label": "1-2 years" },
+            { "value": "3_5y", "label": "3-5 years" },
+            { "value": "gt5y", "label": "More than 5 years" },
+            { "value": "unknown_period", "label": "Data are available, but the time period is unknown" },
+            { "value": "na", "label": "Not applicable" }
+          ],
+          "optionalText": "Optional: What years does the data cover?"
+        },
+        {
+          "kind": "select_one",
+          "id": "S2.Q6",
+          "handle": "Ongoing collection",
+          "prompt": "Is this data still being collected?",
+          "options": [
+            { "value": "yes", "label": "Yes" },
+            { "value": "no", "label": "No" },
+            { "value": "not_sure", "label": "Not sure" },
+            { "value": "na", "label": "Not applicable" }
+          ],
+          "followup": {
+            "when": "yes",
+            "type": "select_one",
+            "prompt": "How frequently is new data collected?",
+            "options": [
+              { "value": "daily", "label": "Daily" },
+              { "value": "weekly", "label": "Weekly" },
+              { "value": "monthly", "label": "Monthly" },
+              { "value": "quarterly", "label": "Quarterly" },
+              { "value": "annually", "label": "Annually" },
+              { "value": "other", "label": "Other" }
+            ],
+            "otherValue": "other"
+          }
+        },
+        {
+          "kind": "select_one",
+          "id": "S2.Q7",
+          "handle": "Recorded outcomes",
+          "prompt": "Do your records also show the final, confirmed outcome of each case?",
+          "helper": "For example, the confirmed cause of death, the final diagnosis, or whether the appointment was attended. AI tools that make predictions or suggestions learn from these recorded outcomes.",
+          "options": [
+            { "value": "most", "label": "Yes, for most records" },
+            { "value": "some", "label": "Yes, for some records" },
+            { "value": "no", "label": "No" },
+            { "value": "not_sure", "label": "Not sure" },
+            { "value": "na", "label": "Not applicable: this use case would not predict or suggest an outcome" }
+          ]
+        },
+        {
+          "kind": "grid",
+          "id": "S2.Q8",
+          "handle": "Data conditions",
+          "prompt": "For the following statements, how well does the available data meet each condition?",
+          "scale": {
+            "options": [
+              { "value": 2, "label": "Fully", "color": "green" },
+              { "value": 1, "label": "Partially", "color": "amber" },
+              { "value": 0, "label": "Not at all", "color": "red" }
+            ],
+            "idk": { "label": "Not sure" },
+            "na": { "label": "Not applicable" }
+          },
+          "explainLabel": "Space to explain (optional)",
+          "statements": [
+            {
+              "id": "S2.Q8.1",
+              "label": "Digital availability",
+              "statement": "Most of the data needed for this use case are available in a digital format that can be accessed and analyzed."
+            },
+            {
+              "id": "S2.Q8.2",
+              "label": "Completeness",
+              "statement": "The important information needed for this task is usually recorded, with few missing fields or records."
+            },
+            {
+              "id": "S2.Q8.3",
+              "label": "Consistency",
+              "statement": "The same information is recorded in a similar way across facilities, locations, and time periods."
+            },
+            {
+              "id": "S2.Q8.4",
+              "label": "Geographic coverage",
+              "statement": "The data include the districts, regions, facilities, or communities where the AI solution would be used."
+            },
+            {
+              "id": "S2.Q8.5",
+              "label": "Population coverage",
+              "statement": "The data include the different populations that the AI solution would serve, such as relevant age groups, genders, geographic communities, and socioeconomic groups."
+            },
+            {
+              "id": "S2.Q8.6",
+              "label": "Less common situations",
+              "statement": "The data include enough examples of less common but important situations relevant to the use case."
+            },
+            {
+              "id": "S2.Q8.7",
+              "label": "Accuracy checks",
+              "statement": "There are processes or checks in place to identify incorrect, impossible, or unusual data entries."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S3",
+      "type": "survey",
+      "title": "Safety and Responsible Use",
+      "purpose": "Ensuring the AI system adheres to ethical standards, accuracy thresholds, and accountability mechanisms.",
+      "questions": [
+        {
+          "kind": "text",
+          "id": "S3.Q1",
+          "handle": "Human review",
+          "prompt": "Where do you anticipate human review or approval to occur in the new process with AI integration?",
+          "helper": "For example, should a health worker review every recommendation, only high-risk or uncertain cases, or only certain types of decisions?"
+        },
+        {
+          "kind": "text",
+          "id": "S3.Q2",
+          "handle": "Data governance",
+          "prompt": "What data governance requirements apply in your country or setting?",
+          "helper": "For example, requirements related to legal use of data, privacy, security, data sharing, regulatory compliance, and protection of personal or health information."
+        },
+        {
+          "kind": "text",
+          "id": "S3.Q3",
+          "handle": "Accuracy monitoring",
+          "prompt": "How would you monitor whether the AI tool remains accurate once it is in use?",
+          "helper": "For example, would someone regularly review a sample of the AI's outputs, track how often staff override its suggestions, or compare its results against a trusted source?"
+        },
+        {
+          "kind": "text",
+          "id": "S3.Q4",
+          "handle": "Handling mistakes",
+          "prompt": "What would happen when the AI tool makes a mistake?",
+          "helper": "For example, how would an incorrect suggestion or record be identified and corrected, and who would be responsible for fixing it?"
+        }
+      ]
+    },
+    {
+      "id": "S4",
+      "type": "survey",
+      "title": "Country-Level Readiness",
+      "purpose": "Assessing the enabling environment, including legal frameworks, infrastructure, and senior leadership support.",
+      "questions": [
+        {
+          "kind": "text",
+          "id": "S4.Q1",
+          "handle": "Leadership support",
+          "prompt": "Do senior leaders in your organization and relevant government agencies support this AI initiative?",
+          "helper": "For example, have they committed to providing leadership, funding, or ongoing involvement?"
+        },
+        {
+          "kind": "text",
+          "id": "S4.Q2",
+          "handle": "Laws and policies",
+          "prompt": "Are there national or regional laws, policies, or guidelines that would apply to this AI solution?",
+          "helper": "For example, policies related to responsible AI use, data protection, privacy, or data sharing."
+        },
+        {
+          "kind": "text",
+          "id": "S4.Q3",
+          "handle": "Infrastructure",
+          "prompt": "Is the necessary technology infrastructure available to support this AI solution?",
+          "helper": "For example, are the required devices, software, internet connectivity, and data storage available, or could they realistically be put in place, across the locations where the solution would be used?"
+        },
+        {
+          "kind": "text",
+          "id": "S4.Q4",
+          "handle": "Skills",
+          "prompt": "Are there people in your organization with the skills needed to implement, operate, and maintain the AI solution?",
+          "helper": "If not, could existing staff be trained or could additional technical support be obtained?"
+        },
+        {
+          "kind": "text",
+          "id": "S4.Q5",
+          "handle": "Implementation challenges",
+          "prompt": "What regulatory, financial, or technical challenges could make it difficult to implement or sustain this AI solution?",
+          "helper": "Please describe any important constraints related to regulations, funding, infrastructure, technology, or staffing."
+        }
+      ]
+    }
+  ]
+}

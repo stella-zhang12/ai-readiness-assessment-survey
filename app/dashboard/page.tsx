@@ -96,9 +96,9 @@ export default async function DashboardPage() {
           <div className="mt-4 rounded-xl border border-dashed border-line p-10 text-center">
             <p className="font-semibold text-ink-soft">No assessments yet</p>
             <p className="mx-auto mt-1 max-w-md text-sm text-ink-muted">
-              Start your first: a quick Brainstorm (~10–15 min) or the full
-              Diagnostic (~30–45 min), which ends with an AI-generated
-              readiness profile.
+              Start your first assessment. It covers four sections: use case
+              definition, data readiness, safety and responsible use, and
+              country-level readiness.
             </p>
           </div>
         ) : (
