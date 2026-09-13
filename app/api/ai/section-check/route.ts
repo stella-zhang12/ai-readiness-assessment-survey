@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { combined, surveyQuestionIds, surveySections } from "@/lib/instrument";
 import { loadAiContext, storeAiOutput } from "@/lib/ai/context";
-import { callStructured, MODEL, PROMPT_VERSION } from "@/lib/ai/claude";
+import { callStructured, PROMPT_VERSION } from "@/lib/ai/claude";
+
+// Latency matters here (the hub blocks on it visually), and the task is
+// light summarization, so this endpoint runs on Haiku rather than Opus.
+const CHECK_MODEL = "claude-haiku-4-5";
 import {
   buildSectionCheckUser,
   hashSectionAnswers,
@@ -70,7 +74,7 @@ export async function POST(request: Request) {
       user: buildSectionCheckUser(section, index + 1, ctx.answers),
       schema: CHECK_SCHEMA as unknown as Record<string, unknown>,
       maxTokens: 1600,
-      effort: "low",
+      model: CHECK_MODEL,
     });
 
     // Keep only rows for real question ids and cap follow-ups at five.
@@ -85,7 +89,7 @@ export async function POST(request: Request) {
       ctx,
       "section_check",
       { answersHash, check: cleaned },
-      MODEL,
+      CHECK_MODEL,
       PROMPT_VERSION,
       section.id
     );

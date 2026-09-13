@@ -139,7 +139,8 @@ Rules:
 - Do not ask the respondent to repeat information they have already provided.
 - An answer of "Not sure" or a skipped question counts as an open unknown: use status partial (if partly answered) or not_answered, and note what is unknown.
 - Use not_applicable only where the respondent chose a Not applicable option or the question clearly does not apply to this use case.
-- Keep follow-up questions specific and answerable by a program team without technical AI knowledge.`;
+- Keep follow-up questions specific and answerable by a program team without technical AI knowledge.
+- Write in plain sentences. Never use em dashes; use commas, colons, or separate sentences instead.`;
 
 function answerLines(q: SurveyQuestion, answers: AnswerMap): string[] {
   const lines: string[] = [];

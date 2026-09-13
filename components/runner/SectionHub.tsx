@@ -50,11 +50,11 @@ export function SectionHub({
         Work through the four sections in any order; your answers save as you
         go. Open a section to continue where you left off.
         {!guest &&
-          " Each time you return here, the AI reviews what you have entered and points out anything worth adding."}
+          " Each time you return here, your answers are reviewed for completeness, with suggestions for anything worth adding."}
       </p>
       {guest && (
         <p className="mt-2 text-xs text-ink-muted">
-          AI completeness checks need an account; in guest mode you only see
+          Completeness checks need an account; in guest mode you only see
           your progress counts.
         </p>
       )}
@@ -152,7 +152,6 @@ export function SectionHub({
         })}
       </div>
 
-      <p className="mt-5 text-xs text-ink-muted">{instrument.disclaimer}</p>
     </section>
   );
 }

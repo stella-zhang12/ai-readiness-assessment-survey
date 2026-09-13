@@ -18,6 +18,8 @@ type StructuredCall = {
   schema: Record<string, unknown>;
   maxTokens: number;
   effort?: "low" | "medium" | "high";
+  /** Override the default model (e.g. Haiku for light, latency-sensitive tasks). */
+  model?: string;
 };
 
 export async function callStructured<T>({
@@ -26,9 +28,10 @@ export async function callStructured<T>({
   schema,
   maxTokens,
   effort,
+  model,
 }: StructuredCall): Promise<T> {
   const base = {
-    model: MODEL,
+    model: model ?? MODEL,
     max_tokens: maxTokens,
     system,
     messages: [{ role: "user" as const, content: user }],

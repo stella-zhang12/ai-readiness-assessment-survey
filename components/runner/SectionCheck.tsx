@@ -75,7 +75,7 @@ export function SectionCheck({
     return (
       <p className="mt-3 text-xs text-ink-muted">
         <span className="mr-1.5 inline-block h-2 w-2 animate-pulse rounded-full bg-spirit align-middle" />
-        AI completeness check running…
+        Checking this section for completeness…
       </p>
     );
   }
@@ -107,9 +107,6 @@ export function SectionCheck({
       open={!check.sufficient && !confirmed}
     >
       <summary className="flex cursor-pointer list-none flex-wrap items-center gap-2 px-3.5 py-2.5">
-        <span className="rounded-full bg-spirit px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
-          AI-generated
-        </span>
         <span
           className={`text-sm font-semibold ${
             check.sufficient ? "text-status-green" : "text-status-amber"
@@ -210,7 +207,7 @@ export function SectionCheck({
         </div>
 
         <p className="mt-2 text-[11px] text-ink-muted">
-          AI can make mistakes, so accuracy should be cross-checked.
+          This automated review can make mistakes; use your own judgment.
         </p>
       </div>
     </details>
