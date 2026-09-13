@@ -121,8 +121,8 @@ export function ReportView({
         </h1>
         <p className="mx-auto mt-3 max-w-md text-sm text-ink-soft">
           Your team&apos;s answers across all four sections are being reviewed
-          to weigh AI, hybrid, and non-AI options. This usually takes about a
-          minute.
+          to weigh AI, hybrid, and non-AI options. This usually takes about
+          half a minute.
         </p>
         <div className="mx-auto mt-8 h-1.5 w-48 overflow-hidden rounded-full bg-line">
           <div className="h-full w-1/3 animate-pulse rounded-full bg-heritage" />

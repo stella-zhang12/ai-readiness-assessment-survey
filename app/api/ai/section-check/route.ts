@@ -20,8 +20,9 @@ export const maxDuration = 60;
 // temperature 0 for repeatable grades.
 const CHECK_MODEL = "claude-haiku-4-5";
 
-// Bumped when the stored check shape changes; old cache rows regenerate.
-const CHECK_SHAPE = 2;
+// Bumped when the stored check shape or grading rubric changes; old cache
+// rows regenerate.
+const CHECK_SHAPE = 3;
 
 /**
  * Completeness check for one progress-page section. "Not answered" and
@@ -93,7 +94,7 @@ export async function POST(request: Request) {
         fixed
       ),
       schema: CHECK_SCHEMA as unknown as Record<string, unknown>,
-      maxTokens: 1400,
+      maxTokens: 1800,
       model: CHECK_MODEL,
       temperature: 0,
     });

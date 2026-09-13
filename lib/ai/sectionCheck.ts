@@ -60,7 +60,7 @@ export const CHECK_SCHEMA = {
           missing: {
             type: "string",
             description:
-              "Short plain reason for what would make the answer complete; empty string when status is complete",
+              "For partial answers: what specifically to elaborate, building on what the respondent wrote (one or two short sentences). Empty string when status is complete",
           },
         },
         required: ["qid", "status", "missing"],
@@ -133,15 +133,19 @@ export const SECTION_CHECK_SYSTEM = `You are helping a health team assess readin
 Only the ANSWERED questions are shown to you in full; unanswered questions are listed separately for context and are handled by the system, not by you.
 
 Your tasks:
-1. Summarize what the respondent has said so far in 2 to 4 sentences.
-2. For each ANSWERED question, grade it: complete (the answer clearly covers what the question asks) or partial (something important is missing, vague, or marked as unknown). For partial answers, state in one short sentence what would make the answer complete.
+1. Summarize what the respondent has said so far in 2 to 4 sentences, in your own words. Interpret, do not just restate: reflect what their answers imply about the use case and note anything important that stays vague.
+2. For each ANSWERED question, engage with the substance of the answer and grade it:
+   - complete: the answer addresses every part of the question with enough specific detail (names, numbers, systems, roles, places, timeframes where relevant) that a scoping report could rely on it.
+   - partial: the answer is vague or generic, covers only part of the question, leaves an obvious follow-on question hanging, or contains an unknown.
+   For partial answers, the missing field must build on what they DID write and say specifically what to elaborate. Refer to their own words and name the concrete detail that would make the answer usable, for example: "You mention paper forms, but not how many records exist or who holds them." One or two short sentences.
 3. End with a checkpoint asking the respondent to confirm your summary is accurate, in this form: "Based on your responses, my understanding is: [1-2 sentence summary]. Is this accurate, or is there anything you would like to clarify before moving on?"
 
 Rules:
 - Use simple, nontechnical language.
 - Do not invent information. Base everything only on what the respondent wrote or selected.
-- Grade consistently: the same answer must always receive the same grade. When in genuine doubt between complete and partial, choose complete; reserve partial for answers with a concrete, nameable gap.
-- An answer of "Not sure", "I don't know", or a selection with no requested detail counts as partial, with the open unknown named in the missing field.
+- Grade the same answer the same way every time. Specificity is the test: a one-line answer to a multi-part question is partial.
+- An answer of "Not sure", "I don't know", or a selection without the requested detail is partial, with the open unknown named.
+- For rating statements: a rating alone can be complete, but a rating of Partially or Not at all with no note explaining why is partial; ask what is behind the rating.
 - Write in plain sentences. Never use em dashes; use commas, colons, or separate sentences instead.`;
 
 /** Short display label for every answerable id in a section. */

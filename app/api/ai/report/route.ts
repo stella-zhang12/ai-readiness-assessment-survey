@@ -2,7 +2,12 @@ import { NextResponse } from "next/server";
 import { combined } from "@/lib/instrument";
 import { answerableIds } from "@/lib/instrument";
 import { loadAiContext, storeAiOutput } from "@/lib/ai/context";
-import { callStructured, MODEL, PROMPT_VERSION } from "@/lib/ai/claude";
+import { callStructured, PROMPT_VERSION } from "@/lib/ai/claude";
+
+// Sonnet generates the report in roughly half Opus's time with near-equal
+// quality on this heavily structured task; the prompt does the reasoning
+// scaffolding.
+const REPORT_MODEL = "claude-sonnet-5";
 import { hashSectionAnswers } from "@/lib/ai/sectionCheck";
 import {
   buildReportUser,
@@ -68,6 +73,7 @@ export async function POST(request: Request) {
       schema: REPORT_SCHEMA as unknown as Record<string, unknown>,
       maxTokens: 4000,
       effort: "medium",
+      model: REPORT_MODEL,
     });
 
     // Enforce shape limits in code (schema keeps to the supported subset):
@@ -90,7 +96,7 @@ export async function POST(request: Request) {
       ctx,
       "report",
       { answersHash, report },
-      MODEL,
+      REPORT_MODEL,
       PROMPT_VERSION
     );
 
