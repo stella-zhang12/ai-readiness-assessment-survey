@@ -48,7 +48,7 @@ export function SiteFeedback() {
   }, [open]);
 
   async function submit() {
-    if (!type) return;
+    if (!type || !message.trim()) return;
     setPhase("sending");
     const supabase = createClient();
     const {
@@ -63,7 +63,7 @@ export function SiteFeedback() {
       question_id: ctx.questionId ?? null,
       question_text: ctx.questionText ?? null,
       feedback_type: type,
-      message: message.trim() || null,
+      message: message.trim(),
     });
     if (error) {
       setPhase("error");
@@ -89,7 +89,7 @@ export function SiteFeedback() {
           ) : (
             <>
               <p className="text-sm font-semibold text-ink">
-                Is something unclear or not working?
+                Is something unclear or not working on this page?
               </p>
               <p className="mt-0.5 text-xs text-ink-muted">
                 This is a pilot; every report helps us improve it.
@@ -116,7 +116,7 @@ export function SiteFeedback() {
                 rows={2}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Tell us more (optional)"
+                placeholder="Tell us more"
                 className="mt-2.5 w-full resize-y rounded-md border border-line px-2.5 py-1.5 text-xs leading-relaxed focus:border-spirit focus:outline-none"
               />
               {phase === "error" && (
@@ -127,7 +127,7 @@ export function SiteFeedback() {
               <div className="mt-2.5 flex items-center gap-3">
                 <button
                   type="button"
-                  disabled={!type || phase === "sending"}
+                  disabled={!type || !message.trim() || phase === "sending"}
                   onClick={submit}
                   className="rounded-md bg-heritage px-3.5 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-heritage-deep disabled:cursor-not-allowed disabled:opacity-40"
                 >
@@ -155,7 +155,7 @@ export function SiteFeedback() {
         aria-expanded={open}
         className="rounded-md bg-heritage px-4 py-2 text-sm font-semibold text-white shadow-md transition-colors hover:bg-heritage-deep"
       >
-        {open ? "Close" : "Survey feedback"}
+        {open ? "Close" : "Feedback for this page"}
       </button>
     </div>
   );
