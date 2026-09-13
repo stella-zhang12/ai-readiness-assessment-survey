@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 /**
- * Two-step delete for a dashboard assessment card. First click arms it
- * ("Really delete?" for a few seconds), second click deletes the assessment
- * and everything under it (responses, checks, timing) via FK cascade.
+ * Delete button for a dashboard assessment card. Opens an Are-you-sure
+ * dialog; confirming deletes the assessment and everything under it
+ * (responses, checks, timing) via FK cascade.
  */
 export function DeleteAssessmentButton({
   assessmentId,
@@ -17,28 +18,22 @@ export function DeleteAssessmentButton({
   title: string;
 }) {
   const router = useRouter();
-  const [armed, setArmed] = useState(false);
+  const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
-  const disarm = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => () => {
-    if (disarm.current) clearTimeout(disarm.current);
-  }, []);
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
 
-  async function onClick(e: React.MouseEvent) {
-    // The card itself is a link; keep clicks from opening the assessment.
-    e.preventDefault();
-    e.stopPropagation();
-    setError(false);
-
-    if (!armed) {
-      setArmed(true);
-      disarm.current = setTimeout(() => setArmed(false), 5000);
-      return;
-    }
-
+  async function confirmDelete() {
     setBusy(true);
+    setError(false);
     const supabase = createClient();
     const { data, error } = await supabase
       .from("assessments")
@@ -46,37 +41,80 @@ export function DeleteAssessmentButton({
       .eq("id", assessmentId)
       .select("id");
     setBusy(false);
-    setArmed(false);
     if (error || !data || data.length === 0) {
       setError(true);
       return;
     }
+    setOpen(false);
     router.refresh();
   }
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={busy}
-      aria-label={
-        armed ? `Confirm deleting ${title}` : `Delete ${title}`
-      }
-      className={`rounded-md border px-2 py-0.5 text-xs font-semibold transition-colors ${
-        error
-          ? "border-status-red text-status-red"
-          : armed
-            ? "border-status-red bg-status-redbg text-status-red"
-            : "border-line text-ink-muted hover:border-status-red hover:text-status-red"
-      }`}
-    >
-      {busy
-        ? "Deleting…"
-        : error
-          ? "Couldn't delete"
-          : armed
-            ? "Really delete?"
-            : "Delete"}
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={(e) => {
+          // The card itself is a link; keep this click from opening it.
+          e.preventDefault();
+          e.stopPropagation();
+          setError(false);
+          setOpen(true);
+        }}
+        aria-label={`Delete ${title}`}
+        className="rounded-md border border-line px-2 py-0.5 text-xs font-semibold text-ink-muted transition-colors hover:border-status-red hover:text-status-red"
+      >
+        Delete
+      </button>
+
+      {open &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-ink/30 px-6"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (e.target === e.currentTarget) setOpen(false);
+            }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-dialog-title"
+          >
+            <div className="w-full max-w-sm border border-line bg-white p-6 shadow-lg">
+              <h2
+                id="delete-dialog-title"
+                className="text-lg font-bold text-heritage"
+              >
+                Delete this assessment?
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+                Are you sure? &ldquo;{title}&rdquo; and all of its saved
+                answers will be permanently deleted. This cannot be undone.
+              </p>
+              {error && (
+                <p className="mt-3 rounded-md bg-status-redbg px-3 py-2 text-sm text-status-red">
+                  Couldn&apos;t delete. Try again.
+                </p>
+              )}
+              <div className="mt-5 flex items-center gap-3">
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={confirmDelete}
+                  className="rounded-md bg-status-red px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
+                >
+                  {busy ? "Deleting…" : "Yes, delete"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className="text-sm font-semibold text-ink-muted underline underline-offset-2"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+    </>
   );
 }
