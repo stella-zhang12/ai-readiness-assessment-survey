@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AuthCatcher } from "@/components/AuthCatcher";
+import { SpectrumDemo } from "@/components/SpectrumDemo";
 
 const quickExamples = [
   {
@@ -100,17 +101,7 @@ export default function Landing() {
             <p className="mt-2 font-sans text-lg font-bold tracking-tight text-heritage">
               Proceed after addressing key gaps
             </p>
-            <div className="mt-4 flex overflow-hidden rounded-[10px] border border-washline text-center text-[11px] font-semibold">
-              <div className="flex-1 bg-white px-2 py-2 text-ink-muted">
-                Non-AI digital
-              </div>
-              <div className="flex-1 border-x border-washline bg-heritage px-2 py-2 text-white">
-                Hybrid
-              </div>
-              <div className="flex-1 bg-white px-2 py-2 text-ink-muted">
-                AI solution
-              </div>
-            </div>
+            <SpectrumDemo />
             <div className="mt-4 flex flex-wrap gap-2">
               <span className="rounded-full border border-status-green/60 bg-status-greenbg px-2.5 py-0.5 text-[11px] font-bold text-status-green">
                 Use case: Ready
@@ -177,7 +168,7 @@ export default function Landing() {
           <p className="mt-3 max-w-measure leading-relaxed text-ink-soft">
             Built for program teams, not engineers: the assessment does not
             assume AI is the answer. It structures the scoping conversation
-            and turns it into a report your leadership can act on.
+            and turns it into a report your team can act on.
           </p>
 
           <div className="mt-10 grid items-stretch gap-5 sm:grid-cols-[1fr_auto_1fr_auto_1fr]">
