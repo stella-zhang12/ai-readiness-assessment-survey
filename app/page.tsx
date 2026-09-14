@@ -52,20 +52,14 @@ export default function Landing() {
       {/* Top bar */}
       <header className="border-b border-line/70 bg-white">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-6 py-3.5">
-          <div className="flex items-center gap-3">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/jhu-bsph-logo.png"
-              alt="Johns Hopkins Bloomberg School of Public Health"
-              width={345}
-              height={94}
-              style={{ height: "34px", width: "auto" }}
-            />
-            <span className="hidden h-7 w-px bg-line/70 sm:block" aria-hidden="true" />
-            <span className="hidden text-[11px] font-semibold uppercase tracking-widest text-spirit-dark sm:block">
-              Center for Global Digital Health Innovation
-            </span>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/cgdhi-lockup.png"
+            alt="Johns Hopkins Bloomberg School of Public Health · Center for Global Digital Health Innovation"
+            width={2147}
+            height={460}
+            style={{ height: "54px", width: "auto" }}
+          />
           <LandingAuthButton />
         </div>
       </header>
@@ -151,6 +145,11 @@ export default function Landing() {
               Try it without an account
             </Link>{" "}
             (nothing you enter is saved).
+          </p>
+          <p className="mt-4 rounded-[10px] bg-wash/70 px-3.5 py-2.5 text-xs leading-relaxed text-ink-soft">
+            <span className="font-semibold text-heritage">Confidential.</span>{" "}
+            Your answers are visible only to your team and the study team, and
+            they are never used to train AI models.
           </p>
         </div>
       </div>

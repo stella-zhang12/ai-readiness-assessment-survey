@@ -81,6 +81,12 @@ export function SectionHub({
         </div>
       </div>
 
+      <p className="mt-3 text-xs leading-relaxed text-ink-muted">
+        <span className="font-semibold text-heritage">Confidential.</span>{" "}
+        Your answers are visible only to your team and the study team, and
+        they are never used to train AI models.
+      </p>
+
       {allDone && (
         <p className="mt-4 border-l-2 border-status-green bg-status-greenbg px-3 py-2 text-sm font-semibold text-status-green">
           All sections complete. You can still revisit and edit any answer.
