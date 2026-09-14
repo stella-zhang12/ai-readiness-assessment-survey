@@ -22,7 +22,7 @@ const CHECK_MODEL = "claude-haiku-4-5";
 
 // Bumped when the stored check shape or grading rubric changes; old cache
 // rows regenerate.
-const CHECK_SHAPE = 3;
+const CHECK_SHAPE = 4;
 
 /**
  * Completeness check for one progress-page section. "Not answered" and

@@ -143,6 +143,7 @@ Your tasks:
 Rules:
 - Use simple, nontechnical language.
 - Do not invent information. Base everything only on what the respondent wrote or selected.
+- Grade each answer ONLY against what its own question asks. The other questions in this section are listed with their full wording; if a detail is the subject of a different question (for example challenges, users, data, or success measures asked separately), never request it here and never mark an answer partial for lacking it. An answer is complete when it covers its own question, even if related topics are still open elsewhere.
 - Grade the same answer the same way every time. Specificity is the test: a one-line answer to a multi-part question is partial.
 - An answer of "Not sure", "I don't know", or a selection without the requested detail is partial, with the open unknown named.
 - For rating statements: a rating alone can be complete, but a rating of Partially or Not at all with no note explaining why is partial; ask what is behind the rating.
@@ -156,6 +157,19 @@ export function questionLabels(section: SurveySection): Map<string, string> {
       for (const st of q.statements) map.set(st.id, st.label);
     } else {
       map.set(q.id, q.handle);
+    }
+  }
+  return map;
+}
+
+/** Full question wording per answerable id, for scope boundaries. */
+function questionPrompts(section: SurveySection): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const q of section.questions) {
+    if (q.kind === "grid") {
+      for (const st of q.statements) map.set(st.id, st.statement);
+    } else {
+      map.set(q.id, q.prompt);
     }
   }
   return map;
@@ -302,13 +316,14 @@ export function buildSectionCheckUser(
 ): string {
   const c = CRITERIA[section.id] ?? { bullets: [] };
   const include = new Set(answeredIds);
+  const prompts = questionPrompts(section);
   const transcript = section.questions
     .flatMap((q) => answerLines(q, answers, include))
     .join("\n");
   const unanswered = fixed
     .filter((f) => f.status === "not_answered")
-    .map((f) => `${f.qid} (${f.question})`)
-    .join(", ");
+    .map((f) => `- ${f.qid} · ${prompts.get(f.qid) ?? f.question}`)
+    .join("\n");
   return `Section ${sectionNumber}: ${section.title}
 ${section.purpose}
 
@@ -319,7 +334,8 @@ Answered questions to grade (one item per qid below):
 
 ${transcript || "(none)"}
 
-Not yet answered (context only, do not grade): ${unanswered || "(none)"}`;
+Questions asked separately later in this section (not yet answered; do not grade them, and do not request their subject matter under any answered question above):
+${unanswered || "(none)"}`;
 }
 
 /** Sort object keys so client state and jsonb round-trips hash alike. */
