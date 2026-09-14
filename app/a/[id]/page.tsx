@@ -11,24 +11,30 @@ export default async function AssessmentPage({
 }) {
   const { id } = await params;
   const supabase = await createClient();
+
+  // Hot path: the middleware verified this request's session moments ago,
+  // so read the user from the cookie instead of a second auth round trip.
+  // RLS still guards every query below regardless.
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user;
   if (!user) redirect("/login");
 
-  const { data: assessment } = await supabase
-    .from("assessments")
-    .select("id, title, version, current_step")
-    .eq("id", id)
-    .maybeSingle();
+  const [{ data: assessment }, { data: rows }] = await Promise.all([
+    supabase
+      .from("assessments")
+      .select("id, title, version, current_step")
+      .eq("id", id)
+      .maybeSingle(),
+    supabase
+      .from("responses")
+      .select("question_id, value")
+      .eq("assessment_id", id),
+  ]);
 
   // RLS returns nothing for assessments outside the user's team.
   if (!assessment) redirect("/dashboard");
-
-  const { data: rows } = await supabase
-    .from("responses")
-    .select("question_id, value")
-    .eq("assessment_id", id);
 
   const initialAnswers: AnswerMap = {};
   for (const r of rows ?? []) {
