@@ -209,6 +209,11 @@ export function CombinedRunner({
     ]
   );
 
+  // True when the user opened an already-complete section on purpose (the
+  // Review button): then Continue pages through sequentially. Otherwise,
+  // completing the section bounces back to the progress page.
+  const enteredForReview = useRef(false);
+
   const goToQuestion = useCallback(
     (qid: string) => {
       const i = steps.findIndex(
@@ -216,7 +221,10 @@ export function CombinedRunner({
           s.q.id === qid ||
           (s.q.kind === "grid" && s.q.statements.some((st) => st.id === qid))
       );
-      if (i >= 0) setLocation(i);
+      if (i >= 0) {
+        enteredForReview.current = false;
+        setLocation(i);
+      }
     },
     [steps, setLocation]
   );
@@ -232,6 +240,7 @@ export function CombinedRunner({
           return s.q.statements.some((st) => !isAnswered(answers[st.id]));
         return !isAnswered(answers[s.q.id]);
       });
+      enteredForReview.current = firstUnanswered === undefined;
       setLocation((firstUnanswered ?? inSection[0]).i);
     },
     [steps, answers, setLocation]
@@ -258,8 +267,25 @@ export function CombinedRunner({
   const next = useCallback(() => {
     if (idx === null || !step) return;
     const last = step.indexInSection === step.sectionSize - 1;
-    setLocation(last ? null : idx + 1);
-  }, [idx, step, setLocation]);
+    if (last) {
+      setLocation(null);
+      return;
+    }
+    // Finishing the section from the middle (e.g. a previously skipped
+    // question) returns to the progress page instead of paging through
+    // questions that are already answered.
+    if (!enteredForReview.current) {
+      const section = sections.find((s) => s.id === step.sectionId);
+      if (section) {
+        const { answered, total } = sectionProgress(section, answers);
+        if (answered === total) {
+          setLocation(null);
+          return;
+        }
+      }
+    }
+    setLocation(idx + 1);
+  }, [idx, step, setLocation, sections, answers]);
 
   const back = useCallback(() => {
     if (idx === null || !step) return;
