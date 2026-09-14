@@ -12,6 +12,12 @@ export function AppHeader({ teamName }: { teamName?: string }) {
         </Link>
         <div className="flex items-center gap-4 text-sm">
           {teamName && <span className="text-ink-muted">{teamName}</span>}
+          <Link
+            href="/account/password"
+            className="text-ink-muted underline-offset-2 hover:text-spirit-dark hover:underline"
+          >
+            Change password
+          </Link>
           <form action="/auth/signout" method="post">
             <button
               type="submit"

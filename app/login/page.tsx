@@ -125,6 +125,15 @@ function LoginForm() {
           >
             Email me a sign-in link instead
           </button>
+
+          <p className="text-center text-sm">
+            <Link
+              href="/reset-password"
+              className="text-ink-muted underline underline-offset-2 hover:text-spirit-dark"
+            >
+              Forgot your password?
+            </Link>
+          </p>
         </form>
       )}
 
