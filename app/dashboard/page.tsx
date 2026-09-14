@@ -43,6 +43,18 @@ export default async function DashboardPage() {
     | undefined;
   if (!team) redirect("/team");
 
+  const { data: memberRows } = await supabase
+    .from("team_members")
+    .select("user_id, joined_at, profiles (full_name)")
+    .eq("team_id", team.id)
+    .order("joined_at", { ascending: true });
+  const members = (memberRows ?? []).map((m) => ({
+    id: m.user_id as string,
+    name:
+      (m.profiles as unknown as { full_name: string | null } | null)
+        ?.full_name ?? "A teammate",
+  }));
+
   const { data: assessments } = await supabase
     .from("assessments")
     .select(
@@ -77,6 +89,22 @@ export default async function DashboardPage() {
               Anyone on the team can open an assessment and pick up where it was
               left off.
             </p>
+            <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+              <span className="text-xs font-semibold uppercase tracking-wider text-ink-muted">
+                Members
+              </span>
+              {members.map((m) => (
+                <span
+                  key={m.id}
+                  className="rounded-md border border-line bg-white px-2 py-0.5 text-xs font-semibold text-ink-soft"
+                >
+                  {m.name}
+                  {m.id === user.id && (
+                    <span className="text-ink-muted"> (you)</span>
+                  )}
+                </span>
+              ))}
+            </div>
           </div>
           <InviteCode code={team.invite_code} />
         </div>
