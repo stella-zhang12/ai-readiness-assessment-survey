@@ -20,6 +20,9 @@ export const maxDuration = 120;
 
 const AREAS = ["use_case", "data", "safety", "country"] as const;
 
+// Bumped when the stored report shape changes; old cache rows regenerate.
+const REPORT_SHAPE = 2;
+
 /**
  * Generates (or returns the cached) AI Solution Scoping Report from all
  * four sections' answers. Cached against a hash of every answer; pass
@@ -48,20 +51,25 @@ export async function POST(request: Request) {
   if (!body.regenerate) {
     const { data: prior } = await ctx.supabase
       .from("ai_outputs")
-      .select("content")
+      .select("content, created_at")
       .eq("assessment_id", ctx.assessment.id)
       .eq("kind", "report")
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
     const priorContent = prior?.content as
-      | { answersHash?: string; report?: Report }
+      | { answersHash?: string; shape?: number; report?: Report }
       | null;
-    if (priorContent?.answersHash === answersHash && priorContent.report) {
+    if (
+      priorContent?.answersHash === answersHash &&
+      priorContent.shape === REPORT_SHAPE &&
+      priorContent.report
+    ) {
       return NextResponse.json({
         report: priorContent.report,
         answersHash,
         cached: true,
+        generatedAt: prior?.created_at ?? null,
       });
     }
   }
@@ -95,7 +103,7 @@ export async function POST(request: Request) {
     await storeAiOutput(
       ctx,
       "report",
-      { answersHash, report },
+      { answersHash, shape: REPORT_SHAPE, report },
       REPORT_MODEL,
       PROMPT_VERSION
     );
@@ -111,7 +119,12 @@ export async function POST(request: Request) {
       })
       .eq("id", ctx.assessment.id);
 
-    return NextResponse.json({ report, answersHash, cached: false });
+    return NextResponse.json({
+      report,
+      answersHash,
+      cached: false,
+      generatedAt: new Date().toISOString(),
+    });
   } catch (e) {
     console.error("report generation failed:", e);
     return NextResponse.json({ error: "generation failed" }, { status: 502 });

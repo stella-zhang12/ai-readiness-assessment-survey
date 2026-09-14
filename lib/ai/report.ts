@@ -37,9 +37,15 @@ export type Report = {
   options: {
     title: string;
     how_it_works: string;
+    best_if: string;
     advantages: string[];
     limitations: string[];
     requirements: string[];
+    cost: {
+      setup: "low" | "moderate" | "high";
+      ongoing: "low" | "moderate" | "high";
+      note: string;
+    };
   }[];
   readiness: {
     area: "use_case" | "data" | "safety" | "country";
@@ -50,6 +56,7 @@ export type Report = {
   next_steps: {
     action: string;
     priority: "immediate" | "before_pilot" | "before_scale";
+    gap: string;
   }[];
   overall: {
     verdict: "proceed" | "proceed_after_gaps" | "simpler_first" | "more_scoping";
@@ -128,16 +135,37 @@ export const REPORT_SCHEMA = {
         properties: {
           title: { type: "string" },
           how_it_works: { type: "string" },
+          best_if: {
+            type: "string",
+            description:
+              "One sentence starting with 'Best if' saying when this option is the right choice",
+          },
           advantages: { type: "array", items: { type: "string" } },
           limitations: { type: "array", items: { type: "string" } },
           requirements: { type: "array", items: { type: "string" } },
+          cost: {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+              setup: { type: "string", enum: ["low", "moderate", "high"] },
+              ongoing: { type: "string", enum: ["low", "moderate", "high"] },
+              note: {
+                type: "string",
+                description:
+                  "One sentence naming the main cost drivers; no currency amounts unless the respondent provided figures",
+              },
+            },
+            required: ["setup", "ongoing", "note"],
+          },
         },
         required: [
           "title",
           "how_it_works",
+          "best_if",
           "advantages",
           "limitations",
           "requirements",
+          "cost",
         ],
       },
     },
@@ -187,8 +215,13 @@ export const REPORT_SCHEMA = {
             type: "string",
             enum: ["immediate", "before_pilot", "before_scale"],
           },
+          gap: {
+            type: "string",
+            description:
+              "The exact title of the gap this step addresses, or an empty string for general steps",
+          },
         },
-        required: ["action", "priority"],
+        required: ["action", "priority", "gap"],
       },
     },
     overall: {
@@ -230,13 +263,13 @@ Structure the report as follows:
 
 2. Recommended Solution Approach. Classify the use case as one of: AI solution appears appropriate; hybrid AI + non-AI approach may be appropriate; a non-AI digital solution may be sufficient; insufficient information to determine. Briefly explain the reasoning. If AI is appropriate, identify the main AI capability required (classification, prediction, information extraction, summarization, generation, pattern recognition, or other).
 
-3. Potential Solution Options. Provide up to three realistic options. Include AI, hybrid, or non-AI alternatives where appropriate. For each option describe how it would work, main advantages, main limitations, and key requirements.
+3. Potential Solution Options. Provide up to three realistic options. Include AI, hybrid, or non-AI alternatives where appropriate. For each option describe how it would work, one "best if" sentence saying when it is the right choice, main advantages, main limitations, and key requirements. Also estimate relative costs: rate set-up cost and ongoing cost each as low, moderate, or high, comparing the options with each other, with a one-sentence note naming the main cost drivers (staffing, licensing, integration, training, maintenance). Ground cost reasoning in the respondent's context where given. Never state currency amounts unless the respondent provided budget figures.
 
 4. Readiness Assessment. Assess each of the four areas (use case, data readiness, safety and responsible use, country-level readiness) as Ready, Some gaps, Major gaps, or Unable to assess, with key findings. Do not calculate an overall numerical readiness score.
 
 5. Key Gaps and Risks. Identify only the most important gaps that could affect successful development, implementation, or scale-up. Consider: data availability or quality, representativeness, human oversight, privacy and data governance, regulatory requirements, infrastructure, workforce skills, funding and sustainability, leadership support, and user readiness.
 
-6. Recommended Next Steps. For each major gap, provide a specific and practical next step, prioritized as immediate, before development or piloting, or before wider implementation.
+6. Recommended Next Steps. For each major gap, provide a specific and practical next step, prioritized as immediate, before development or piloting, or before wider implementation. Tag each step with the exact title of the gap it addresses (empty string for general steps), so gaps and their actions can be shown together.
 
 7. Overall Recommendation. Conclude with one of: proceed to technical design/pilot; proceed after addressing key gaps; explore a simpler or hybrid solution first; further scoping is needed before proceeding. Provide a brief explanation.
 
