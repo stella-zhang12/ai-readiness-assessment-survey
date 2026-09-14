@@ -82,9 +82,8 @@ export default function Landing() {
               Beta
             </span>
           </p>
-          <h1 className="mt-5 font-sans text-4xl font-bold leading-[1.08] tracking-tight text-ink sm:text-[3.25rem]">
-            Is your AI use case{" "}
-            <span className="text-heritage">ready to build?</span>
+          <h1 className="mt-5 font-sans text-4xl font-bold leading-[1.08] tracking-tight text-heritage sm:text-[3.25rem]">
+            Is your AI use case ready to build?
           </h1>
           <p className="mt-6 max-w-measure text-lg leading-relaxed text-ink-soft">
             A structured assessment for health and CRVS teams. Work through it
@@ -92,19 +91,20 @@ export default function Landing() {
             report that weighs AI against simpler options.
           </p>
 
-          {/* Illustration: a miniature scoping result */}
-          <div className="mt-10 max-w-lg rounded-[16px] border border-line/70 bg-white p-6 shadow-sm">
+          {/* Illustration: a miniature scoping result (quiet tinted panel so
+              it doesn't compete with the action card) */}
+          <div className="mt-10 max-w-lg rounded-[16px] bg-wash/70 p-6">
             <p className="text-[10px] font-bold uppercase tracking-widest text-ink-muted">
               Your scoping report
             </p>
             <p className="mt-2 font-sans text-lg font-bold tracking-tight text-heritage">
               Proceed after addressing key gaps
             </p>
-            <div className="mt-4 flex overflow-hidden rounded-[10px] border border-line/70 text-center text-[11px] font-semibold">
+            <div className="mt-4 flex overflow-hidden rounded-[10px] border border-washline text-center text-[11px] font-semibold">
               <div className="flex-1 bg-white px-2 py-2 text-ink-muted">
                 Non-AI digital
               </div>
-              <div className="flex-1 border-x border-line/70 bg-heritage px-2 py-2 text-white">
+              <div className="flex-1 border-x border-washline bg-heritage px-2 py-2 text-white">
                 Hybrid
               </div>
               <div className="flex-1 bg-white px-2 py-2 text-ink-muted">
