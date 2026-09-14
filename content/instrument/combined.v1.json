@@ -10,7 +10,8 @@
     "Three questions added per lab-approved gap review (2026-09-13): S2.Q4 data permissions, S2.Q7 recorded outcomes, S3.Q3/S3.Q4 accuracy monitoring and mistake handling.",
     "Source typos corrected in transcription: doubled question mark on the success question; 'How would this information produced be used' reworded to 'How would the information produced be used'; hyphens-as-dashes in the infrastructure question replaced with commas.",
     "AI summary (Section C) and the readiness results are intentionally absent: paused pending new lab instructions.",
-    "Example toggles (CRVS + healthcare) and answer-structure chips restored per user request (2026-09-13). Examples reuse v1 instrument texts where the question maps directly; examples for new or substantially reworded questions are Claude-drafted and flagged draft pending lab review. S4.Q5 chip 'Funding' replaces v1's 'Budgetary' to match the question's own wording."
+    "Example toggles (CRVS + healthcare) and answer-structure chips restored per user request (2026-09-13). Examples reuse v1 instrument texts where the question maps directly; examples for new or substantially reworded questions are Claude-drafted and flagged draft pending lab review. S4.Q5 chip 'Funding' replaces v1's 'Budgetary' to match the question's own wording.",
+    "S1.Q9 converted from free text to a structured goal builder per user request (2026-09-14): goals added one at a time, each with what would improve plus a before/after pair; the helper's closing sentence was adapted accordingly."
   ],
   "disclaimer": "AI can make mistakes, so accuracy should be cross-checked.",
   "sections": [
@@ -188,11 +189,17 @@
           }
         },
         {
-          "kind": "text",
+          "kind": "goals",
           "id": "S1.Q9",
           "handle": "Success outcomes",
           "prompt": "What outcomes would indicate that the application of AI in this process has been successful?",
-          "helper": "If the AI solution worked well, what would be different or better than the current process? For example, less staff time, fewer errors, faster services, better quality of care, or reaching more people. Please provide specific quantitative and/or qualitative goals.",
+          "helper": "If the AI solution worked well, what would be different or better than the current process? For example, less staff time, fewer errors, faster services, better quality of care, or reaching more people. Add each goal separately, comparing today with what success would look like, and be as specific and measurable as you can.",
+          "labels": {
+            "metric": "What would improve",
+            "before": "Today, before the solution",
+            "after": "With the solution, after",
+            "add": "Add a goal"
+          },
           "examples": {
             "crvs": {
               "text": "We would define success across two levels:\n\nProcess efficiency: Average time from verbal autopsy upload to coded record reduced from 47 days to 7-10 days (measured monthly from the civil registration database). The percentage of deaths coded within 30 days of occurrence increased from 61% to over 80% (measured quarterly).\n\nOutput quality: Miscoding rate, measured against a specialist gold-standard review of a random sample of 200 records per quarter, reduced from 18% to below 5%. Human coder override rate (cases where the coder rejects the AI suggestion) tracked monthly; a stable override rate of below 15% would indicate the AI is performing well."

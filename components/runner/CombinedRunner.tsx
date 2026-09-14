@@ -16,6 +16,7 @@ import { TextQuestionStep } from "./TextQuestionStep";
 import { SelectOneStep } from "./SelectOneStep";
 import { SelectManyStep } from "./SelectManyStep";
 import { GridStep } from "./GridStep";
+import { GoalsQuestionStep } from "./GoalsQuestionStep";
 import {
   clearFeedbackContext,
   setFeedbackContext,
@@ -410,6 +411,19 @@ export function CombinedRunner({
               indexInSection: step.indexInSection,
               sectionSize: step.sectionSize,
             }}
+            value={answers[step.q.id]}
+            onChange={(v) => setAnswer(step.q.id, v)}
+            onContinue={next}
+            onBack={back}
+          />
+        )}
+
+        {step.q.kind === "goals" && (
+          <GoalsQuestionStep
+            key={step.key}
+            q={step.q}
+            sectionTitle={step.sectionTitle}
+            position={position}
             value={answers[step.q.id]}
             onChange={(v) => setAnswer(step.q.id, v)}
             onContinue={next}

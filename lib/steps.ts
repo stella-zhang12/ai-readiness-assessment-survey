@@ -24,6 +24,8 @@ export type AnswerValue = {
   followupOther?: string;
   scale?: number;
   note?: string;
+  /** Structured success goals: what improves, before, and after. */
+  goals?: { metric: string; before: string; after: string }[];
 };
 
 export type AnswerMap = Record<string, AnswerValue>;
@@ -175,6 +177,13 @@ export function isAnswered(v: AnswerValue | undefined): boolean {
       v.na ||
       v.choice !== undefined ||
       (v.choices && v.choices.length > 0) ||
-      v.scale !== undefined
+      v.scale !== undefined ||
+      (v.goals &&
+        v.goals.some(
+          (g) =>
+            g.metric.trim() !== "" ||
+            g.before.trim() !== "" ||
+            g.after.trim() !== ""
+        ))
   );
 }

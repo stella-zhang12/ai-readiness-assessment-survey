@@ -102,11 +102,23 @@ export type GridQuestion = {
   statements: GridStatement[];
 };
 
+export type GoalsQuestion = {
+  kind: "goals";
+  id: string;
+  handle: string;
+  prompt: string;
+  helper?: string;
+  /** UI labels for the goal builder (content lives in the JSON). */
+  labels: { metric: string; before: string; after: string; add: string };
+  examples?: { crvs?: ExampleVariant; healthcare?: ExampleVariant };
+};
+
 export type SurveyQuestion =
   | (TextQuestion & { kind: "text" })
   | SelectOneQuestion
   | SelectManyQuestion
-  | GridQuestion;
+  | GridQuestion
+  | GoalsQuestion;
 
 export type SurveySection = {
   id: string;

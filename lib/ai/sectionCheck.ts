@@ -226,6 +226,25 @@ export function answerLines(
   const v: AnswerValue | undefined = answers[q.id];
   lines.push(`${q.id} · ${q.prompt}`);
 
+  if (q.kind === "goals") {
+    const filled = (v?.goals ?? []).filter(
+      (g) => g.metric.trim() || g.before.trim() || g.after.trim()
+    );
+    if (v?.idk)
+      lines.push(`  Answer: (skipped, respondent selected "I don't know")`);
+    else if (filled.length > 0) {
+      filled.forEach((g, i) => {
+        lines.push(
+          `  Goal ${i + 1}: ${g.metric.trim() || "(not named)"} | Before: ${
+            g.before.trim() || "(blank)"
+          } | After: ${g.after.trim() || "(blank)"}`
+        );
+      });
+    } else if (v?.text?.trim()) lines.push(`  Answer: ${v.text.trim()}`);
+    else lines.push("  Answer: (not answered)");
+    return lines;
+  }
+
   if (q.kind === "text") {
     if (v?.idk)
       lines.push(`  Answer: (skipped, respondent selected "I don't know")`);

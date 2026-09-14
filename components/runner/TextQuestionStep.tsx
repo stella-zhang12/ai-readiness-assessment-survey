@@ -6,7 +6,7 @@ import type { ExampleVariant } from "@/lib/instrument";
 
 type QuestionStep = Extract<Step, { kind: "question" }>;
 
-function ExampleToggle({
+export function ExampleToggle({
   examples,
 }: {
   examples: { crvs?: ExampleVariant; healthcare?: ExampleVariant };

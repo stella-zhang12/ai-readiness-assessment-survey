@@ -85,8 +85,14 @@ check("S3 has 4 questions", cSecs.S3.questions.length === 4);
 check("S4 has 5 questions", cSecs.S4.questions.length === 5);
 check("every combined section has a purpose (element definition)",
   Object.values(cSecs).every((s) => typeof s.purpose === "string" && s.purpose.length > 0));
-check("S1 questions are all open text",
-  cSecs.S1.questions.every((q) => q.kind === "text"));
+check("S1 questions are open text (goal builder on S1.Q9)",
+  cSecs.S1.questions.every((q) =>
+    q.id === "S1.Q9" ? q.kind === "goals" : q.kind === "text"));
+check("S1.Q9 goal builder has all four labels",
+  (() => {
+    const l = cSecs.S1.questions.find((q) => q.id === "S1.Q9")?.labels;
+    return Boolean(l?.metric && l?.before && l?.after && l?.add);
+  })());
 check("S1.Q4 carries the rule-based vs AI explainer",
   (cSecs.S1.questions.find((q) => q.id === "S1.Q4")?.info?.body?.length ?? 0) === 3);
 check("S1.Q5 carries the 0-5 comfort scale",
@@ -107,9 +113,9 @@ check("S2.Q1 and S2.Q6 have conditional follow-ups",
     cSecs.S2.questions.find((q) => q.id === "S2.Q6")?.followup?.when === "yes");
 check("S3/S4 questions are all open text",
   [...cSecs.S3.questions, ...cSecs.S4.questions].every((q) => q.kind === "text"));
-check("every combined text question has crvs + healthcare examples",
+check("every combined text/goals question has crvs + healthcare examples",
   [...cSecs.S1.questions, ...cSecs.S3.questions, ...cSecs.S4.questions]
-    .filter((q) => q.kind === "text")
+    .filter((q) => q.kind === "text" || q.kind === "goals")
     .every((q) => q.examples?.crvs?.text && q.examples?.healthcare?.text));
 check("challenges and constraints questions have 5 chips",
   (cSecs.S1.questions.find((q) => q.id === "S1.Q3")?.chips?.length ?? 0) === 5 &&
