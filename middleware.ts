@@ -6,6 +6,17 @@ type CookieToSet = { name: string; value: string; options: CookieOptions };
 const PROTECTED_PREFIXES = ["/dashboard", "/team", "/new", "/a/", "/account"];
 
 export async function middleware(request: NextRequest) {
+  // Only pages that actually gate on auth pay the Supabase round trip:
+  // protected pages (access control + session refresh) and login/signup
+  // (redirect away when already signed in). Public pages and API routes
+  // (which verify auth themselves) skip it entirely.
+  const p = request.nextUrl.pathname;
+  const needsAuth =
+    PROTECTED_PREFIXES.some((prefix) => p.startsWith(prefix)) ||
+    p === "/login" ||
+    p === "/signup";
+  if (!needsAuth) return NextResponse.next();
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(

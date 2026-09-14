@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import type { Instrument, SurveySection } from "@/lib/instrument";
 import { surveyQuestionIds, surveySections } from "@/lib/instrument";
 import { sectionProgress, type AnswerMap } from "@/lib/steps";
@@ -33,6 +34,8 @@ export function SectionHub({
   onConfirmCheck: (sectionId: string, hash: string) => void;
   onGoToQuestion: (qid: string) => void;
 }) {
+  const router = useRouter();
+  const [openingReport, setOpeningReport] = useState(false);
   const sections = surveySections(instrument);
   const totals = sections.map((s) => sectionProgress(s, answers));
   const allDone =
@@ -202,12 +205,21 @@ export function SectionHub({
           </p>
         ) : (
           <div className="mt-4 flex flex-wrap items-center gap-3">
-            <Link
-              href={`/a/${assessmentId}/report`}
-              className="rounded-md bg-heritage px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-heritage-deep"
+            <button
+              type="button"
+              disabled={openingReport}
+              onClick={() => {
+                setOpeningReport(true);
+                router.push(`/a/${assessmentId}/report`);
+              }}
+              className="rounded-md bg-heritage px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-heritage-deep disabled:opacity-70"
             >
-              {allDone ? "Generate the report" : "Generate report anyway"}
-            </Link>
+              {openingReport
+                ? "Opening the report…"
+                : allDone
+                  ? "Generate the report"
+                  : "Generate report anyway"}
+            </button>
             {!allDone && (
               <span className="text-xs text-ink-muted">
                 Some sections are incomplete; the report will flag what is
