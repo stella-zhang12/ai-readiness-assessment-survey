@@ -13,6 +13,12 @@ export function AppHeader({ teamName }: { teamName?: string }) {
         <div className="flex items-center gap-4 text-sm">
           {teamName && <span className="text-ink-muted">{teamName}</span>}
           <Link
+            href="/"
+            className="text-ink-muted underline-offset-2 hover:text-spirit-dark hover:underline"
+          >
+            Home
+          </Link>
+          <Link
             href="/account/password"
             className="text-ink-muted underline-offset-2 hover:text-spirit-dark hover:underline"
           >

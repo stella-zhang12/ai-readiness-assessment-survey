@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AuthCatcher } from "@/components/AuthCatcher";
+import { LandingAuthButton } from "@/components/LandingAuthButton";
 import { SpectrumDemo } from "@/components/SpectrumDemo";
 
 const quickExamples = [
@@ -65,12 +66,7 @@ export default function Landing() {
               Center for Global Digital Health Innovation
             </span>
           </div>
-          <Link
-            href="/login"
-            className="rounded-[10px] bg-heritage px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-heritage-deep"
-          >
-            Sign in
-          </Link>
+          <LandingAuthButton />
         </div>
       </header>
 
