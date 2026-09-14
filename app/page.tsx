@@ -44,12 +44,12 @@ const steps = [
 
 export default function Landing() {
   return (
-    <main>
+    <main className="font-sans">
       <AuthCatcher />
 
       {/* Top bar */}
-      <header className="border-b border-line bg-white">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-6 py-3">
+      <header className="border-b border-line/70 bg-white">
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-6 py-3.5">
           <div className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -59,14 +59,14 @@ export default function Landing() {
               height={94}
               style={{ height: "34px", width: "auto" }}
             />
-            <span className="hidden h-7 w-px bg-line sm:block" aria-hidden="true" />
+            <span className="hidden h-7 w-px bg-line/70 sm:block" aria-hidden="true" />
             <span className="hidden text-[11px] font-semibold uppercase tracking-widest text-spirit-dark sm:block">
               Center for Global Digital Health Innovation
             </span>
           </div>
           <Link
             href="/login"
-            className="rounded-md bg-heritage px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-heritage-deep"
+            className="rounded-[10px] bg-heritage px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-heritage-deep"
           >
             Sign in
           </Link>
@@ -74,57 +74,58 @@ export default function Landing() {
       </header>
 
       {/* Hero */}
-      <div className="mx-auto grid max-w-5xl gap-10 px-6 py-14 lg:grid-cols-[1fr_23rem] lg:gap-14">
+      <div className="mx-auto grid max-w-5xl gap-12 px-6 py-16 lg:grid-cols-[1fr_23rem] lg:gap-16 lg:py-20">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-spirit-dark">
             AI Use Case Scoping &amp; Readiness Assessment{" "}
-            <span className="ml-1 inline-block rounded border border-washline bg-wash px-1.5 py-0.5 align-middle text-[10px] font-bold text-spirit-dark">
+            <span className="ml-1.5 inline-block rounded-full border border-washline bg-wash px-2.5 py-0.5 align-middle text-[10px] font-bold text-spirit-dark">
               Beta
             </span>
           </p>
-          <h1 className="mt-4 text-4xl font-bold leading-tight text-heritage sm:text-5xl">
-            Is your AI use case ready to build?
+          <h1 className="mt-5 font-sans text-4xl font-bold leading-[1.08] tracking-tight text-ink sm:text-[3.25rem]">
+            Is your AI use case{" "}
+            <span className="text-heritage">ready to build?</span>
           </h1>
-          <p className="mt-5 max-w-measure text-lg leading-relaxed text-ink-soft">
+          <p className="mt-6 max-w-measure text-lg leading-relaxed text-ink-soft">
             A structured assessment for health and CRVS teams. Work through it
             together, see what is missing as you go, and end with a scoping
             report that weighs AI against simpler options.
           </p>
 
           {/* Illustration: a miniature scoping result */}
-          <div className="mt-9 max-w-lg border border-line bg-white p-5">
+          <div className="mt-10 max-w-lg rounded-[16px] border border-line/70 bg-white p-6 shadow-sm">
             <p className="text-[10px] font-bold uppercase tracking-widest text-ink-muted">
               Your scoping report
             </p>
-            <p className="mt-2 font-bold text-heritage">
+            <p className="mt-2 font-sans text-lg font-bold tracking-tight text-heritage">
               Proceed after addressing key gaps
             </p>
-            <div className="mt-3 flex overflow-hidden rounded-md border border-line text-center text-[11px] font-semibold">
-              <div className="flex-1 bg-white px-2 py-1.5 text-ink-muted">
+            <div className="mt-4 flex overflow-hidden rounded-[10px] border border-line/70 text-center text-[11px] font-semibold">
+              <div className="flex-1 bg-white px-2 py-2 text-ink-muted">
                 Non-AI digital
               </div>
-              <div className="flex-1 border-x border-line bg-heritage px-2 py-1.5 text-white">
+              <div className="flex-1 border-x border-line/70 bg-heritage px-2 py-2 text-white">
                 Hybrid
               </div>
-              <div className="flex-1 bg-white px-2 py-1.5 text-ink-muted">
+              <div className="flex-1 bg-white px-2 py-2 text-ink-muted">
                 AI solution
               </div>
             </div>
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              <span className="rounded-md border border-status-green bg-status-greenbg px-2 py-0.5 text-[11px] font-bold text-status-green">
+            <div className="mt-4 flex flex-wrap gap-2">
+              <span className="rounded-full border border-status-green/60 bg-status-greenbg px-2.5 py-0.5 text-[11px] font-bold text-status-green">
                 Use case: Ready
               </span>
-              <span className="rounded-md border border-status-amber bg-status-amberbg px-2 py-0.5 text-[11px] font-bold text-status-amber">
+              <span className="rounded-full border border-status-amber/60 bg-status-amberbg px-2.5 py-0.5 text-[11px] font-bold text-status-amber">
                 Data: Some gaps
               </span>
-              <span className="rounded-md border border-status-green bg-status-greenbg px-2 py-0.5 text-[11px] font-bold text-status-green">
+              <span className="rounded-full border border-status-green/60 bg-status-greenbg px-2.5 py-0.5 text-[11px] font-bold text-status-green">
                 Safety: Ready
               </span>
-              <span className="rounded-md border border-status-amber bg-status-amberbg px-2 py-0.5 text-[11px] font-bold text-status-amber">
+              <span className="rounded-full border border-status-amber/60 bg-status-amberbg px-2.5 py-0.5 text-[11px] font-bold text-status-amber">
                 Country: Some gaps
               </span>
             </div>
-            <p className="mt-3 text-[11px] text-ink-muted">
+            <p className="mt-4 text-[11px] text-ink-muted">
               Illustrative result. Your report reflects your team&apos;s
               answers.
             </p>
@@ -132,29 +133,29 @@ export default function Landing() {
         </div>
 
         {/* Action card */}
-        <div className="h-fit border border-line bg-white p-6 shadow-sm lg:mt-10">
-          <h2 className="text-xl font-bold text-heritage">
+        <div className="h-fit rounded-[16px] border border-line/70 bg-white p-7 shadow-sm lg:mt-12">
+          <h2 className="font-sans text-xl font-bold tracking-tight text-ink">
             Start your assessment
           </h2>
-          <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
+          <p className="mt-2 text-sm leading-relaxed text-ink-soft">
             Sign in with your team, or explore first as a guest. Answers save
             as you go, and anyone on your team can pick up where you left off.
           </p>
-          <div className="mt-5 grid gap-2.5">
+          <div className="mt-6 grid gap-3">
             <Link
               href="/login"
-              className="rounded-md bg-heritage px-5 py-2.5 text-center font-semibold text-white transition-colors hover:bg-heritage-deep"
+              className="rounded-[10px] bg-heritage px-5 py-2.5 text-center font-semibold text-white transition-colors hover:bg-heritage-deep"
             >
               Sign in to begin
             </Link>
             <Link
               href="/signup"
-              className="rounded-md border border-heritage px-5 py-2.5 text-center font-semibold text-heritage transition-colors hover:bg-wash"
+              className="rounded-[10px] border border-line px-5 py-2.5 text-center font-semibold text-heritage transition-colors hover:border-heritage hover:bg-wash"
             >
               Create an account
             </Link>
           </div>
-          <p className="mt-4 border-t border-line pt-4 text-sm text-ink-muted">
+          <p className="mt-5 border-t border-line/70 pt-5 text-sm text-ink-muted">
             Want to explore first?{" "}
             <Link
               href="/try"
@@ -168,16 +169,18 @@ export default function Landing() {
       </div>
 
       {/* How it works */}
-      <div className="border-y border-line bg-wash/40">
-        <div className="mx-auto max-w-5xl px-6 py-14">
-          <h2 className="text-3xl font-bold text-heritage">How it works</h2>
-          <p className="mt-3 max-w-measure text-ink-soft">
+      <div className="border-y border-line/70 bg-wash/40">
+        <div className="mx-auto max-w-5xl px-6 py-16">
+          <h2 className="font-sans text-3xl font-bold tracking-tight text-ink">
+            How it works
+          </h2>
+          <p className="mt-3 max-w-measure leading-relaxed text-ink-soft">
             Built for program teams, not engineers: the assessment does not
             assume AI is the answer. It structures the scoping conversation
             and turns it into a report your leadership can act on.
           </p>
 
-          <div className="mt-8 grid items-stretch gap-4 sm:grid-cols-[1fr_auto_1fr_auto_1fr]">
+          <div className="mt-10 grid items-stretch gap-5 sm:grid-cols-[1fr_auto_1fr_auto_1fr]">
             {steps.map((s, i) => (
               <div key={s.n} className="contents">
                 {i > 0 && (
@@ -188,12 +191,14 @@ export default function Landing() {
                     →
                   </div>
                 )}
-                <div className="border border-washline bg-gradient-to-b from-wash to-white p-5">
+                <div className="rounded-[16px] border border-washline/80 bg-gradient-to-b from-wash to-white p-6">
                   <p className="font-mono text-sm font-bold text-spirit-dark">
                     {s.n}
                   </p>
-                  <h3 className="mt-2 text-lg font-bold text-ink">{s.title}</h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
+                  <h3 className="mt-2.5 font-sans text-lg font-bold tracking-tight text-ink">
+                    {s.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-ink-soft">
                     {s.text}
                   </p>
                 </div>
@@ -204,9 +209,9 @@ export default function Landing() {
       </div>
 
       {/* What counts as a use case */}
-      <div className="mx-auto max-w-5xl px-6 py-14">
-        <div className="max-w-measure border-l-2 border-heritage bg-wash p-5">
-          <h2 className="font-bold text-heritage">
+      <div className="mx-auto max-w-5xl px-6 py-16">
+        <div className="max-w-measure rounded-[16px] border border-washline bg-wash p-6">
+          <h2 className="font-sans text-lg font-bold tracking-tight text-heritage">
             What counts as a use case?
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-ink-soft">
@@ -239,7 +244,7 @@ export default function Landing() {
         </div>
       </div>
 
-      <footer className="border-t border-line">
+      <footer className="border-t border-line/70">
         <p className="mx-auto max-w-5xl px-6 py-8 text-xs text-ink-muted">
           Center for Global Digital Health Innovation · Johns Hopkins
           Bloomberg School of Public Health
