@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { setActiveTeam } from "@/lib/activeTeam";
 
 export function TeamOnboarding({ userId }: { userId: string }) {
   const router = useRouter();
@@ -16,7 +17,9 @@ export function TeamOnboarding({ userId }: { userId: string }) {
     setBusy("join");
     setError(null);
     const supabase = createClient();
-    const { error } = await supabase.rpc("join_team", { code: code.trim() });
+    const { data, error } = await supabase.rpc("join_team", {
+      code: code.trim(),
+    });
     setBusy(null);
     if (error) {
       setError(
@@ -26,6 +29,7 @@ export function TeamOnboarding({ userId }: { userId: string }) {
       );
       return;
     }
+    if (typeof data === "string") setActiveTeam(data);
     router.push("/dashboard");
     router.refresh();
   }
@@ -38,11 +42,21 @@ export function TeamOnboarding({ userId }: { userId: string }) {
     const { error } = await supabase
       .from("teams")
       .insert({ name: teamName.trim(), created_by: userId });
-    setBusy(null);
     if (error) {
+      setBusy(null);
       setError(error.message);
       return;
     }
+    // The creator's membership is added by a trigger; the newest membership
+    // is therefore the team we just created.
+    const { data: newest } = await supabase
+      .from("team_members")
+      .select("team_id")
+      .order("joined_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    setBusy(null);
+    if (newest?.team_id) setActiveTeam(newest.team_id as string);
     router.push("/dashboard");
     router.refresh();
   }

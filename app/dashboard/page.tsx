@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { ACTIVE_TEAM_COOKIE } from "@/lib/activeTeam";
 import { AppHeader } from "@/components/AppHeader";
 import { InviteCode } from "@/components/InviteCode";
 import { DeleteAssessmentButton } from "@/components/DeleteAssessmentButton";
@@ -36,11 +38,20 @@ export default async function DashboardPage() {
   const { data: memberships } = await supabase
     .from("team_members")
     .select("team_id, teams (id, name, invite_code)")
+    .eq("user_id", user.id)
     .order("joined_at", { ascending: true });
 
-  const team = memberships?.[0]?.teams as
-    | { id: string; name: string; invite_code: string }
-    | undefined;
+  const allTeams = (memberships ?? [])
+    .map(
+      (m) =>
+        m.teams as unknown as
+          | { id: string; name: string; invite_code: string }
+          | null
+    )
+    .filter(Boolean) as { id: string; name: string; invite_code: string }[];
+  const cookieStore = await cookies();
+  const preferred = cookieStore.get(ACTIVE_TEAM_COOKIE)?.value;
+  const team = allTeams.find((t) => t.id === preferred) ?? allTeams[0];
   if (!team) redirect("/team");
 
   const { data: memberRows } = await supabase
@@ -84,7 +95,17 @@ export default async function DashboardPage() {
       <main className="mx-auto max-w-4xl px-6 py-10">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-heritage">{team.name}</h1>
+            <h1 className="text-2xl font-bold text-heritage">
+              {team.name}
+              <Link
+                href="/team"
+                className="ml-3 align-middle text-xs font-semibold text-spirit-dark underline underline-offset-2"
+              >
+                {allTeams.length > 1
+                  ? `Manage teams (${allTeams.length})`
+                  : "Manage teams"}
+              </Link>
+            </h1>
             <p className="mt-1 text-sm text-ink-muted">
               Anyone on the team can open an assessment and pick up where it was
               left off.
