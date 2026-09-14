@@ -56,9 +56,9 @@ export default function Landing() {
           <img
             src="/cgdhi-lockup.png"
             alt="Johns Hopkins Bloomberg School of Public Health · Center for Global Digital Health Innovation"
-            width={2147}
-            height={460}
-            style={{ height: "54px", width: "auto" }}
+            width={1855}
+            height={267}
+            style={{ height: "58px", width: "auto" }}
           />
           <LandingAuthButton />
         </div>
