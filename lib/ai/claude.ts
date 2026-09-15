@@ -24,7 +24,25 @@ type StructuredCall = {
   temperature?: number;
 };
 
-export type Usage = { input_tokens: number; output_tokens: number };
+export type Usage = {
+  input_tokens: number;
+  output_tokens: number;
+  /** Estimated charge for this call in USD, from the price table below. */
+  cost_usd: number;
+};
+
+/** USD per million tokens (input, output). Update here if pricing changes. */
+const PRICES: [prefix: string, inPerM: number, outPerM: number][] = [
+  ["claude-haiku", 1, 5],
+  ["claude-sonnet", 3, 15],
+  ["claude-opus", 5, 25],
+];
+
+function estimateCost(model: string, inTok: number, outTok: number): number {
+  const row = PRICES.find(([p]) => model.startsWith(p));
+  if (!row) return 0;
+  return Number(((inTok * row[1] + outTok * row[2]) / 1_000_000).toFixed(6));
+}
 
 export async function callStructured<T>({
   system,
@@ -71,9 +89,12 @@ export async function callStructured<T>({
     .map((b) => b.text ?? "")
     .join("");
   if (!text) throw new Error("empty_response");
+  const inTok = response.usage?.input_tokens ?? 0;
+  const outTok = response.usage?.output_tokens ?? 0;
   const usage: Usage = {
-    input_tokens: response.usage?.input_tokens ?? 0,
-    output_tokens: response.usage?.output_tokens ?? 0,
+    input_tokens: inTok,
+    output_tokens: outTok,
+    cost_usd: estimateCost(model ?? MODEL, inTok, outTok),
   };
   return { data: JSON.parse(text) as T, usage };
 }
