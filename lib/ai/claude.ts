@@ -24,6 +24,8 @@ type StructuredCall = {
   temperature?: number;
 };
 
+export type Usage = { input_tokens: number; output_tokens: number };
+
 export async function callStructured<T>({
   system,
   user,
@@ -32,7 +34,7 @@ export async function callStructured<T>({
   effort,
   model,
   temperature,
-}: StructuredCall): Promise<T> {
+}: StructuredCall): Promise<{ data: T; usage: Usage }> {
   const base = {
     model: model ?? MODEL,
     max_tokens: maxTokens,
@@ -69,5 +71,9 @@ export async function callStructured<T>({
     .map((b) => b.text ?? "")
     .join("");
   if (!text) throw new Error("empty_response");
-  return JSON.parse(text) as T;
+  const usage: Usage = {
+    input_tokens: response.usage?.input_tokens ?? 0,
+    output_tokens: response.usage?.output_tokens ?? 0,
+  };
+  return { data: JSON.parse(text) as T, usage };
 }

@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   const { system, user } = summaryPrompts(instrument, ctx.answers);
 
   try {
-    const out = await callStructured<{ summary: string }>({
+    const { data: out } = await callStructured<{ summary: string }>({
       system,
       user,
       schema: SUMMARY_SCHEMA,

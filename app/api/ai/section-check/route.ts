@@ -84,7 +84,7 @@ export async function POST(request: Request) {
   const labels = questionLabels(section);
 
   try {
-    const model = await callStructured<ModelCheck>({
+    const { data: model, usage } = await callStructured<ModelCheck>({
       system: SECTION_CHECK_SYSTEM,
       user: buildSectionCheckUser(
         section,
@@ -132,7 +132,7 @@ export async function POST(request: Request) {
     await storeAiOutput(
       ctx,
       "section_check",
-      { answersHash, shape: CHECK_SHAPE, check },
+      { answersHash, shape: CHECK_SHAPE, check, usage },
       CHECK_MODEL,
       PROMPT_VERSION,
       section.id

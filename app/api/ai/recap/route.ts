@@ -27,7 +27,7 @@ export async function POST(req: Request) {
 
   const { system, user } = recapPrompts(section, ctx.answers);
   try {
-    const out = await callStructured<{ recap: string }>({
+    const { data: out } = await callStructured<{ recap: string }>({
       system,
       user,
       schema: RECAP_SCHEMA,

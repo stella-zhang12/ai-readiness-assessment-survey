@@ -75,7 +75,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const raw = await callStructured<Report>({
+    const { data: raw, usage } = await callStructured<Report>({
       system: REPORT_SYSTEM,
       user: buildReportUser(combined, ctx.answers),
       schema: REPORT_SCHEMA as unknown as Record<string, unknown>,
@@ -103,7 +103,7 @@ export async function POST(request: Request) {
     await storeAiOutput(
       ctx,
       "report",
-      { answersHash, shape: REPORT_SHAPE, report },
+      { answersHash, shape: REPORT_SHAPE, report, usage },
       REPORT_MODEL,
       PROMPT_VERSION
     );

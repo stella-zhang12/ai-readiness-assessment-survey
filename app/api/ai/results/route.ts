@@ -189,7 +189,7 @@ export async function POST(req: Request) {
   const followupsPromise: Promise<Followups> = (async () => {
     try {
       const { system, user } = followupsPrompts(gaps);
-      const out = await callStructured<Followups>({
+      const { data: out } = await callStructured<Followups>({
         system,
         user,
         schema: FOLLOWUPS_SCHEMA,
@@ -238,7 +238,7 @@ export async function POST(req: Request) {
   const { system, user } = judgmentPrompts(promptInput);
   for (let attempt = 0; attempt < 2 && !judgment; attempt++) {
     try {
-      const raw = await callStructured<Judgment>({
+      const { data: raw } = await callStructured<Judgment>({
         system,
         user:
           attempt === 0
