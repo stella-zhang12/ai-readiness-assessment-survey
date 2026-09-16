@@ -109,3 +109,8 @@ join public.assessments a on a.id = r.assessment_id
 join public.teams t       on t.id = a.team_id
 left join public.profiles p on p.id = r.updated_by
 order by a.title, q.ord;
+
+-- Lock the view down: respect row-level security and keep it out of the
+-- public API entirely (research team reads it via the dashboard only).
+alter view public.clean_responses set (security_invoker = true);
+revoke select on public.clean_responses from anon, authenticated;
