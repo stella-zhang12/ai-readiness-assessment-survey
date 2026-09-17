@@ -102,8 +102,13 @@ export function CombinedRunner({
     [guest]
   );
 
+  // Keys the user has touched in THIS mount; a background reconcile with
+  // the database must never overwrite these.
+  const editedKeys = useRef<Set<string>>(new Set());
+
   const setAnswer = useCallback(
     (questionId: string, value: AnswerValue, debounceMs = 700) => {
+      editedKeys.current.add(questionId);
       setAnswers((prev) => ({ ...prev, [questionId]: value }));
       if (guest) {
         answersRef.current = { ...answersRef.current, [questionId]: value };
@@ -176,6 +181,45 @@ export function CombinedRunner({
     }
     timers.current.clear();
   }, [guest, persist]);
+
+  /** Browser back/forward restores a cached snapshot of this page, whose
+   * server-loaded answers can be stale (answers saved after the snapshot
+   * appear "gone" even though the database has them). Reconcile with the
+   * database on every mount; never clobber keys edited in this mount. */
+  const refreshAnswers = useCallback(async () => {
+    if (guest) return;
+    const { data } = await supabase
+      .from("responses")
+      .select("question_id, value")
+      .eq("assessment_id", assessmentId);
+    if (!data) return;
+    setAnswers((prev) => {
+      const fresh: AnswerMap = {};
+      for (const r of data) {
+        fresh[r.question_id as string] = r.value as AnswerValue;
+      }
+      for (const k of editedKeys.current) {
+        if (prev[k] !== undefined) fresh[k] = prev[k];
+      }
+      return fresh;
+    });
+  }, [guest, supabase, assessmentId]);
+
+  useEffect(() => {
+    void refreshAnswers();
+    const onPageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) void refreshAnswers();
+    };
+    const onPageHide = () => flushPendingSaves();
+    window.addEventListener("pageshow", onPageShow);
+    window.addEventListener("pagehide", onPageHide);
+    return () => {
+      window.removeEventListener("pageshow", onPageShow);
+      window.removeEventListener("pagehide", onPageHide);
+      // Leaving the runner (including browser back): write anything pending.
+      flushPendingSaves();
+    };
+  }, [refreshAnswers, flushPendingSaves]);
 
   const setLocation = useCallback(
     (nextIdx: number | null) => {

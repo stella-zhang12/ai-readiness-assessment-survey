@@ -6,6 +6,7 @@ import { ACTIVE_TEAM_COOKIE } from "@/lib/activeTeam";
 import { AppHeader } from "@/components/AppHeader";
 import { InviteCode } from "@/components/InviteCode";
 import { DeleteAssessmentButton } from "@/components/DeleteAssessmentButton";
+import { RefreshOnReturn } from "@/components/RefreshOnReturn";
 import { getInstrument } from "@/lib/instrument";
 
 type AssessmentRow = {
@@ -91,6 +92,7 @@ export default async function DashboardPage() {
 
   return (
     <>
+      <RefreshOnReturn />
       <AppHeader />
       <main className="mx-auto max-w-4xl px-6 py-10">
         <div className="flex flex-wrap items-center justify-between gap-4">
