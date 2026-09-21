@@ -22,7 +22,13 @@ const CHECK_MODEL = "claude-haiku-4-5";
 
 // Bumped when the stored check shape or grading rubric changes; old cache
 // rows regenerate.
-const CHECK_SHAPE = 4;
+const CHECK_SHAPE = 5;
+
+/** Loose normalization so a pasted worked example still matches after
+ * whitespace or punctuation drift. */
+function norm(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
 
 /**
  * Completeness check for one progress-page section. "Not answered" and
@@ -107,6 +113,21 @@ export async function POST(request: Request) {
         .filter((i) => answeredIds.includes(i.qid))
         .map((i) => [i.qid, i])
     );
+
+    // Guarantee: an answer that contains a pasted worked example is
+    // complete by definition, regardless of the model's grade.
+    for (const q of section.questions) {
+      if (q.kind !== "text") continue;
+      const txt = ctx.answers[q.id]?.text?.trim();
+      if (!txt) continue;
+      const a = norm(txt);
+      for (const ex of [q.examples?.crvs?.text, q.examples?.healthcare?.text]) {
+        if (ex && ex.length > 40 && a.includes(norm(ex))) {
+          graded.set(q.id, { qid: q.id, status: "complete", missing: "" });
+          break;
+        }
+      }
+    }
     const fixedById = new Map(fixed.map((f) => [f.qid, f]));
     const items = ids.map((qid) => {
       const fx = fixedById.get(qid);

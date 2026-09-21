@@ -144,6 +144,7 @@ Rules:
 - Use simple, nontechnical language.
 - Do not invent information. Base everything only on what the respondent wrote or selected.
 - Grade each answer ONLY against what its own question asks. The other questions in this section are listed with their full wording; if a detail is the subject of a different question (for example challenges, users, data, or success measures asked separately), never request it here and never mark an answer partial for lacking it. An answer is complete when it covers its own question, even if related topics are still open elsewhere.
+- Some answered questions include a worked example labeled "Expected level of detail". That example IS the bar for complete: an answer with comparable specificity is complete, an answer that matches or closely paraphrases the example is complete, and you must never ask for more detail than the example itself contains.
 - Grade the same answer the same way every time. Specificity is the test: a one-line answer to a multi-part question is partial.
 - An answer of "Not sure", "I don't know", or a selection without the requested detail is partial, with the open unknown named.
 - For rating statements: a rating alone can be complete, but a rating of Partially or Not at all with no note explaining why is partial; ask what is behind the rating.
@@ -318,7 +319,15 @@ export function buildSectionCheckUser(
   const include = new Set(answeredIds);
   const prompts = questionPrompts(section);
   const transcript = section.questions
-    .flatMap((q) => answerLines(q, answers, include))
+    .flatMap((q) => {
+      const lines = answerLines(q, answers, include);
+      // Calibrate grading: the worked example sets the expected depth.
+      if (lines.length > 0 && (q.kind === "text" || q.kind === "goals")) {
+        const ex = q.examples?.crvs?.text ?? q.examples?.healthcare?.text;
+        if (ex) lines.push(`  Expected level of detail (worked example): ${ex}`);
+      }
+      return lines;
+    })
     .join("\n");
   const unanswered = fixed
     .filter((f) => f.status === "not_answered")
