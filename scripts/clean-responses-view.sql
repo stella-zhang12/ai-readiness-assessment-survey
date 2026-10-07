@@ -5,8 +5,15 @@
 -- Run once in the Supabase SQL editor. Afterwards, browse it under
 -- Table Editor -> Views -> clean_responses (filter, sort, export CSV), or:
 --   select * from clean_responses where assessment = 'My assessment';
+--
+-- Rows are chronological: newest submission first, questions in survey
+-- order within each submission.
 
-create or replace view public.clean_responses as
+-- Recreate from scratch: "create or replace" cannot add or reorder view
+-- columns, and the grants are re-applied below anyway.
+drop view if exists public.clean_responses;
+
+create view public.clean_responses as
 with q(ord, qid, section, question, kind, options) as (
   values
     (1, 'S1.Q1', '1 · Use Case Definition', 'What task are you hoping AI could help with? What would you like AI to do?', 'text', null::jsonb),
@@ -43,8 +50,10 @@ with q(ord, qid, section, question, kind, options) as (
     (33, 'S4.Q5', '4 · Country-Level Readiness', 'What regulatory, financial, or technical challenges could make it difficult to implement or sustain this AI solution?', 'text', null::jsonb)
 )
 select
+  a.created_at                              as started,
   a.title                                   as assessment,
   t.name                                    as team,
+  creator.full_name                         as started_by,
   q.ord                                     as question_order,
   q.section,
   q.question,
@@ -101,16 +110,34 @@ select
 
     else r.value::text
   end                                       as answer,
-  p.full_name                               as last_edited_by,
-  r.updated_at
+  p.full_name                               as answered_by,
+  r.updated_at                              as answered_at
 from public.responses r
 join q                    on q.qid = r.question_id
 join public.assessments a on a.id = r.assessment_id
 join public.teams t       on t.id = a.team_id
-left join public.profiles p on p.id = r.updated_by
-order by a.title, q.ord;
+left join public.profiles p       on p.id = r.updated_by
+left join public.profiles creator on creator.id = a.created_by
+order by a.created_at desc, q.ord;
 
 -- Lock the view down: respect row-level security and keep it out of the
 -- public API entirely (research team reads it via the dashboard only).
 alter view public.clean_responses set (security_invoker = true);
 revoke select on public.clean_responses from anon, authenticated;
+
+-- Submissions at a glance: one row per assessment, newest first, with who
+-- started it and the latest activity. Paste into the SQL editor as needed.
+--
+--   select
+--     a.created_at                          as started,
+--     a.title                               as assessment,
+--     t.name                                as team,
+--     p.full_name                           as started_by,
+--     a.status,
+--     a.updated_at                          as last_activity,
+--     (select count(*) from public.responses r
+--       where r.assessment_id = a.id)       as answers_saved
+--   from public.assessments a
+--   join public.teams t         on t.id = a.team_id
+--   left join public.profiles p on p.id = a.created_by
+--   order by a.created_at desc;
