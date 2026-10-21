@@ -176,6 +176,7 @@ export function ReportView({
   title: string;
 }) {
   const [phase, setPhase] = useState<"loading" | "done" | "error">("loading");
+  const [busy, setBusy] = useState(false);
   const [report, setReport] = useState<Report | null>(null);
   const [generatedAt, setGeneratedAt] = useState<string | null>(null);
   const started = useRef(false);
@@ -183,12 +184,17 @@ export function ReportView({
   const generate = useCallback(
     async (regenerate: boolean) => {
       setPhase("loading");
+      setBusy(false);
       try {
         const res = await fetch("/api/ai/report", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ assessmentId, regenerate }),
         });
+        if (res.status === 503) {
+          setBusy(true);
+          throw new Error("busy");
+        }
         if (!res.ok) throw new Error("failed");
         const data = await res.json();
         setReport(data.report);
@@ -233,8 +239,9 @@ export function ReportView({
           Couldn&apos;t generate the report
         </h1>
         <p className="mx-auto mt-3 max-w-md text-sm text-ink-soft">
-          Something went wrong. Your answers are all saved; try again in a
-          moment.
+          {busy
+            ? "Several reports are being generated at the same time. Your answers are all saved; wait about a minute, then try again."
+            : "Something went wrong. Your answers are all saved; try again in a moment."}
         </p>
         <button
           type="button"

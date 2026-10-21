@@ -10,7 +10,10 @@ import Anthropic from "@anthropic-ai/sdk";
 export const MODEL = "claude-opus-5";
 export const PROMPT_VERSION = "v1";
 
-const client = new Anthropic(); // reads ANTHROPIC_API_KEY
+// Reads ANTHROPIC_API_KEY. Explicit per-attempt timeout and a single retry
+// keep the worst case inside the serverless function's time budget instead
+// of dying at the platform limit with nothing stored.
+const client = new Anthropic({ timeout: 90_000, maxRetries: 1 });
 
 type StructuredCall = {
   system: string;
@@ -66,8 +69,10 @@ export async function callStructured<T>({
   };
 
   // Prefer the server-side refusal fallback (re-runs a safety decline on a
-  // fallback model automatically); fall back to a plain call if the beta
-  // isn't available to this account/SDK.
+  // fallback model automatically); fall back to a plain call ONLY when the
+  // beta itself is rejected (400/404). Rate limits, overload, and timeouts
+  // must propagate: retrying them as a second full call doubled latency past
+  // the serverless time limit under concurrent pilot use.
   let response;
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -76,7 +81,9 @@ export async function callStructured<T>({
       betas: ["server-side-fallback-2026-07-01"],
       fallbacks: "default",
     });
-  } catch {
+  } catch (e) {
+    const status = (e as { status?: number }).status;
+    if (status !== 400 && status !== 404) throw e;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     response = await (client.messages.create as any)(base);
   }

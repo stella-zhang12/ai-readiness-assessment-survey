@@ -126,7 +126,12 @@ export async function POST(request: Request) {
       generatedAt: new Date().toISOString(),
     });
   } catch (e) {
-    console.error("report generation failed:", e);
+    const status = (e as { status?: number }).status;
+    console.error("report generation failed:", status ?? "", e);
+    // Rate limit / overload: tell the client it's contention, not a bug.
+    if (status === 429 || status === 529) {
+      return NextResponse.json({ error: "busy" }, { status: 503 });
+    }
     return NextResponse.json({ error: "generation failed" }, { status: 502 });
   }
 }
